@@ -47,16 +47,22 @@ export default async function Home({
   const tabs = [{ value: null, label: "전체" }, ...CATEGORIES];
 
   return (
-    <main className="mx-auto min-h-dvh max-w-md px-4 pb-10">
+    <main className="mx-auto min-h-dvh max-w-md px-4 pb-28">
       <Header />
 
       {!user && (
-        <Link
-          href="/login"
-          className="mb-4 block rounded-xl bg-gray-900 px-4 py-3 text-center text-sm font-medium text-white"
-        >
-          로그인하고 예측에 참여하기
-        </Link>
+        <section className="mb-5 rounded-2xl bg-indigo-50 p-5">
+          <p className="font-bold text-indigo-900">미래를 확률로 맞혀 보세요</p>
+          <p className="mt-1 text-sm text-indigo-800/80">
+            돈은 걸지 않아요. 예측이 맞을수록 점수가 쌓이고, 랭킹에 올라요.
+          </p>
+          <Link
+            href="/login"
+            className="mt-4 block rounded-xl bg-indigo-600 px-4 py-3 text-center text-sm font-medium text-white"
+          >
+            로그인하고 시작하기
+          </Link>
+        </section>
       )}
 
       <nav className="flex gap-2">

@@ -37,7 +37,7 @@ export default async function RankingPage() {
   const me = user ? rows.find((r) => r.user_id === user.id) : undefined;
 
   return (
-    <main className="mx-auto min-h-dvh max-w-md px-4 pb-10">
+    <main className="mx-auto min-h-dvh max-w-md px-4 pb-28">
       <Header />
       <h1 className="text-xl font-bold">랭킹</h1>
       <p className="mt-1 text-xs text-gray-500">
@@ -65,7 +65,7 @@ export default async function RankingPage() {
               <li
                 key={r.user_id}
                 className={`flex items-center gap-3 px-2 py-3 ${
-                  isMe ? "rounded-xl bg-blue-50" : ""
+                  isMe ? "rounded-xl bg-indigo-50" : ""
                 }`}
               >
                 <span
@@ -79,7 +79,7 @@ export default async function RankingPage() {
                   <p className="truncate font-medium">
                     {r.nickname}
                     {isMe && (
-                      <span className="ml-1 text-xs text-blue-600">(나)</span>
+                      <span className="ml-1 text-xs text-indigo-600">(나)</span>
                     )}
                   </p>
                   <p className="text-xs text-gray-400">

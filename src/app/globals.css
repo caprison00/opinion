@@ -4,4 +4,34 @@ body {
   font-family:
     -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard",
     "Noto Sans KR", sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 확률 슬라이더: 손가락으로 잡기 쉽게 큰 손잡이 */
+input[type="range"].probability-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  border-radius: 9999px;
+  background: linear-gradient(
+    to right,
+    var(--color-indigo-600) var(--value),
+    var(--color-gray-200) var(--value)
+  );
+}
+input[type="range"].probability-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 9999px;
+  background: #fff;
+  border: 3px solid var(--color-indigo-600);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.2);
+}
+input[type="range"].probability-slider::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  background: #fff;
+  border: 3px solid var(--color-indigo-600);
 }

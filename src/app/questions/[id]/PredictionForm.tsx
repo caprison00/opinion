@@ -26,7 +26,7 @@ export default function PredictionForm({
       <div>
         <div className="flex items-end justify-between">
           <span className="text-sm font-medium">YES일 확률</span>
-          <span className="text-3xl font-bold tabular-nums">
+          <span className="text-3xl font-bold tabular-nums text-indigo-600">
             {probability}%
           </span>
         </div>
@@ -37,9 +37,10 @@ export default function PredictionForm({
           max={99}
           value={probability}
           onChange={(e) => setProbability(Number(e.target.value))}
-          className="mt-2 w-full accent-gray-900"
+          className="probability-slider mt-4 w-full"
+          style={{ "--value": `${probability}%` } as React.CSSProperties}
         />
-        <div className="flex justify-between text-xs text-gray-400">
+        <div className="mt-2 flex justify-between text-xs text-gray-400">
           <span>아닐 것 같다</span>
           <span>반반</span>
           <span>그럴 것 같다</span>

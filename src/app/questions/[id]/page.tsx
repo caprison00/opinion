@@ -73,7 +73,7 @@ export default async function QuestionPage({
   }
 
   return (
-    <main className="mx-auto min-h-dvh max-w-md px-4 pb-10">
+    <main className="mx-auto min-h-dvh max-w-md px-4 pb-28">
       <Header />
       <Link href="/" className="text-sm text-gray-500">
         ← 목록으로
@@ -139,7 +139,15 @@ export default async function QuestionPage({
           <p className="mt-1 text-4xl font-bold tabular-nums">
             {crowd === null ? "–" : `${crowd}%`}
           </p>
-          <p className="mt-1 text-xs text-gray-400">
+          {crowd !== null && (
+            <div className="mx-auto mt-3 h-1.5 max-w-48 overflow-hidden rounded-full bg-white/20">
+              <div
+                className="h-full rounded-full bg-indigo-400"
+                style={{ width: `${crowd}%` }}
+              />
+            </div>
+          )}
+          <p className="mt-2 text-xs text-gray-400">
             {predictions.length === 0
               ? "아직 예측한 사람이 없어요"
               : `${predictions.length}명 예측`}

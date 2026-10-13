@@ -54,7 +54,7 @@ export default async function MyPredictionsPage({
   const list = tab === "done" ? done : active;
 
   return (
-    <main className="mx-auto min-h-dvh max-w-md px-4 pb-10">
+    <main className="mx-auto min-h-dvh max-w-md px-4 pb-28">
       <Header />
       <h1 className="text-xl font-bold">내 예측</h1>
 
@@ -143,7 +143,7 @@ function ScoreBadge({ score, isVoid }: { score?: number; isVoid: boolean }) {
     <span
       className={`shrink-0 text-xl font-bold tabular-nums ${
         score > 0
-          ? "text-blue-600"
+          ? "text-indigo-600"
           : score < 0
             ? "text-red-600"
             : "text-gray-500"

@@ -18,7 +18,7 @@ export default async function AdminPage() {
 
   if (!isAdmin) {
     return (
-      <main className="mx-auto min-h-dvh max-w-md px-4">
+      <main className="mx-auto min-h-dvh max-w-md px-4 pb-28">
         <Header />
         <p className="py-16 text-center text-gray-500">
           관리자만 볼 수 있는 화면이에요.
@@ -34,7 +34,7 @@ export default async function AdminPage() {
   const questions = (data ?? []) as Question[];
 
   return (
-    <main className="mx-auto min-h-dvh max-w-md px-4 pb-10">
+    <main className="mx-auto min-h-dvh max-w-md px-4 pb-28">
       <Header />
       <h1 className="text-xl font-bold">새 질문 만들기</h1>
       <div className="mt-4">

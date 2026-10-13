@@ -38,10 +38,12 @@ export async function savePrediction(
     return { error: "예측이 마감된 질문이에요." };
   }
 
-  const { error } = await supabase.from("predictions").upsert(
-    { user_id: user.id, question_id: questionId, probability, reason },
-    { onConflict: "user_id,question_id" },
-  );
+  const { error } = await supabase
+    .from("predictions")
+    .upsert(
+      { user_id: user.id, question_id: questionId, probability, reason },
+      { onConflict: "user_id,question_id" },
+    );
 
   if (error) {
     // 마감 직후에 저장하면 DB 정책(RLS)에서 거부된다.
