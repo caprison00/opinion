@@ -1,56 +1,72 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import Header from "@/components/Header";
+import QuestionCard from "@/components/QuestionCard";
+import { getViewer } from "@/lib/auth";
+import { CATEGORIES, isCategory, type Question } from "@/lib/questions";
 
-export default async function Home() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ category?: string }>;
+}) {
+  const { category: rawCategory } = await searchParams;
+  const category = isCategory(rawCategory) ? rawCategory : null;
 
-  const { data: profile } = user
-    ? await supabase
-        .from("profiles")
-        .select("nickname")
-        .eq("id", user.id)
-        .maybeSingle()
-    : { data: null };
+  const { supabase, user } = await getViewer();
+
+  let query = supabase
+    .from("questions")
+    .select("*")
+    .eq("status", "open")
+    .gt("close_at", new Date().toISOString())
+    .order("close_at", { ascending: true });
+  if (category) query = query.eq("category", category);
+
+  const { data } = await query;
+  const questions = (data ?? []) as Question[];
+
+  const tabs = [{ value: null, label: "전체" }, ...CATEGORIES];
 
   return (
-    <main className="mx-auto min-h-dvh max-w-md px-6 py-10">
-      <header className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">예감</h1>
-        {user ? (
-          <form action="/auth/signout" method="post">
-            <button className="text-sm text-gray-500 underline">로그아웃</button>
-          </form>
-        ) : (
-          <Link href="/login" className="text-sm font-medium underline">
-            로그인
-          </Link>
-        )}
-      </header>
+    <main className="mx-auto min-h-dvh max-w-md px-4 pb-10">
+      <Header />
 
-      <section className="mt-10 rounded-2xl bg-gray-50 p-6">
-        {profile ? (
-          <>
-            <p className="text-lg">
-              <strong>{profile.nickname}</strong>님, 환영해요!
-            </p>
+      {!user && (
+        <Link
+          href="/login"
+          className="mb-4 block rounded-xl bg-gray-900 px-4 py-3 text-center text-sm font-medium text-white"
+        >
+          로그인하고 예측에 참여하기
+        </Link>
+      )}
+
+      <nav className="flex gap-2">
+        {tabs.map((tab) => {
+          const active = tab.value === category;
+          return (
             <Link
-              href="/onboarding"
-              className="mt-3 inline-block text-sm text-gray-500 underline"
+              key={tab.label}
+              href={tab.value ? `/?category=${tab.value}` : "/"}
+              className={`rounded-full px-4 py-1.5 text-sm ${
+                active
+                  ? "bg-gray-900 font-medium text-white"
+                  : "bg-gray-100 text-gray-600"
+              }`}
             >
-              닉네임 변경
+              {tab.label}
             </Link>
-          </>
-        ) : (
-          <p className="text-gray-600">
-            로그인하면 예측에 참여할 수 있어요.
+          );
+        })}
+      </nav>
+
+      <section className="mt-4 flex flex-col gap-3">
+        {questions.length === 0 ? (
+          <p className="py-16 text-center text-sm text-gray-400">
+            진행 중인 질문이 없어요.
           </p>
+        ) : (
+          questions.map((q) => <QuestionCard key={q.id} question={q} />)
         )}
-        <p className="mt-6 text-sm text-gray-400">
-          질문 목록은 다음 단계에서 추가됩니다.
-        </p>
       </section>
     </main>
   );
