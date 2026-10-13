@@ -25,6 +25,25 @@ export default async function Home({
   const { data } = await query;
   const questions = (data ?? []) as Question[];
 
+  const { data: statsData } = questions.length
+    ? await supabase
+        .from("question_stats")
+        .select("question_id, crowd_probability, prediction_count")
+        .in(
+          "question_id",
+          questions.map((q) => q.id),
+        )
+    : { data: [] };
+  const stats = new Map(
+    (
+      (statsData ?? []) as {
+        question_id: string;
+        crowd_probability: number;
+        prediction_count: number;
+      }[]
+    ).map((s) => [s.question_id, s]),
+  );
+
   const tabs = [{ value: null, label: "전체" }, ...CATEGORIES];
 
   return (
@@ -65,7 +84,14 @@ export default async function Home({
             진행 중인 질문이 없어요.
           </p>
         ) : (
-          questions.map((q) => <QuestionCard key={q.id} question={q} />)
+          questions.map((q) => (
+            <QuestionCard
+              key={q.id}
+              question={q}
+              crowd={stats.get(q.id)?.crowd_probability}
+              count={stats.get(q.id)?.prediction_count}
+            />
+          ))
         )}
       </section>
     </main>

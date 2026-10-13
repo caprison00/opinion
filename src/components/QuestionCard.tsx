@@ -6,7 +6,15 @@ import {
   type Question,
 } from "@/lib/questions";
 
-export default function QuestionCard({ question }: { question: Question }) {
+export default function QuestionCard({
+  question,
+  crowd,
+  count = 0,
+}: {
+  question: Question;
+  crowd?: number;
+  count?: number;
+}) {
   return (
     <Link
       href={`/questions/${question.id}`}
@@ -20,9 +28,14 @@ export default function QuestionCard({ question }: { question: Question }) {
           {timeLeft(question.close_at)}
         </span>
       </div>
-      <h2 className="mt-2 font-semibold leading-snug">{question.title}</h2>
+      <div className="mt-2 flex items-start justify-between gap-3">
+        <h2 className="font-semibold leading-snug">{question.title}</h2>
+        <span className="shrink-0 text-xl font-bold tabular-nums">
+          {crowd === undefined ? "–" : `${crowd}%`}
+        </span>
+      </div>
       <p className="mt-1 text-xs text-gray-400">
-        마감 {formatDate(question.close_at)}
+        마감 {formatDate(question.close_at)} · {count}명 예측
       </p>
     </Link>
   );
