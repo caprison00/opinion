@@ -55,9 +55,22 @@ export default async function QuestionPage({
             predictions.length,
         )
       : null;
-  const mine = user ? predictions.find((p) => p.user_id === user.id) : undefined;
+  const mine = user
+    ? predictions.find((p) => p.user_id === user.id)
+    : undefined;
   const reasons = predictions.filter((p) => p.reason);
   const accepting = isAccepting(q);
+
+  let myScore: number | undefined;
+  if (mine && q.status === "resolved") {
+    const { data: scoreRow } = await supabase
+      .from("prediction_scores")
+      .select("score")
+      .eq("question_id", q.id)
+      .eq("user_id", mine.user_id)
+      .maybeSingle();
+    myScore = scoreRow?.score;
+  }
 
   return (
     <main className="mx-auto min-h-dvh max-w-md px-4 pb-10">
@@ -97,8 +110,32 @@ export default async function QuestionPage({
           </dd>
         </dl>
 
+        {q.status === "resolved" && q.outcome && (
+          <section
+            className={`mt-5 rounded-2xl p-4 text-center font-bold ${
+              q.outcome === "yes"
+                ? "bg-blue-50 text-blue-700"
+                : "bg-red-50 text-red-700"
+            }`}
+          >
+            결과: {q.outcome.toUpperCase()}
+            {myScore !== undefined && (
+              <span className="ml-2 font-normal">
+                · 내 점수 {myScore > 0 ? `+${myScore}` : myScore}점
+              </span>
+            )}
+          </section>
+        )}
+        {q.status === "void" && (
+          <section className="mt-5 rounded-2xl bg-gray-100 p-4 text-center text-sm text-gray-600">
+            이 질문은 무효 처리되어 채점하지 않아요.
+          </section>
+        )}
+
         <section className="mt-5 rounded-2xl bg-gray-900 p-5 text-center text-white">
-          <p className="text-sm text-gray-300">현재 집단 확률</p>
+          <p className="text-sm text-gray-300">
+            {accepting ? "현재 집단 확률" : "최종 집단 확률"}
+          </p>
           <p className="mt-1 text-4xl font-bold tabular-nums">
             {crowd === null ? "–" : `${crowd}%`}
           </p>

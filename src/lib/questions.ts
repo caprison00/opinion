@@ -35,8 +35,13 @@ const STATUS_LABELS: Record<QuestionStatus, string> = {
 };
 
 // status가 open이어도 마감 시각이 지났으면 마감으로 보여준다.
-export function statusLabel(q: Pick<Question, "status" | "close_at">) {
+export function statusLabel(
+  q: Pick<Question, "status" | "close_at" | "outcome">,
+) {
   if (q.status === "open" && new Date(q.close_at) <= new Date()) return "마감";
+  if (q.status === "resolved" && q.outcome) {
+    return `결과 ${q.outcome.toUpperCase()}`;
+  }
   return STATUS_LABELS[q.status];
 }
 

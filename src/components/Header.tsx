@@ -15,6 +15,11 @@ export default async function Header() {
             관리자
           </Link>
         )}
+        {user && (
+          <Link href="/me" className="font-medium">
+            내 예측
+          </Link>
+        )}
         {user ? (
           <form action="/auth/signout" method="post">
             <button className="text-gray-500 underline">로그아웃</button>

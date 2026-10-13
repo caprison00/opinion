@@ -5,9 +5,11 @@ import { getViewer } from "@/lib/auth";
 import {
   categoryLabel,
   formatDate,
+  isAccepting,
   statusLabel,
   type Question,
 } from "@/lib/questions";
+import QuestionActions from "./QuestionActions";
 import QuestionForm from "./QuestionForm";
 
 export default async function AdminPage() {
@@ -39,7 +41,9 @@ export default async function AdminPage() {
         <QuestionForm />
       </div>
 
-      <h2 className="mt-10 text-lg font-bold">전체 질문 ({questions.length})</h2>
+      <h2 className="mt-10 text-lg font-bold">
+        전체 질문 ({questions.length})
+      </h2>
       <ul className="mt-3 divide-y divide-gray-100">
         {questions.map((q) => (
           <li key={q.id} className="py-3">
@@ -50,6 +54,11 @@ export default async function AdminPage() {
               </p>
               <p className="mt-0.5 font-medium">{q.title}</p>
             </Link>
+            <QuestionActions
+              id={q.id}
+              canClose={q.status === "open"}
+              accepting={isAccepting(q)}
+            />
           </li>
         ))}
       </ul>

@@ -101,9 +101,7 @@ export default function QuestionForm() {
       </p>
 
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
-      {state.ok && (
-        <p className="text-sm text-green-700">질문이 등록됐어요!</p>
-      )}
+      {state.ok && <p className="text-sm text-green-700">질문이 등록됐어요!</p>}
 
       <button
         disabled={pending}
