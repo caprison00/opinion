@@ -9,12 +9,15 @@ export default async function Header() {
       <Link href="/" className="text-2xl font-bold">
         예감
       </Link>
-      <nav className="flex items-center gap-4 text-sm">
+      <nav className="flex items-center gap-3 text-sm">
         {isAdmin && (
           <Link href="/admin" className="font-medium text-blue-600">
             관리자
           </Link>
         )}
+        <Link href="/ranking" className="font-medium">
+          랭킹
+        </Link>
         {user && (
           <Link href="/me" className="font-medium">
             내 예측
