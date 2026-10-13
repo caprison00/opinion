@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { button } from "@/components/ui";
 import {
   closeQuestion,
   resolveQuestion,
@@ -8,9 +9,13 @@ import {
 } from "./actions";
 
 const RESULT_BUTTONS = [
-  { value: "yes", label: "YES", className: "bg-blue-600 text-white" },
-  { value: "no", label: "NO", className: "bg-red-600 text-white" },
-  { value: "void", label: "무효", className: "bg-gray-200 text-gray-700" },
+  { value: "yes", label: "YES", className: button.smallPrimary },
+  {
+    value: "no",
+    label: "NO",
+    className: `${button.smallPrimary} !bg-negative hover:!bg-negative-strong`,
+  },
+  { value: "void", label: "무효", className: button.smallSecondary },
 ] as const;
 
 export default function QuestionActions({
@@ -37,7 +42,7 @@ export default function QuestionActions({
   const error = closeState.error ?? resolveState.error;
 
   return (
-    <div className="mt-2">
+    <div className="mt-3">
       <div className="flex flex-wrap gap-2">
         {canClose && (
           <form
@@ -49,10 +54,7 @@ export default function QuestionActions({
             }}
           >
             <input type="hidden" name="id" value={id} />
-            <button
-              disabled={closing}
-              className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium disabled:opacity-50"
-            >
+            <button disabled={closing} className={button.smallSecondary}>
               마감 처리
             </button>
           </form>
@@ -69,16 +71,15 @@ export default function QuestionActions({
           >
             <input type="hidden" name="id" value={id} />
             <input type="hidden" name="result" value={b.value} />
-            <button
-              disabled={resolving}
-              className={`rounded-lg px-3 py-1.5 text-xs font-medium disabled:opacity-50 ${b.className}`}
-            >
+            <button disabled={resolving} className={b.className}>
               {b.label}
             </button>
           </form>
         ))}
       </div>
-      {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
+      {error && (
+        <p className="mt-2 t-caption-1 text-negative-strong">{error}</p>
+      )}
     </div>
   );
 }

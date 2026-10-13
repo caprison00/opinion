@@ -1,6 +1,8 @@
 import Link from "next/link";
-import Header from "@/components/Header";
+import EmptyState from "@/components/EmptyState";
+import PageShell from "@/components/PageShell";
 import QuestionCard from "@/components/QuestionCard";
+import { chip } from "@/components/ui";
 import { getViewer } from "@/lib/auth";
 import { CATEGORIES, isCategory, type Question } from "@/lib/questions";
 
@@ -47,59 +49,63 @@ export default async function Home({
   const tabs = [{ value: null, label: "전체" }, ...CATEGORIES];
 
   return (
-    <main className="mx-auto min-h-dvh max-w-md px-4 pb-28">
-      <Header />
-
+    <PageShell>
       {!user && (
-        <section className="mb-5 rounded-2xl bg-indigo-50 p-5">
-          <p className="font-bold text-indigo-900">미래를 확률로 맞혀 보세요</p>
-          <p className="mt-1 text-sm text-indigo-800/80">
+        <section className="relative mb-8 overflow-hidden rounded-[20px] bg-gradient-to-br from-primary to-primary-deep px-6 py-8 text-white md:mb-12 md:px-12 md:py-14">
+          <p className="t-caption-1 !font-semibold tracking-[0.14em] text-white/70">
+            예측 게임
+          </p>
+          <h1 className="mt-2 t-heading-1 md:t-title-1">
+            미래를 확률로 맞혀 보세요
+          </h1>
+          <p className="mt-2 t-body-3 text-white/80 md:t-body-1">
             돈은 걸지 않아요. 예측이 맞을수록 점수가 쌓이고, 랭킹에 올라요.
           </p>
           <Link
             href="/login"
-            className="mt-4 block rounded-xl bg-indigo-600 px-4 py-3 text-center text-sm font-medium text-white"
+            className="mt-6 inline-flex h-10 items-center rounded-full bg-white px-5 t-label-1 !font-semibold text-primary transition-colors hover:bg-white/90"
           >
             로그인하고 시작하기
           </Link>
         </section>
       )}
 
-      <nav className="flex gap-2">
-        {tabs.map((tab) => {
-          const active = tab.value === category;
-          return (
+      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h1 className="t-heading-1 md:t-title-3">진행 중인 질문</h1>
+          <p className="mt-1 t-label-1 text-label-alt">
+            마감이 가까운 순서로 보여요.
+          </p>
+        </div>
+        <nav className="-mx-4 flex gap-2 overflow-x-auto px-4 md:mx-0 md:px-0">
+          {tabs.map((tab) => (
             <Link
               key={tab.label}
               href={tab.value ? `/?category=${tab.value}` : "/"}
-              className={`rounded-full px-4 py-1.5 text-sm ${
-                active
-                  ? "bg-gray-900 font-medium text-white"
-                  : "bg-gray-100 text-gray-600"
-              }`}
+              className={chip(tab.value === category)}
             >
               {tab.label}
             </Link>
-          );
-        })}
-      </nav>
+          ))}
+        </nav>
+      </div>
 
-      <section className="mt-4 flex flex-col gap-3">
+      <section className="mt-6">
         {questions.length === 0 ? (
-          <p className="py-16 text-center text-sm text-gray-400">
-            진행 중인 질문이 없어요.
-          </p>
+          <EmptyState message="진행 중인 질문이 없어요." />
         ) : (
-          questions.map((q) => (
-            <QuestionCard
-              key={q.id}
-              question={q}
-              crowd={stats.get(q.id)?.crowd_probability}
-              count={stats.get(q.id)?.prediction_count}
-            />
-          ))
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
+            {questions.map((q) => (
+              <QuestionCard
+                key={q.id}
+                question={q}
+                crowd={stats.get(q.id)?.crowd_probability}
+                count={stats.get(q.id)?.prediction_count}
+              />
+            ))}
+          </div>
         )}
       </section>
-    </main>
+    </PageShell>
   );
 }

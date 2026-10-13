@@ -26,7 +26,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className="bg-white text-gray-900 antialiased">
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-jp.min.css"
+        />
+      </head>
+      <body className="min-h-dvh bg-bg font-sans text-label">
         {children}
         <BottomNav />
       </body>

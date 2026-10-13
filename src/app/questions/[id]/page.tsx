@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import Header from "@/components/Header";
+import { ChevronLeftIcon, LockIcon } from "@/components/icons";
+import PageShell from "@/components/PageShell";
+import { button, card, scoreText } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
 import {
   categoryLabel,
@@ -73,152 +75,192 @@ export default async function QuestionPage({
   }
 
   return (
-    <main className="mx-auto min-h-dvh max-w-md px-4 pb-28">
-      <Header />
-      <Link href="/" className="text-sm text-gray-500">
-        ← 목록으로
+    <PageShell>
+      <Link
+        href="/"
+        className="inline-flex items-center gap-0.5 t-label-1 text-label-alt hover:text-label"
+      >
+        <ChevronLeftIcon className="h-4 w-4" />
+        목록으로
       </Link>
 
-      <article className="mt-3">
-        <div className="flex items-center gap-2 text-xs">
-          <span className="rounded-full bg-gray-100 px-2 py-0.5 text-gray-600">
-            {categoryLabel(q.category)}
-          </span>
-          <span className="rounded-full bg-orange-50 px-2 py-0.5 font-medium text-orange-600">
-            {statusLabel(q)}
-          </span>
-        </div>
-        <h1 className="mt-2 text-xl font-bold leading-snug">{q.title}</h1>
+      <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-10">
+        {/* 왼쪽: 질문 내용과 근거 목록 */}
+        <article className="min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="rounded-md bg-fill px-2 py-0.5 t-caption-1 !font-semibold text-label-neutral">
+              {categoryLabel(q.category)}
+            </span>
+            <span
+              className={`rounded-md px-2 py-0.5 t-caption-1 !font-semibold ${
+                accepting
+                  ? "bg-accent-blue text-primary"
+                  : "bg-fill text-label-alt"
+              }`}
+            >
+              {statusLabel(q)}
+            </span>
+          </div>
+          <h1 className="mt-3 t-heading-1 md:t-title-2">{q.title}</h1>
 
-        {q.description && (
-          <p className="mt-3 whitespace-pre-line text-gray-700">
-            {q.description}
-          </p>
-        )}
+          {q.description && (
+            <p className="mt-4 whitespace-pre-line t-body-2 text-label-neutral">
+              {q.description}
+            </p>
+          )}
 
-        <dl className="mt-5 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 rounded-2xl bg-gray-50 p-4 text-sm">
-          <dt className="text-gray-500">예측 마감</dt>
-          <dd>
-            {formatDate(q.close_at)}{" "}
-            <span className="text-orange-600">({timeLeft(q.close_at)})</span>
-          </dd>
-          <dt className="text-gray-500">결과 확정</dt>
-          <dd>{formatDate(q.resolve_at)} 예정</dd>
-          <dt className="text-gray-500">판정 출처</dt>
-          <dd className="whitespace-pre-line break-words">
-            {q.resolution_source}
-          </dd>
-        </dl>
+          <dl className="mt-6 grid grid-cols-[auto_1fr] gap-x-6 gap-y-3 rounded-2xl bg-bg-alt p-5 t-label-1">
+            <dt className="text-label-alt">예측 마감</dt>
+            <dd className="text-label">
+              {formatDate(q.close_at)}
+              {accepting && (
+                <span className="ml-1.5 !font-semibold text-caution-text">
+                  {timeLeft(q.close_at)}
+                </span>
+              )}
+            </dd>
+            <dt className="text-label-alt">결과 확정</dt>
+            <dd className="text-label">{formatDate(q.resolve_at)} 예정</dd>
+            <dt className="text-label-alt">판정 출처</dt>
+            <dd className="whitespace-pre-line break-words text-label">
+              {q.resolution_source}
+            </dd>
+          </dl>
 
-        {q.status === "resolved" && q.outcome && (
-          <section
-            className={`mt-5 rounded-2xl p-4 text-center font-bold ${
-              q.outcome === "yes"
-                ? "bg-blue-50 text-blue-700"
-                : "bg-red-50 text-red-700"
-            }`}
-          >
-            결과: {q.outcome.toUpperCase()}
-            {myScore !== undefined && (
-              <span className="ml-2 font-normal">
-                · 내 점수 {myScore > 0 ? `+${myScore}` : myScore}점
-              </span>
-            )}
+          <section className="mt-10 hidden lg:block">
+            <Reasons reasons={reasons} userId={user?.id} />
           </section>
-        )}
-        {q.status === "void" && (
-          <section className="mt-5 rounded-2xl bg-gray-100 p-4 text-center text-sm text-gray-600">
-            이 질문은 무효 처리되어 채점하지 않아요.
-          </section>
-        )}
+        </article>
 
-        <section className="mt-5 rounded-2xl bg-gray-900 p-5 text-center text-white">
-          <p className="text-sm text-gray-300">
-            {accepting ? "현재 집단 확률" : "최종 집단 확률"}
-          </p>
-          <p className="mt-1 text-4xl font-bold tabular-nums">
-            {crowd === null ? "–" : `${crowd}%`}
-          </p>
-          {crowd !== null && (
-            <div className="mx-auto mt-3 h-1.5 max-w-48 overflow-hidden rounded-full bg-white/20">
+        {/* 오른쪽(데스크톱) / 아래(모바일): 집단 확률과 내 예측 */}
+        <aside className="flex flex-col gap-4 lg:sticky lg:top-24 lg:self-start">
+          {q.status === "resolved" && q.outcome && (
+            <section
+              className={`rounded-2xl p-4 text-center ${
+                q.outcome === "yes"
+                  ? "bg-accent-blue text-primary"
+                  : "bg-accent-red text-negative-strong"
+              }`}
+            >
+              <p className="t-body-1 !font-bold">
+                결과 {q.outcome.toUpperCase()}
+              </p>
+              {myScore !== undefined && (
+                <p className="mt-0.5 t-label-1">
+                  내 점수 {scoreText(myScore)}점
+                </p>
+              )}
+            </section>
+          )}
+          {q.status === "void" && (
+            <section className="rounded-2xl bg-fill p-4 text-center t-label-1 text-label-neutral">
+              이 질문은 무효 처리되어 채점하지 않아요.
+            </section>
+          )}
+
+          <section className="rounded-[20px] bg-gradient-to-br from-primary to-primary-deep p-6 text-white">
+            <p className="t-label-1 text-white/75">
+              {accepting ? "현재 집단 확률" : "최종 집단 확률"}
+            </p>
+            <div className="mt-1 flex items-end justify-between">
+              <p className="t-display-2 tabular-nums">
+                {crowd === null ? "–" : `${crowd}%`}
+              </p>
+              <p className="pb-2 t-label-2 text-white/70">
+                {predictions.length === 0
+                  ? "예측 없음"
+                  : `${predictions.length}명 예측`}
+              </p>
+            </div>
+            <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/20">
               <div
-                className="h-full rounded-full bg-indigo-400"
-                style={{ width: `${crowd}%` }}
+                className="h-full rounded-full bg-white"
+                style={{ width: `${crowd ?? 0}%` }}
               />
             </div>
-          )}
-          <p className="mt-2 text-xs text-gray-400">
-            {predictions.length === 0
-              ? "아직 예측한 사람이 없어요"
-              : `${predictions.length}명 예측`}
-          </p>
-        </section>
+          </section>
 
-        <section className="mt-5 rounded-2xl border border-gray-200 p-5">
-          <h2 className="mb-4 font-bold">내 예측</h2>
-          {!user ? (
-            <Link
-              href="/login"
-              className="block rounded-xl bg-gray-900 px-4 py-3 text-center font-medium text-white"
-            >
-              로그인하고 예측하기
-            </Link>
-          ) : accepting ? (
-            <PredictionForm
-              questionId={q.id}
-              initialProbability={mine?.probability}
-              initialReason={mine?.reason}
-            />
-          ) : mine ? (
-            <div>
-              <p className="text-3xl font-bold tabular-nums">
-                {mine.probability}%
+          <section className={`${card} p-5`}>
+            <h2 className="mb-4 t-body-1 !font-bold">내 예측</h2>
+            {!user ? (
+              <Link href="/login" className={`${button.primary} w-full`}>
+                로그인하고 예측하기
+              </Link>
+            ) : accepting ? (
+              <PredictionForm
+                questionId={q.id}
+                initialProbability={mine?.probability}
+                initialReason={mine?.reason}
+              />
+            ) : mine ? (
+              <div>
+                <p className="t-title-1 tabular-nums text-primary">
+                  {mine.probability}%
+                </p>
+                {mine.reason && (
+                  <p className="mt-1 t-body-3 text-label-neutral">
+                    “{mine.reason}”
+                  </p>
+                )}
+                <p className="mt-4 flex items-center gap-1.5 t-caption-1 text-label-alt">
+                  <LockIcon className="h-3.5 w-3.5" />
+                  마감되어 더 이상 수정할 수 없어요.
+                </p>
+              </div>
+            ) : (
+              <p className="flex items-center gap-1.5 t-label-1 text-label-alt">
+                <LockIcon className="h-4 w-4" />
+                마감되어 예측할 수 없어요.
               </p>
-              {mine.reason && (
-                <p className="mt-1 text-sm text-gray-600">“{mine.reason}”</p>
-              )}
-              <p className="mt-3 text-xs text-gray-400">
-                🔒 마감되어 더 이상 수정할 수 없어요.
-              </p>
-            </div>
-          ) : (
-            <p className="text-sm text-gray-500">
-              🔒 마감되어 예측할 수 없어요.
-            </p>
-          )}
-        </section>
+            )}
+          </section>
+        </aside>
 
-        <section className="mt-5">
-          <h2 className="font-bold">
-            다른 사람들의 근거{" "}
-            <span className="text-sm font-normal text-gray-400">
-              {reasons.length}
-            </span>
-          </h2>
-          {reasons.length === 0 ? (
-            <p className="py-8 text-center text-sm text-gray-400">
-              아직 근거가 없어요.
-            </p>
-          ) : (
-            <ul className="mt-2 divide-y divide-gray-100">
-              {reasons.map((p) => (
-                <li key={p.user_id} className="flex gap-3 py-3">
-                  <span className="w-12 shrink-0 text-right font-bold tabular-nums">
-                    {p.probability}%
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-xs text-gray-400">
-                      {p.profiles?.nickname ?? "알 수 없음"}
-                      {user && p.user_id === user.id && " (나)"}
-                    </p>
-                    <p className="break-words text-sm">{p.reason}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
+        <section className="lg:hidden">
+          <Reasons reasons={reasons} userId={user?.id} />
         </section>
-      </article>
-    </main>
+      </div>
+    </PageShell>
+  );
+}
+
+function Reasons({
+  reasons,
+  userId,
+}: {
+  reasons: PredictionRow[];
+  userId?: string;
+}) {
+  return (
+    <>
+      <h2 className="t-heading-2">
+        다른 사람들의 근거{" "}
+        <span className="t-body-2 text-label-assist">{reasons.length}</span>
+      </h2>
+      {reasons.length === 0 ? (
+        <p className="mt-3 rounded-2xl bg-bg-alt py-10 text-center t-label-1 text-label-alt">
+          아직 근거가 없어요.
+        </p>
+      ) : (
+        <ul className="mt-2 divide-y divide-line-alt">
+          {reasons.map((p) => (
+            <li key={p.user_id} className="flex gap-4 py-4">
+              <span className="w-12 shrink-0 text-right t-body-1 !font-bold tabular-nums text-primary">
+                {p.probability}%
+              </span>
+              <div className="min-w-0">
+                <p className="t-caption-1 text-label-alt">
+                  {p.profiles?.nickname ?? "알 수 없음"}
+                  {userId && p.user_id === userId && " (나)"}
+                </p>
+                <p className="mt-0.5 break-words t-body-3 text-label">
+                  {p.reason}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </>
   );
 }

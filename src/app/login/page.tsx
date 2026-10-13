@@ -1,6 +1,9 @@
 import { redirect } from "next/navigation";
+import AuthShell from "@/components/AuthShell";
 import { createClient } from "@/lib/supabase/server";
 import GoogleLoginButton from "./GoogleLoginButton";
+
+export const metadata = { title: "로그인" };
 
 export default async function LoginPage({
   searchParams,
@@ -16,19 +19,21 @@ export default async function LoginPage({
   const { error } = await searchParams;
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-6 px-6">
-      <div>
-        <h1 className="text-3xl font-bold">예감</h1>
-        <p className="mt-2 text-gray-600">
-          미래를 확률로 예측하고, 적중 점수를 쌓아보세요.
-        </p>
-      </div>
+    <AuthShell>
+      <h1 className="mt-8 t-title-3">
+        미래를 확률로 예측하고, 점수를 쌓아보세요
+      </h1>
+      <p className="mt-2 t-body-3 text-label-alt">
+        돈은 걸지 않아요. 예측이 맞을수록 점수와 랭킹이 올라가요.
+      </p>
       {error && (
-        <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+        <p className="mt-6 rounded-lg bg-accent-red px-4 py-3 t-label-1 text-negative-strong">
           로그인에 실패했어요. 다시 시도해 주세요.
         </p>
       )}
-      <GoogleLoginButton />
-    </main>
+      <div className="mt-8">
+        <GoogleLoginButton />
+      </div>
+    </AuthShell>
   );
 }

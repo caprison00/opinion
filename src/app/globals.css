@@ -1,23 +1,163 @@
 @import "tailwindcss";
 
-body {
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard",
-    "Noto Sans KR", sans-serif;
-  -webkit-tap-highlight-color: transparent;
+/*
+  Wanted Design System 토큰 (design/wanted/colors_and_type.css 기준)
+  Wanted Design System (Community) by Wanted Lab — CC BY 4.0
+*/
+@theme {
+  --font-sans:
+    "Pretendard JP", "Pretendard", -apple-system, BlinkMacSystemFont,
+    "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+
+  /* Primary */
+  --color-primary: #0066ff;
+  --color-primary-strong: #005eeb;
+  --color-primary-heavy: #0054d1;
+  --color-primary-deep: #001536;
+
+  /* Label (text) */
+  --color-label: rgb(23 23 25);
+  --color-label-neutral: rgb(46 47 51 / 0.88);
+  --color-label-alt: rgb(55 56 60 / 0.61);
+  --color-label-assist: rgb(55 56 60 / 0.28);
+  --color-label-disable: rgb(55 56 60 / 0.16);
+
+  /* Background */
+  --color-bg: #ffffff;
+  --color-bg-alt: #f7f7f8;
+  --color-inverse: #171719;
+
+  /* Line */
+  --color-line: rgb(112 115 124 / 0.22);
+  --color-line-neutral: rgb(112 115 124 / 0.45);
+  --color-line-alt: rgb(112 115 124 / 0.08);
+
+  /* Fill */
+  --color-fill: rgb(112 115 124 / 0.08);
+  --color-fill-alt: rgb(112 115 124 / 0.05);
+  --color-fill-strong: rgb(112 115 124 / 0.16);
+
+  /* Status */
+  --color-positive: #00bf40;
+  --color-caution: #ff9200;
+  --color-caution-text: #d47800;
+  --color-negative: #ff4242;
+  --color-negative-strong: #e52222;
+
+  /* Accent backgrounds */
+  --color-accent-blue: #eaf2fe;
+  --color-accent-red: #feecec;
+  --color-accent-green: #d9ffe6;
+  --color-accent-orange: #fef4e6;
+
+  /* Elevation */
+  --shadow-xsmall: 0px 1px 2px -1px rgb(23 23 23 / 0.1);
+  --shadow-small:
+    0px 4px 6px -1px rgb(23 23 23 / 0.06), 0px 2px 4px -2px rgb(23 23 23 / 0.06);
+  --shadow-medium:
+    0px 10px 15px -3px rgb(23 23 23 / 0.07), 0px 4px 6px -2px rgb(0 0 0 / 0.07);
+  --shadow-large:
+    0px 16px 24px -6px rgb(23 23 23 / 0.08),
+    0px 6px 10px -4px rgb(23 23 23 / 0.08);
 }
 
-/* 확률 슬라이더: 손가락으로 잡기 쉽게 큰 손잡이 */
+/* 타이포그래피 (Wanted 7단계 스케일) */
+@utility t-display-2 {
+  font-size: 44px;
+  line-height: 1.318;
+  letter-spacing: -0.0309em;
+  font-weight: 700;
+}
+@utility t-title-1 {
+  font-size: 28px;
+  line-height: 1.358;
+  letter-spacing: -0.0249em;
+  font-weight: 700;
+}
+@utility t-title-2 {
+  font-size: 26px;
+  line-height: 1.346;
+  letter-spacing: -0.0241em;
+  font-weight: 700;
+}
+@utility t-title-3 {
+  font-size: 24px;
+  line-height: 1.334;
+  letter-spacing: -0.0228em;
+  font-weight: 700;
+}
+@utility t-heading-1 {
+  font-size: 22px;
+  line-height: 1.364;
+  letter-spacing: -0.0207em;
+  font-weight: 700;
+}
+@utility t-heading-2 {
+  font-size: 20px;
+  line-height: 1.4;
+  letter-spacing: -0.0185em;
+  font-weight: 700;
+}
+@utility t-body-1 {
+  font-size: 17px;
+  line-height: 1.5;
+  letter-spacing: 0.0036em;
+  font-weight: 500;
+}
+@utility t-body-2 {
+  font-size: 16px;
+  line-height: 1.5;
+  letter-spacing: 0.0057em;
+  font-weight: 500;
+}
+@utility t-body-3 {
+  font-size: 15px;
+  line-height: 1.467;
+  letter-spacing: 0.0096em;
+  font-weight: 500;
+}
+@utility t-label-1 {
+  font-size: 14px;
+  line-height: 1.429;
+  letter-spacing: 0.0145em;
+  font-weight: 500;
+}
+@utility t-label-2 {
+  font-size: 13px;
+  line-height: 1.385;
+  letter-spacing: 0.0194em;
+  font-weight: 500;
+}
+@utility t-caption-1 {
+  font-size: 12px;
+  line-height: 1.333;
+  letter-spacing: 0.0252em;
+  font-weight: 500;
+}
+
+html,
+body {
+  background: var(--color-bg);
+  color: var(--color-label);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+/* 확률 슬라이더 */
 input[type="range"].probability-slider {
   -webkit-appearance: none;
   appearance: none;
-  height: 8px;
+  height: 6px;
   border-radius: 9999px;
   background: linear-gradient(
     to right,
-    var(--color-indigo-600) var(--value),
-    var(--color-gray-200) var(--value)
+    var(--color-primary) var(--value),
+    var(--color-fill-strong) var(--value)
   );
+  cursor: pointer;
 }
 input[type="range"].probability-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
@@ -25,13 +165,18 @@ input[type="range"].probability-slider::-webkit-slider-thumb {
   height: 28px;
   border-radius: 9999px;
   background: #fff;
-  border: 3px solid var(--color-indigo-600);
-  box-shadow: 0 1px 4px rgb(0 0 0 / 0.2);
+  border: 1px solid var(--color-line);
+  box-shadow: var(--shadow-medium);
 }
 input[type="range"].probability-slider::-moz-range-thumb {
-  width: 22px;
-  height: 22px;
+  width: 26px;
+  height: 26px;
   border-radius: 9999px;
   background: #fff;
-  border: 3px solid var(--color-indigo-600);
+  border: 1px solid var(--color-line);
+  box-shadow: var(--shadow-medium);
+}
+input[type="range"].probability-slider:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 6px;
 }

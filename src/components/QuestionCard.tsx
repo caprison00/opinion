@@ -5,6 +5,7 @@ import {
   timeLeft,
   type Question,
 } from "@/lib/questions";
+import { card } from "./ui";
 
 export default function QuestionCard({
   question,
@@ -18,35 +19,42 @@ export default function QuestionCard({
   return (
     <Link
       href={`/questions/${question.id}`}
-      className="block rounded-2xl border border-gray-200 p-4 transition-colors hover:border-gray-300 active:bg-gray-50"
+      className={`${card} group flex flex-col p-5 transition duration-150 hover:-translate-y-0.5 hover:shadow-medium`}
     >
-      <div className="flex items-center justify-between text-xs text-gray-500">
-        <span className="rounded-full bg-gray-100 px-2 py-0.5">
+      <div className="flex items-center justify-between">
+        <span className="rounded-md bg-fill px-2 py-0.5 t-caption-1 !font-semibold text-label-neutral">
           {categoryLabel(question.category)}
         </span>
-        <span className="font-medium text-orange-600">
+        <span className="t-caption-1 !font-semibold text-caution-text">
           {timeLeft(question.close_at)}
         </span>
       </div>
-      <div className="mt-2 flex items-start justify-between gap-3">
-        <h2 className="font-semibold leading-snug">{question.title}</h2>
-        <span
-          className={`shrink-0 text-xl font-bold tabular-nums ${
-            crowd === undefined ? "text-gray-300" : "text-indigo-600"
-          }`}
-        >
-          {crowd === undefined ? "–" : `${crowd}%`}
-        </span>
+
+      <h2 className="mt-3 line-clamp-2 t-body-1 !font-bold text-label">
+        {question.title}
+      </h2>
+
+      <div className="mt-auto pt-5">
+        <div className="flex items-end justify-between">
+          <span className="t-caption-1 text-label-alt">집단 확률</span>
+          <span
+            className={`t-heading-2 tabular-nums ${
+              crowd === undefined ? "text-label-assist" : "text-primary"
+            }`}
+          >
+            {crowd === undefined ? "–" : `${crowd}%`}
+          </span>
+        </div>
+        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-fill-strong">
+          <div
+            className="h-full rounded-full bg-primary"
+            style={{ width: `${crowd ?? 0}%` }}
+          />
+        </div>
+        <p className="mt-3 t-caption-1 text-label-alt">
+          마감 {formatDate(question.close_at)} · {count}명 예측
+        </p>
       </div>
-      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-gray-100">
-        <div
-          className="h-full rounded-full bg-indigo-500"
-          style={{ width: `${crowd ?? 0}%` }}
-        />
-      </div>
-      <p className="mt-1 text-xs text-gray-400">
-        마감 {formatDate(question.close_at)} · {count}명 예측
-      </p>
     </Link>
   );
 }

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import Header from "@/components/Header";
+import PageShell from "@/components/PageShell";
+import { card } from "@/components/ui";
 import { getViewer } from "@/lib/auth";
 import {
   categoryLabel,
@@ -12,18 +13,19 @@ import {
 import QuestionActions from "./QuestionActions";
 import QuestionForm from "./QuestionForm";
 
+export const metadata = { title: "관리자" };
+
 export default async function AdminPage() {
   const { supabase, user, isAdmin } = await getViewer();
   if (!user) redirect("/login");
 
   if (!isAdmin) {
     return (
-      <main className="mx-auto min-h-dvh max-w-md px-4 pb-28">
-        <Header />
-        <p className="py-16 text-center text-gray-500">
+      <PageShell narrow>
+        <p className="rounded-2xl bg-bg-alt py-16 text-center t-body-2 text-label-alt">
           관리자만 볼 수 있는 화면이에요.
         </p>
-      </main>
+      </PageShell>
     );
   }
 
@@ -34,34 +36,46 @@ export default async function AdminPage() {
   const questions = (data ?? []) as Question[];
 
   return (
-    <main className="mx-auto min-h-dvh max-w-md px-4 pb-28">
-      <Header />
-      <h1 className="text-xl font-bold">새 질문 만들기</h1>
-      <div className="mt-4">
-        <QuestionForm />
-      </div>
+    <PageShell>
+      <h1 className="t-heading-1 md:t-title-3">관리자</h1>
 
-      <h2 className="mt-10 text-lg font-bold">
-        전체 질문 ({questions.length})
-      </h2>
-      <ul className="mt-3 divide-y divide-gray-100">
-        {questions.map((q) => (
-          <li key={q.id} className="py-3">
-            <Link href={`/questions/${q.id}`} className="block">
-              <p className="text-xs text-gray-500">
-                {categoryLabel(q.category)} · {statusLabel(q)} · 마감{" "}
-                {formatDate(q.close_at)}
-              </p>
-              <p className="mt-0.5 font-medium">{q.title}</p>
-            </Link>
-            <QuestionActions
-              id={q.id}
-              canClose={q.status === "open"}
-              accepting={isAccepting(q)}
-            />
-          </li>
-        ))}
-      </ul>
-    </main>
+      <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-[440px_minmax(0,1fr)] lg:gap-10">
+        <section
+          className={`${card} p-5 md:p-6 lg:sticky lg:top-24 lg:self-start`}
+        >
+          <h2 className="mb-5 t-heading-2">새 질문 만들기</h2>
+          <QuestionForm />
+        </section>
+
+        <section className="min-w-0">
+          <h2 className="t-heading-2">
+            전체 질문{" "}
+            <span className="t-body-2 text-label-assist">
+              {questions.length}
+            </span>
+          </h2>
+          <ul className="mt-3 divide-y divide-line-alt">
+            {questions.map((q) => (
+              <li key={q.id} className="py-4">
+                <Link href={`/questions/${q.id}`} className="block">
+                  <p className="t-caption-1 text-label-alt">
+                    {categoryLabel(q.category)} · {statusLabel(q)} · 마감{" "}
+                    {formatDate(q.close_at)}
+                  </p>
+                  <p className="mt-1 t-body-2 !font-semibold hover:text-primary">
+                    {q.title}
+                  </p>
+                </Link>
+                <QuestionActions
+                  id={q.id}
+                  canClose={q.status === "open"}
+                  accepting={isAccepting(q)}
+                />
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
+    </PageShell>
   );
 }
