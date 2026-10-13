@@ -1,0 +1,36 @@
+<!doctype html>
+<!-- @dsCard group="Components" name="Form fields" subtitle="Default · focused · error" viewport="700x160" -->
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+body{margin:0;padding:24px;background:#fff;display:flex;flex-direction:column;gap:14px}
+.cap{font:600 11px/1 var(--font-sans);color:var(--color-label-alternative);text-transform:uppercase;letter-spacing:.08em}
+.row{display:flex;align-items:center;gap:14px}
+.field{display:flex;flex-direction:column;gap:6px;flex:1}
+label{font:600 12px var(--font-sans);color:var(--color-label-neutral);letter-spacing:.025em}
+.input{height:44px;border-radius:8px;background:#fff;box-shadow:inset 0 0 0 1px var(--color-line-neutral);padding:0 14px;font:500 15px var(--font-sans);color:var(--color-label-normal);display:flex;align-items:center;gap:8px}
+.input.focused{box-shadow:inset 0 0 0 2px var(--color-blue-50)}
+.input.error{box-shadow:inset 0 0 0 2px var(--color-red-50)}
+.placeholder{color:var(--color-label-assistive)}
+.help{font:500 12px var(--font-sans);color:var(--color-label-alternative)}
+.help.err{color:var(--color-red-50)}
+.icon{width:18px;height:18px;color:var(--color-label-alternative);flex:none}
+</style></head><body>
+<div class="cap">Form fields</div>
+<div class="row">
+  <div class="field">
+    <label>Email</label>
+    <div class="input"><span>jin@wanted.co.kr</span></div>
+    <span class="help">우리는 이메일을 공유하지 않습니다.</span>
+  </div>
+  <div class="field">
+    <label>Password</label>
+    <div class="input focused"><span class="placeholder">8자 이상</span></div>
+    <span class="help">Focused state</span>
+  </div>
+  <div class="field">
+    <label>Phone</label>
+    <div class="input error"><span>010-0000</span></div>
+    <span class="help err">올바른 번호가 아닙니다</span>
+  </div>
+</div>
+</body></html>

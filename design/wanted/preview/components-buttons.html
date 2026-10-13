@@ -1,0 +1,38 @@
+<!doctype html>
+<!-- @dsCard group="Components" name="Buttons" subtitle="Primary, secondary, outline, text, danger" viewport="700x190" -->
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+body{margin:0;padding:24px;background:#fff;display:flex;flex-direction:column;gap:14px}
+.cap{font:600 11px/1 var(--font-sans);color:var(--color-label-alternative);text-transform:uppercase;letter-spacing:.08em}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+button{font:600 14px/1 var(--font-sans);letter-spacing:.014em;border:0;cursor:pointer;border-radius:8px;padding:0 14px;height:38px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn-primary{background:var(--color-blue-50);color:#fff}
+.btn-primary:hover{background:var(--color-blue-45)}
+.btn-primary:active{background:var(--color-blue-40)}
+.btn-secondary{background:var(--color-fill-normal);color:var(--color-label-normal)}
+.btn-secondary:hover{background:var(--color-fill-strong)}
+.btn-outline{background:#fff;color:var(--color-label-normal);box-shadow:inset 0 0 0 1px var(--color-line-neutral)}
+.btn-text{background:transparent;color:var(--color-blue-50)}
+.btn-disabled{background:var(--color-fill-normal);color:var(--color-label-disable);cursor:not-allowed}
+.btn-danger{background:var(--color-red-50);color:#fff}
+.lg{height:48px;padding:0 18px;font-size:16px;border-radius:10px}
+.sm{height:30px;padding:0 10px;font-size:13px;border-radius:6px}
+.xs{height:24px;padding:0 8px;font-size:12px;border-radius:5px}
+</style></head><body>
+<div class="cap">Buttons — sizes</div>
+<div class="row">
+  <button class="btn-primary lg">Continue</button>
+  <button class="btn-primary">Continue</button>
+  <button class="btn-primary sm">Continue</button>
+  <button class="btn-primary xs">Apply</button>
+</div>
+<div class="cap" style="margin-top:4px">Buttons — variants</div>
+<div class="row">
+  <button class="btn-primary">Primary</button>
+  <button class="btn-secondary">Secondary</button>
+  <button class="btn-outline">Outline</button>
+  <button class="btn-text">Text link</button>
+  <button class="btn-disabled" disabled>Disabled</button>
+  <button class="btn-danger">Delete</button>
+</div>
+</body></html>

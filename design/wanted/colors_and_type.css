@@ -1,0 +1,443 @@
+/* =========================================================================
+   Wanted Design System — Colors + Typography
+   Source: Wanted Design System (Community).fig
+   License: CC BY 4.0 (Wanted Lab)
+   ========================================================================= */
+
+/* ---------- Webfonts ---------- */
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard-jp.css");
+@import url("https://cdn.jsdelivr.net/gh/sunn-us/WantedSans/packages/wantedsans/fonts/webfonts/variable/woff2/WantedSansVariable.css");
+
+:root {
+  /* =====================================================================
+     ATOMIC COLORS — palette scales (100 = lightest, 0 = black)
+     ===================================================================== */
+
+  /* Cool Neutral (the system's default neutral, slight blue cast) */
+  --color-coolNeutral-99: #F7F7F8;
+  --color-coolNeutral-98: #F4F4F5;
+  --color-coolNeutral-96: #EAEBEC;
+  --color-coolNeutral-94: #E1E2E4;
+  --color-coolNeutral-92: #DBDCDF;
+  --color-coolNeutral-87: #C2C4C8;
+  --color-coolNeutral-78: #AEB0B6;
+  --color-coolNeutral-67: #989BA2;
+  --color-coolNeutral-58: #878A93;
+  --color-coolNeutral-50: #70737C;
+  --color-coolNeutral-40: #5A5C63;
+  --color-coolNeutral-30: #46474C;
+  --color-coolNeutral-25: #37383C;
+  --color-coolNeutral-22: #333438;
+  --color-coolNeutral-20: #2E2F33;
+  --color-coolNeutral-18: #292A2D;
+  --color-coolNeutral-15: #212225;
+  --color-coolNeutral-12: #1B1C1E;
+  --color-coolNeutral-10: #171719;
+  --color-coolNeutral-8:  #141415;
+  --color-coolNeutral-6:  #0F0F10;
+  --color-coolNeutral-0:  #000000;
+
+  /* Pure Neutral (no cast) */
+  --color-neutral-99: #F7F7F7;
+  --color-neutral-92: #DCDCDC;
+  --color-neutral-85: #C4C4C4;
+  --color-neutral-77: #B0B0B0;
+  --color-neutral-67: #9B9B9B;
+  --color-neutral-57: #8A8A8A;
+  --color-neutral-47: #737373;
+  --color-neutral-37: #5C5C5C;
+  --color-neutral-28: #474747;
+  --color-neutral-20: #303030;
+  --color-neutral-17: #2A2A2A;
+  --color-neutral-13: #1C1C1C;
+  --color-neutral-10: #171717;
+  --color-neutral-6:  #0F0F0F;
+  --color-neutral-0:  #000000;
+
+  /* Brand Blue (primary) */
+  --color-blue-99: #F7FBFF;
+  --color-blue-95: #EAF2FE;
+  --color-blue-88: #C9DEFE;
+  --color-blue-78: #9EC5FF;
+  --color-blue-65: #69A5FF;
+  --color-blue-58: #4F95FF;
+  --color-blue-55: #3385FF;
+  --color-blue-52: #1A75FF;
+  --color-blue-50: #0066FF;  /* primary */
+  --color-blue-45: #005EEB;  /* primary hover */
+  --color-blue-40: #0054D1;  /* primary press */
+  --color-blue-30: #003E9C;
+  --color-blue-20: #002966;
+  --color-blue-10: #001536;
+  --color-blue-0:  #000000;
+
+  /* Red (negative / status) */
+  --color-red-99: #FFFAFA;
+  --color-red-94: #FEECEC;
+  --color-red-86: #FED5D5;
+  --color-red-75: #FFB5B5;
+  --color-red-65: #FF8C8C;
+  --color-red-55: #FF6363;
+  --color-red-50: #FF4242;  /* status-negative */
+  --color-red-40: #E52222;
+  --color-red-25: #B20C0C;
+  --color-red-15: #750404;
+  --color-red-7:  #3B0101;
+
+  /* Green (positive / status) */
+  --color-green-99: #F2FFF6;
+  --color-green-95: #D9FFE6;
+  --color-green-85: #ACFCC7;
+  --color-green-72: #7DF5A5;
+  --color-green-60: #49E57D;
+  --color-green-52: #1ED45A;
+  --color-green-50: #00BF40;  /* status-positive */
+  --color-green-40: #009632;
+  --color-green-25: #006E25;
+  --color-green-15: #004517;
+  --color-green-7:  #00240C;
+
+  /* Orange (warning / status) */
+  --color-orange-99: #FFFCF7;
+  --color-orange-95: #FEF4E6;
+  --color-orange-85: #FEE6C6;
+  --color-orange-75: #FFD49C;
+  --color-orange-65: #FFC06E;
+  --color-orange-55: #FFA938;
+  --color-orange-50: #FF9200;  /* status-cautionary */
+  --color-orange-42: #D47800;
+  --color-orange-40: #D17600;
+  --color-orange-30: #9C5800;
+  --color-orange-20: #663A00;
+  --color-orange-10: #361E00;
+
+  /* Red-Orange */
+  --color-redOrange-99: #FFFAF7;
+  --color-redOrange-94: #FEEEE5;
+  --color-redOrange-86: #FEDBC6;
+  --color-redOrange-72: #FFC09C;
+  --color-redOrange-60: #FF9C63;
+  --color-redOrange-50: #FF7B2E;
+  --color-redOrange-48: #FF5E00;
+  --color-redOrange-45: #F55A00;
+  --color-redOrange-37: #CC4B00;
+  --color-redOrange-25: #943600;
+  --color-redOrange-15: #5C2200;
+  --color-redOrange-7:  #2E1100;
+
+  /* Lime */
+  --color-lime-99: #F8FFF2;
+  --color-lime-95: #E6FFD4;
+  --color-lime-85: #CCFCA9;
+  --color-lime-72: #AEF779;
+  --color-lime-58: #88F03E;
+  --color-lime-48: #6BE016;
+  --color-lime-40: #58CF04;
+  --color-lime-37: #48AD00;
+  --color-lime-35: #429E00;
+  --color-lime-25: #347D00;
+  --color-lime-15: #225200;
+  --color-lime-7:  #112900;
+
+  /* Cyan */
+  --color-cyan-99: #F7FEFF;
+  --color-cyan-95: #DEFAFF;
+  --color-cyan-85: #B5F4FF;
+  --color-cyan-75: #8AEDFF;
+  --color-cyan-65: #57DFF7;
+  --color-cyan-55: #28D0ED;
+  --color-cyan-50: #00BDDE;
+  --color-cyan-40: #0098B2;
+  --color-cyan-25: #006F82;
+  --color-cyan-15: #004854;
+  --color-cyan-7:  #00252B;
+
+  /* LightBlue */
+  --color-lightBlue-99: #F7FDFF;
+  --color-lightBlue-95: #E5F6FE;
+  --color-lightBlue-88: #C4ECFE;
+  --color-lightBlue-78: #A1E1FF;
+  --color-lightBlue-65: #70D2FF;
+  --color-lightBlue-55: #3DC2FF;
+  --color-lightBlue-50: #00AEFF;
+  --color-lightBlue-40: #008DCF;
+  --color-lightBlue-25: #006796;
+  --color-lightBlue-15: #004261;
+  --color-lightBlue-7:  #002130;
+
+  /* Violet */
+  --color-violet-99: #FBFAFF;
+  --color-violet-95: #F0ECFE;
+  --color-violet-88: #DBD3FE;
+  --color-violet-78: #C0B0FF;
+  --color-violet-65: #9E86FC;
+  --color-violet-55: #7D5EF7;
+  --color-violet-50: #6541F2;
+  --color-violet-45: #5B37ED;
+  --color-violet-40: #4F29E5;
+  --color-violet-30: #3A16C9;
+  --color-violet-15: #23098F;
+  --color-violet-7:  #11024D;
+
+  /* Purple */
+  --color-purple-99: #FEFBFF;
+  --color-purple-95: #F9EDFF;
+  --color-purple-88: #F2D6FF;
+  --color-purple-78: #E9BAFF;
+  --color-purple-65: #DE96FF;
+  --color-purple-55: #D478FF;
+  --color-purple-50: #CB59FF;
+  --color-purple-40: #AD36E3;
+  --color-purple-25: #861CB8;
+  --color-purple-15: #580A7D;
+  --color-purple-7:  #290247;
+
+  /* Pink */
+  --color-pink-99: #FFFAFE;
+  --color-pink-95: #FEECFB;
+  --color-pink-88: #FED3F7;
+  --color-pink-78: #FFB8F3;
+  --color-pink-65: #FF94ED;
+  --color-pink-55: #FA73E3;
+  --color-pink-50: #F553DA;
+  --color-pink-46: #E846CD;
+  --color-pink-40: #D331B8;
+  --color-pink-25: #A81690;
+  --color-pink-15: #730560;
+  --color-pink-7:  #3D0133;
+
+  /* Static (unchanging across themes) */
+  --color-static-white: #FFFFFF;
+  --color-static-black: #000000;
+
+  /* =====================================================================
+     OPACITY TOKENS — used to grade base colors
+     ===================================================================== */
+  --opacity-5:  0.05;
+  --opacity-8:  0.08;
+  --opacity-12: 0.12;
+  --opacity-16: 0.16;
+  --opacity-22: 0.22;
+  --opacity-28: 0.28;
+  --opacity-38: 0.38;
+  --opacity-45: 0.45;
+  --opacity-61: 0.61;
+  --opacity-88: 0.88;
+
+  /* =====================================================================
+     SEMANTIC COLORS — light theme (default)
+     ===================================================================== */
+
+  /* Primary (brand) */
+  --color-primary-normal: var(--color-blue-50);
+  --color-primary-strong: var(--color-blue-45);
+  --color-primary-heavy:  var(--color-blue-40);
+
+  /* Inverse primary (for use on inverse / dark surfaces) */
+  --color-inverse-primary: var(--color-blue-60, #1A75FF);
+
+  /* Label / Text — black at variable opacity */
+  --color-label-normal:    rgba(23, 23, 25, 1);     /* coolNeutral-10 */
+  --color-label-strong:    rgba(0, 0, 0, 1);
+  --color-label-neutral:   rgba(46, 47, 51, 0.88);  /* coolNeutral-22 @ 88 */
+  --color-label-alternative: rgba(55, 56, 60, 0.61);/* coolNeutral-25 @ 61 */
+  --color-label-assistive: rgba(55, 56, 60, 0.28);  /* coolNeutral-25 @ 28 */
+  --color-label-disable:   rgba(55, 56, 60, 0.16);  /* coolNeutral-25 @ 16 */
+
+  /* Background */
+  --color-background-normal:   #FFFFFF;
+  --color-background-alternative: #F7F7F8;          /* coolNeutral-99 */
+  --color-background-elevated: #FFFFFF;
+  --color-background-elevated-alt: #F7F7F8;
+  --color-background-dimmer:   rgba(0, 0, 0, 0.08);
+  --color-background-dim:      rgba(0, 0, 0, 0.28);
+
+  /* Line / borders */
+  --color-line-normal:        rgba(112, 115, 124, 0.22);
+  --color-line-neutral:       rgba(112, 115, 124, 0.45);
+  --color-line-alternative:   rgba(112, 115, 124, 0.08);
+
+  /* Status */
+  --color-status-positive:    var(--color-green-50);
+  --color-status-cautionary:  var(--color-orange-50);
+  --color-status-negative:    var(--color-red-50);
+
+  /* Interaction */
+  --color-interaction-inactive: var(--color-coolNeutral-50);
+  --color-interaction-disable:  rgba(55, 56, 60, 0.16);
+
+  /* Component fills (subtle gray fills for chips, segmented controls, etc) */
+  --color-fill-normal:        rgba(112, 115, 124, 0.08);
+  --color-fill-alternative:   rgba(112, 115, 124, 0.05);
+  --color-fill-strong:        rgba(112, 115, 124, 0.16);
+
+  /* Accent backgrounds (for tags / badges) */
+  --color-accent-bg-blue:      var(--color-blue-95);
+  --color-accent-bg-red:       var(--color-red-94);
+  --color-accent-bg-green:     var(--color-green-95);
+  --color-accent-bg-orange:    var(--color-orange-95);
+  --color-accent-bg-redOrange: var(--color-redOrange-94);
+  --color-accent-bg-violet:    var(--color-violet-95);
+  --color-accent-bg-purple:    var(--color-purple-95);
+  --color-accent-bg-pink:      var(--color-pink-95);
+  --color-accent-bg-cyan:      var(--color-cyan-95);
+  --color-accent-bg-lime:      var(--color-lime-95);
+
+  /* =====================================================================
+     SHADOW / ELEVATION
+     ===================================================================== */
+  --shadow-xsmall: 0px 1px 2px -1px rgba(23, 23, 23, 0.10);
+  --shadow-small:  0px 4px 6px -1px rgba(23, 23, 23, 0.06),
+                   0px 2px 4px -2px rgba(23, 23, 23, 0.06);
+  --shadow-medium: 0px 10px 15px -3px rgba(23, 23, 23, 0.07),
+                   0px 4px 6px -2px rgba(0, 0, 0, 0.07);
+  --shadow-large:  0px 16px 24px -6px rgba(23, 23, 23, 0.08),
+                   0px 6px 10px -4px rgba(23, 23, 23, 0.08);
+  --shadow-xlarge: 0px 24px 38px -10px rgba(23, 23, 23, 0.12),
+                   0px 10px 15px -5px rgba(23, 23, 23, 0.10);
+
+  /* =====================================================================
+     RADIUS
+     ===================================================================== */
+  --radius-0:   0px;
+  --radius-xs:  4px;
+  --radius-sm:  8px;
+  --radius-md:  12px;
+  --radius-lg:  16px;
+  --radius-xl:  20px;
+  --radius-2xl: 24px;
+  --radius-3xl: 32px;
+  --radius-pill: 9999px;
+  --radius-card: 64px;
+
+  /* =====================================================================
+     SPACING (4px grid)
+     ===================================================================== */
+  --space-0:  0;
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
+  --space-32: 128px;
+
+  /* =====================================================================
+     TYPOGRAPHY — families
+     ===================================================================== */
+  --font-sans:    "Pretendard JP", "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Hiragino Sans", "Yu Gothic", sans-serif;
+  --font-display: "Wanted Sans Variable", "Wanted Sans", "Pretendard JP", "Pretendard", sans-serif;
+  --font-mono:    "SF Mono", "JetBrains Mono", "Fira Code", ui-monospace, Menlo, Consolas, monospace;
+
+  /* =====================================================================
+     TYPOGRAPHY — semantic styles
+     7 tiers / 18 steps. Format: --type-{role}-{size}-{prop}
+     ===================================================================== */
+
+  /* Display — for hero / billboard moments */
+  --type-display-1-size: 56px;       --type-display-1-line: 1.286;  --type-display-1-tracking: -0.0319em;  --type-display-1-weight: 700;
+  --type-display-2-size: 44px;       --type-display-2-line: 1.318;  --type-display-2-tracking: -0.0309em;  --type-display-2-weight: 700;
+
+  /* Title */
+  --type-title-1-size: 28px;         --type-title-1-line: 1.358;    --type-title-1-tracking: -0.0249em;    --type-title-1-weight: 700;
+  --type-title-2-size: 26px;         --type-title-2-line: 1.346;    --type-title-2-tracking: -0.0241em;    --type-title-2-weight: 700;
+  --type-title-3-size: 24px;         --type-title-3-line: 1.334;    --type-title-3-tracking: -0.0228em;    --type-title-3-weight: 700;
+
+  /* Heading */
+  --type-heading-1-size: 22px;       --type-heading-1-line: 1.364;  --type-heading-1-tracking: -0.0207em;  --type-heading-1-weight: 700;
+  --type-heading-2-size: 20px;       --type-heading-2-line: 1.4;    --type-heading-2-tracking: -0.0185em;  --type-heading-2-weight: 700;
+
+  /* Body */
+  --type-body-1-size: 17px;          --type-body-1-line: 1.5;       --type-body-1-tracking:  0.0036em;     --type-body-1-weight: 500;
+  --type-body-2-size: 16px;          --type-body-2-line: 1.5;       --type-body-2-tracking:  0.0057em;     --type-body-2-weight: 500;
+  --type-body-3-size: 15px;          --type-body-3-line: 1.467;     --type-body-3-tracking:  0.0096em;     --type-body-3-weight: 500;
+
+  /* Label / Caption */
+  --type-label-1-size: 14px;         --type-label-1-line: 1.429;    --type-label-1-tracking:  0.0145em;    --type-label-1-weight: 500;
+  --type-label-2-size: 13px;         --type-label-2-line: 1.385;    --type-label-2-tracking:  0.0194em;    --type-label-2-weight: 500;
+  --type-label-3-size: 12px;         --type-label-3-line: 1.333;    --type-label-3-tracking:  0.0252em;    --type-label-3-weight: 600;
+  --type-caption-1-size: 12px;       --type-caption-1-line: 1.333;  --type-caption-1-tracking:  0.0252em;  --type-caption-1-weight: 500;
+  --type-caption-2-size: 11px;       --type-caption-2-line: 1.273;  --type-caption-2-tracking:  0.0309em;  --type-caption-2-weight: 500;
+}
+
+/* =========================================================================
+   DARK THEME
+   ========================================================================= */
+[data-theme="dark"], .theme-dark {
+  --color-label-normal:    rgba(255, 255, 255, 1);
+  --color-label-strong:    #FFFFFF;
+  --color-label-neutral:   rgba(255, 255, 255, 0.88);
+  --color-label-alternative: rgba(255, 255, 255, 0.61);
+  --color-label-assistive: rgba(255, 255, 255, 0.28);
+  --color-label-disable:   rgba(255, 255, 255, 0.16);
+
+  --color-background-normal:   var(--color-coolNeutral-15);
+  --color-background-alternative: var(--color-coolNeutral-12);
+  --color-background-elevated: var(--color-coolNeutral-18);
+  --color-background-elevated-alt: var(--color-coolNeutral-15);
+  --color-background-dimmer:   rgba(0, 0, 0, 0.32);
+  --color-background-dim:      rgba(0, 0, 0, 0.5);
+
+  --color-line-normal:        rgba(255, 255, 255, 0.16);
+  --color-line-neutral:       rgba(255, 255, 255, 0.28);
+  --color-line-alternative:   rgba(255, 255, 255, 0.08);
+
+  --color-fill-normal:        rgba(255, 255, 255, 0.08);
+  --color-fill-alternative:   rgba(255, 255, 255, 0.05);
+  --color-fill-strong:        rgba(255, 255, 255, 0.16);
+
+  --color-primary-normal:     var(--color-blue-52);
+  --color-primary-strong:     var(--color-blue-58);
+}
+
+/* =========================================================================
+   SEMANTIC ELEMENT STYLES — drop-in defaults
+   ========================================================================= */
+html, body {
+  font-family: var(--font-sans);
+  color: var(--color-label-normal);
+  background: var(--color-background-normal);
+  font-size: 16px;
+  line-height: 1.5;
+  letter-spacing: 0.006em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1 { font-size: var(--type-display-2-size); line-height: var(--type-display-2-line); letter-spacing: var(--type-display-2-tracking); font-weight: var(--type-display-2-weight); margin: 0; }
+h2 { font-size: var(--type-title-1-size);   line-height: var(--type-title-1-line);   letter-spacing: var(--type-title-1-tracking);   font-weight: var(--type-title-1-weight); margin: 0; }
+h3 { font-size: var(--type-title-3-size);   line-height: var(--type-title-3-line);   letter-spacing: var(--type-title-3-tracking);   font-weight: var(--type-title-3-weight); margin: 0; }
+h4 { font-size: var(--type-heading-1-size); line-height: var(--type-heading-1-line); letter-spacing: var(--type-heading-1-tracking); font-weight: var(--type-heading-1-weight); margin: 0; }
+h5 { font-size: var(--type-heading-2-size); line-height: var(--type-heading-2-line); letter-spacing: var(--type-heading-2-tracking); font-weight: var(--type-heading-2-weight); margin: 0; }
+p, li { font-size: var(--type-body-2-size); line-height: var(--type-body-2-line); letter-spacing: var(--type-body-2-tracking); font-weight: var(--type-body-2-weight); margin: 0; }
+small { font-size: var(--type-caption-1-size); line-height: var(--type-caption-1-line); letter-spacing: var(--type-caption-1-tracking); }
+code, kbd, pre { font-family: var(--font-mono); font-size: 0.875em; }
+a { color: var(--color-primary-normal); text-decoration: none; }
+a:hover { color: var(--color-primary-strong); }
+a:active { color: var(--color-primary-heavy); }
+hr { border: 0; border-top: 1px solid var(--color-line-normal); }
+
+/* =========================================================================
+   TYPE UTILITY CLASSES
+   ========================================================================= */
+.t-display-1 { font-size: var(--type-display-1-size); line-height: var(--type-display-1-line); letter-spacing: var(--type-display-1-tracking); font-weight: var(--type-display-1-weight); }
+.t-display-2 { font-size: var(--type-display-2-size); line-height: var(--type-display-2-line); letter-spacing: var(--type-display-2-tracking); font-weight: var(--type-display-2-weight); }
+.t-title-1   { font-size: var(--type-title-1-size);   line-height: var(--type-title-1-line);   letter-spacing: var(--type-title-1-tracking);   font-weight: var(--type-title-1-weight); }
+.t-title-2   { font-size: var(--type-title-2-size);   line-height: var(--type-title-2-line);   letter-spacing: var(--type-title-2-tracking);   font-weight: var(--type-title-2-weight); }
+.t-title-3   { font-size: var(--type-title-3-size);   line-height: var(--type-title-3-line);   letter-spacing: var(--type-title-3-tracking);   font-weight: var(--type-title-3-weight); }
+.t-heading-1 { font-size: var(--type-heading-1-size); line-height: var(--type-heading-1-line); letter-spacing: var(--type-heading-1-tracking); font-weight: var(--type-heading-1-weight); }
+.t-heading-2 { font-size: var(--type-heading-2-size); line-height: var(--type-heading-2-line); letter-spacing: var(--type-heading-2-tracking); font-weight: var(--type-heading-2-weight); }
+.t-body-1    { font-size: var(--type-body-1-size);    line-height: var(--type-body-1-line);    letter-spacing: var(--type-body-1-tracking);    font-weight: var(--type-body-1-weight); }
+.t-body-2    { font-size: var(--type-body-2-size);    line-height: var(--type-body-2-line);    letter-spacing: var(--type-body-2-tracking);    font-weight: var(--type-body-2-weight); }
+.t-body-3    { font-size: var(--type-body-3-size);    line-height: var(--type-body-3-line);    letter-spacing: var(--type-body-3-tracking);    font-weight: var(--type-body-3-weight); }
+.t-label-1   { font-size: var(--type-label-1-size);   line-height: var(--type-label-1-line);   letter-spacing: var(--type-label-1-tracking);   font-weight: var(--type-label-1-weight); }
+.t-label-2   { font-size: var(--type-label-2-size);   line-height: var(--type-label-2-line);   letter-spacing: var(--type-label-2-tracking);   font-weight: var(--type-label-2-weight); }
+.t-label-3   { font-size: var(--type-label-3-size);   line-height: var(--type-label-3-line);   letter-spacing: var(--type-label-3-tracking);   font-weight: var(--type-label-3-weight); }
+.t-caption-1 { font-size: var(--type-caption-1-size); line-height: var(--type-caption-1-line); letter-spacing: var(--type-caption-1-tracking); font-weight: var(--type-caption-1-weight); }
+.t-caption-2 { font-size: var(--type-caption-2-size); line-height: var(--type-caption-2-line); letter-spacing: var(--type-caption-2-tracking); font-weight: var(--type-caption-2-weight); }

@@ -1,0 +1,89 @@
+<!doctype html>
+<!-- @dsCard group="UI Kit — Wanted Desktop" name="UI Kit · Wanted Desktop" subtitle="Job board home — nav, hero, filters, job grid" viewport="1280x720" -->
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>Wanted · Desktop</title>
+<meta name="viewport" content="width=1280">
+<link rel="stylesheet" href="styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="TopNav.jsx"></script>
+<script type="text/babel" src="Hero.jsx"></script>
+<script type="text/babel" src="FilterBar.jsx"></script>
+<script type="text/babel" src="JobCard.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
+
+const ROWS = {
+  recommended: [
+    { company: "당근마켓", title: "Senior Product Designer", location: "Seoul · 서울", tags: ["3y+"], bonus: "1,000,000원", badge: "AI 추천", image: "linear-gradient(135deg,#FFD49C,#FF9200)" },
+    { company: "토스", title: "Frontend Engineer · React", location: "Seoul · 강남", tags: ["5y+"], bonus: "2,000,000원", image: "linear-gradient(135deg,#9EC5FF,#0066FF)" },
+    { company: "쿠팡", title: "Backend Engineer · Java", location: "Seoul · 송파", tags: ["7y+"], bonus: "1,500,000원", image: "linear-gradient(135deg,#7DF5A5,#00BF40)" },
+    { company: "라인", title: "Engineering Manager", location: "Tokyo · Japan", tags: ["10y+"], image: "linear-gradient(135deg,#C0B0FF,#6541F2)" },
+    { company: "Naver", title: "Data Scientist", location: "Bundang", tags: ["3y+"], bonus: "1,000,000원", image: "linear-gradient(135deg,#FFB8F3,#F553DA)" },
+    { company: "카카오", title: "iOS Engineer · Swift", location: "Pangyo", tags: ["3y+"], image: "linear-gradient(135deg,#A1E1FF,#00AEFF)" },
+    { company: "Wanted Lab", title: "Brand Designer", location: "Seoul · Yeoksam", tags: ["2y+"], bonus: "500,000원", badge: "Hot", image: "linear-gradient(135deg,#AEF779,#58CF04)" },
+    { company: "29CM", title: "PM · Growth", location: "Seoul · Hannam", tags: ["4y+"], image: "linear-gradient(135deg,#FFC09C,#FF7B2E)" },
+  ],
+  remote: [
+    { company: "GitLab", title: "Staff Engineer (Remote)", location: "Remote · Asia", tags: ["7y+"], bonus: "$3,000", badge: "Remote", image: "linear-gradient(135deg,#46474C,#171719)" },
+    { company: "Toss Payments", title: "DevOps · K8s", location: "Hybrid · Seoul", tags: ["5y+"], image: "linear-gradient(135deg,#69A5FF,#003E9C)" },
+    { company: "DeepL", title: "ML Engineer", location: "Berlin · Remote OK", tags: ["3y+"], bonus: "€2,500", image: "linear-gradient(135deg,#DE96FF,#AD36E3)" },
+    { company: "Vercel", title: "Developer Advocate", location: "Remote", tags: ["4y+"], image: "linear-gradient(135deg,#212225,#000000)" },
+  ],
+};
+
+const Index = () => {
+  const [filter, setFilter] = useState("all");
+  return (
+    <div data-screen-label="01 Wanted Home">
+      <TopNav />
+      <Hero
+        headline="잘 다닐 회사를 찾고 있나요?"
+        sub="3.6M 명이 선택한 커리어 매칭 플랫폼. AI가 당신의 다음 회사를 매칭합니다."
+        cta="이력서 등록하고 매칭 받기"
+        image="radial-gradient(circle at 80% 30%, rgba(0,102,255,0.65), transparent 60%), radial-gradient(circle at 20% 80%, rgba(101,65,242,0.55), transparent 55%), #171719"
+      />
+      <FilterBar active={filter} onChange={setFilter} />
+      <main className="wd-section">
+        <div className="wd-section__head">
+          <div>
+            <div className="wd-section__title">AI 추천 포지션</div>
+            <div className="wd-section__sub">당신의 이력서에 맞춰 매일 업데이트됩니다</div>
+          </div>
+          <a href="#" onClick={(e)=>e.preventDefault()} className="wd-section__more">전체보기 ›</a>
+        </div>
+        <div className="wd-grid">
+          {ROWS.recommended.map((j, i) => <JobCard key={i} {...j} />)}
+        </div>
+
+        <div className="wd-section__head" style={{ paddingTop: 48 }}>
+          <div>
+            <div className="wd-section__title">Remote · Hybrid</div>
+            <div className="wd-section__sub">원격으로 일할 수 있는 포지션</div>
+          </div>
+          <a href="#" onClick={(e)=>e.preventDefault()} className="wd-section__more">전체보기 ›</a>
+        </div>
+        <div className="wd-grid">
+          {ROWS.remote.map((j, i) => <JobCard key={i} {...j} />)}
+        </div>
+      </main>
+      <footer className="wd-footer">
+        <div className="wd-footer__inner">
+          <div className="wd-footer__copy">© Wanted Lab, Inc. · Design system reconstruction · CC BY 4.0</div>
+          <div className="wd-footer__copy">서울특별시 강남구 · 사업자번호 000-00-00000</div>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById("root")).render(<Index />);
+</script>
+</body>
+</html>

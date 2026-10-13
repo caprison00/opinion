@@ -1,0 +1,35 @@
+<!doctype html>
+<!-- @dsCard group="Spacing" name="Spacing & Radii" subtitle="4px grid · radius tokens 0–32" viewport="700x340" -->
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+body{margin:0;padding:24px;background:#fff;display:flex;flex-direction:column;gap:14px}
+.cap{font:600 11px/1 var(--font-sans);color:var(--color-label-alternative);text-transform:uppercase;letter-spacing:.08em}
+.row{display:flex;align-items:center;gap:14px}
+.box{background:var(--color-blue-95);border:1px dashed var(--color-blue-50);height:24px}
+.lbl{font:500 11px/1 var(--font-mono);color:var(--color-label-alternative);width:42px;flex:none}
+.r{display:flex;align-items:center;gap:18px}
+.r .v{font:600 13px var(--font-mono);color:var(--color-label-normal);width:32px}
+.r .b{flex:1;background:var(--color-blue-95);height:18px;border-radius:3px}
+.radii{display:flex;gap:14px;align-items:flex-end}
+.tile{width:54px;height:54px;background:var(--color-coolNeutral-10);display:flex;align-items:flex-end;justify-content:center;font:500 10px/1 var(--font-mono);color:#fff;padding-bottom:4px}
+</style></head><body>
+<div class="cap">Spacing — 4px grid</div>
+<div class="r"><span class="v">4</span><span class="b" style="max-width:4px"></span></div>
+<div class="r"><span class="v">8</span><span class="b" style="max-width:8px"></span></div>
+<div class="r"><span class="v">16</span><span class="b" style="max-width:16px"></span></div>
+<div class="r"><span class="v">24</span><span class="b" style="max-width:24px"></span></div>
+<div class="r"><span class="v">32</span><span class="b" style="max-width:32px"></span></div>
+<div class="r"><span class="v">64</span><span class="b" style="max-width:64px"></span></div>
+
+<div class="cap" style="margin-top:8px">Corner radii</div>
+<div class="radii">
+  <div class="tile" style="border-radius:0">0</div>
+  <div class="tile" style="border-radius:4px">4</div>
+  <div class="tile" style="border-radius:8px">8</div>
+  <div class="tile" style="border-radius:12px">12</div>
+  <div class="tile" style="border-radius:16px">16</div>
+  <div class="tile" style="border-radius:24px">24</div>
+  <div class="tile" style="border-radius:32px">32</div>
+  <div class="tile" style="border-radius:9999px">∞</div>
+</div>
+</body></html>

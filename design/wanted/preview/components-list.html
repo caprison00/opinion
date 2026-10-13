@@ -1,0 +1,38 @@
+<!doctype html>
+<!-- @dsCard group="Components" name="List rows" subtitle="Resource cells with avatars + values" viewport="700x260" -->
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>
+body{margin:0;padding:18px 24px;background:#fff;display:flex;flex-direction:column;gap:10px}
+.cap{font:600 11px/1 var(--font-sans);color:var(--color-label-alternative);text-transform:uppercase;letter-spacing:.08em}
+.row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--color-line-normal)}
+.row:last-child{border-bottom:0}
+.left{display:flex;align-items:center;gap:12px}
+.av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#69A5FF,#0066FF);color:#fff;display:flex;align-items:center;justify-content:center;font:700 14px var(--font-sans);flex:none}
+.title{font:600 14px var(--font-sans);color:var(--color-label-normal);letter-spacing:-.005em}
+.sub{font:500 12px var(--font-sans);color:var(--color-label-alternative);margin-top:2px}
+.value{font:500 13px var(--font-sans);color:var(--color-label-alternative)}
+.chev{color:var(--color-label-assistive);font:500 16px var(--font-sans)}
+</style></head><body>
+<div class="cap">List rows · resource cells</div>
+<div class="row">
+  <div class="left">
+    <div class="av" style="background:linear-gradient(135deg,#FFB8F3,#F553DA)">한</div>
+    <div><div class="title">한지수 · Product Designer</div><div class="sub">Wanted Lab · 5y</div></div>
+  </div>
+  <div class="value">Online</div>
+</div>
+<div class="row">
+  <div class="left">
+    <div class="av">정</div>
+    <div><div class="title">정민호</div><div class="sub">Frontend · React · TypeScript</div></div>
+  </div>
+  <span class="chev">›</span>
+</div>
+<div class="row">
+  <div class="left">
+    <div class="av" style="background:linear-gradient(135deg,#7DF5A5,#00BF40)">JS</div>
+    <div><div class="title">Jisoo Lee</div><div class="sub">Backend Engineer</div></div>
+  </div>
+  <span class="value">2 mins ago</span>
+</div>
+</body></html>

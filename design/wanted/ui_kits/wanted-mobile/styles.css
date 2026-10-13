@@ -1,0 +1,149 @@
+/* Wanted Mobile UI Kit */
+@import url("../../colors_and_type.css");
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--color-coolNeutral-12); min-height: 100vh; word-break: keep-all; }
+.wm-screen, .wm-screen * { word-break: keep-all; }
+.wm-tabitem { white-space: nowrap; }
+.wm-herocard__cta { white-space: nowrap; }
+.wm-jobrow__meta span { white-space: nowrap; }
+
+.stage {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 32px 0;
+}
+
+.wm-screen {
+  position: absolute; inset: 0; overflow: hidden;
+  background: var(--color-background-normal);
+  display: flex; flex-direction: column;
+}
+
+/* ---------- Top App Bar ---------- */
+.wm-appbar {
+  height: 52px; padding: 0 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: #fff; flex: none;
+}
+.wm-logo { color: var(--color-coolNeutral-10); }
+.wm-logo svg { height: 18px; width: auto; fill: currentColor; display: block; }
+.wm-appbar__actions { display: flex; gap: 4px; }
+.wm-iconbtn {
+  width: 36px; height: 36px; border-radius: 9999px; border: 0; background: transparent;
+  color: var(--color-label-normal); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.wm-iconbtn:hover { background: var(--color-fill-normal); }
+.wm-iconbtn .badge {
+  position: absolute; transform: translate(8px, -8px);
+  min-width: 6px; height: 6px; border-radius: 9999px; background: var(--color-red-50);
+}
+
+/* ---------- Search ---------- */
+.wm-searchbar { padding: 8px 16px 12px; background: #fff; flex: none; }
+.wm-search {
+  height: 44px; border-radius: 12px; background: var(--color-fill-normal);
+  display: flex; align-items: center; padding: 0 14px; gap: 10px;
+  font: 500 15px var(--font-sans); color: var(--color-label-alternative);
+}
+
+/* ---------- Tabs ---------- */
+.wm-tabs {
+  display: flex; gap: 4px; padding: 0 12px; background: #fff;
+  border-bottom: 1px solid var(--color-line-normal); flex: none;
+  overflow-x: auto;
+}
+.wm-tab {
+  font: 600 15px/1 var(--font-sans); color: var(--color-label-alternative);
+  padding: 14px 12px; border: 0; background: transparent; cursor: pointer;
+  position: relative; white-space: nowrap;
+  letter-spacing: -.005em;
+}
+.wm-tab.is-active { color: var(--color-label-normal); }
+.wm-tab.is-active::after {
+  content: ""; position: absolute; left: 12px; right: 12px; bottom: -1px;
+  height: 2px; background: var(--color-coolNeutral-10);
+}
+
+/* ---------- Body / Scroll ---------- */
+.wm-scroll { flex: 1; overflow-y: auto; padding-bottom: 96px; }
+.wm-section { padding: 20px 16px 8px; }
+.wm-section__title { font: 700 18px/1.4 var(--font-sans); letter-spacing: -.018em; color: var(--color-label-normal); margin: 0 0 4px; }
+.wm-section__sub { font: 500 13px var(--font-sans); color: var(--color-label-alternative); margin-bottom: 14px; }
+
+/* Hero card */
+.wm-herocard {
+  margin: 0 16px;
+  border-radius: 20px; padding: 22px 20px;
+  background: linear-gradient(135deg,#0066FF,#001536);
+  color: #fff; position: relative; overflow: hidden;
+}
+.wm-herocard__eyebrow { font: 600 11px/1 var(--font-sans); letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.7); }
+.wm-herocard__title { font: 700 22px/1.32 var(--font-sans); letter-spacing: -.022em; margin: 8px 0 14px; }
+.wm-herocard__cta {
+  display: inline-flex; align-items: center; gap: 4px;
+  height: 36px; padding: 0 14px; border-radius: 9999px;
+  background: #fff; color: var(--color-coolNeutral-10);
+  font: 600 13px/1 var(--font-sans); text-decoration: none;
+}
+.wm-herocard__deco {
+  position: absolute; right: -40px; top: -20px; width: 200px; height: 200px;
+  border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.18), transparent 70%);
+}
+
+/* Job list rows */
+.wm-joblist { padding: 6px 16px; }
+.wm-jobrow {
+  display: flex; gap: 12px; padding: 14px 0;
+  border-bottom: 1px solid var(--color-line-alternative);
+  text-decoration: none; color: inherit;
+}
+.wm-jobrow:last-child { border-bottom: 0; }
+.wm-jobrow__thumb {
+  width: 64px; height: 64px; border-radius: 12px; flex: none;
+  background-size: cover; background-position: center;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.04);
+}
+.wm-jobrow__body { flex: 1; min-width: 0; }
+.wm-jobrow__company { font: 500 12px/1 var(--font-sans); color: var(--color-label-alternative); margin-bottom: 4px; }
+.wm-jobrow__title { font: 700 15px/1.36 var(--font-sans); letter-spacing: -.012em; color: var(--color-label-normal); margin: 0 0 6px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.wm-jobrow__meta { font: 500 12px/1 var(--font-sans); color: var(--color-label-alternative); display: flex; gap: 6px; align-items: center; }
+.wm-jobrow__meta .dot { width: 2px; height: 2px; border-radius: 50%; background: currentColor; }
+.wm-jobrow__bonus { margin-top: 6px; font: 600 12px/1 var(--font-sans); color: var(--color-blue-50); }
+.wm-jobrow__bookmark {
+  align-self: flex-start; width: 32px; height: 32px; border-radius: 9999px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: transparent; border: 0; color: var(--color-label-alternative); cursor: pointer; flex: none;
+}
+
+/* Horizontal company chips */
+.wm-hscroll { display: flex; gap: 10px; overflow-x: auto; padding: 4px 16px 12px; }
+.wm-hscroll::-webkit-scrollbar { display: none; }
+.wm-companycard {
+  flex: none; width: 140px; padding: 14px;
+  border: 1px solid var(--color-line-normal); border-radius: 16px;
+  text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 8px;
+}
+.wm-companycard__logo { width: 36px; height: 36px; border-radius: 8px; background-size: cover; }
+.wm-companycard__name { font: 600 13px/1.3 var(--font-sans); color: var(--color-label-normal); }
+.wm-companycard__meta { font: 500 12px var(--font-sans); color: var(--color-label-alternative); }
+
+/* Tab bar */
+.wm-tabbar {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 78px; padding: 6px 0 18px;
+  background: rgba(255,255,255,.96); backdrop-filter: blur(12px);
+  border-top: 1px solid var(--color-line-normal);
+  display: flex; justify-content: space-around; align-items: flex-start;
+  z-index: 10;
+}
+.wm-tabitem {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  background: transparent; border: 0; cursor: pointer;
+  color: var(--color-label-alternative);
+  font: 600 10px/1 var(--font-sans); letter-spacing: -.005em;
+  padding: 6px 12px;
+}
+.wm-tabitem.is-active { color: var(--color-coolNeutral-10); }
+.wm-tabitem svg { width: 24px; height: 24px; }
