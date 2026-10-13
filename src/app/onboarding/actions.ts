@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { splitVersions, type LegalDocument } from "@/lib/legal";
 import { createClient } from "@/lib/supabase/server";
 
 export type NicknameState = { error?: string };
@@ -24,9 +25,39 @@ export async function saveNickname(
   } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { error } = await supabase
+  const { data: existing } = await supabase
     .from("profiles")
-    .upsert({ id: user.id, nickname });
+    .select("id")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  let error;
+  if (existing) {
+    ({ error } = await supabase
+      .from("profiles")
+      .update({ nickname })
+      .eq("id", user.id));
+  } else {
+    // 처음 가입: 만 14세 이상 확인과 약관 동의를 받고, 동의한 버전을 기록한다.
+    if (formData.get("age") !== "on" || formData.get("terms") !== "on") {
+      return { error: "필수 항목에 동의해 주세요." };
+    }
+    const { data: docs } = await supabase
+      .from("legal_documents")
+      .select("kind, version, effective_at");
+    const all = (docs ?? []) as LegalDocument[];
+    const currentVersion = (kind: string) =>
+      splitVersions(all.filter((d) => d.kind === kind)).current?.version ??
+      null;
+
+    ({ error } = await supabase.from("profiles").insert({
+      id: user.id,
+      nickname,
+      terms_version: currentVersion("terms"),
+      privacy_version: currentVersion("privacy"),
+      agreed_at: new Date().toISOString(),
+    }));
+  }
 
   if (error) {
     if (error.code === "23505") {

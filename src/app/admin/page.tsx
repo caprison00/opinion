@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import PageShell from "@/components/PageShell";
-import { card } from "@/components/ui";
+import { button, card } from "@/components/ui";
 import { getViewer } from "@/lib/auth";
 import {
   categoryLabel,
@@ -37,7 +37,12 @@ export default async function AdminPage() {
 
   return (
     <PageShell>
-      <h1 className="t-heading-1 md:t-title-3">관리자</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="t-heading-1 md:t-title-3">관리자</h1>
+        <Link href="/admin/legal" className={button.smallSecondary}>
+          약관 관리
+        </Link>
+      </div>
 
       <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-[440px_minmax(0,1fr)] lg:gap-10">
         <section

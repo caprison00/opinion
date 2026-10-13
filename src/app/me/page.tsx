@@ -6,6 +6,7 @@ import PageShell from "@/components/PageShell";
 import { card, chip, scoreColor, scoreText } from "@/components/ui";
 import { getViewer } from "@/lib/auth";
 import { formatDate, statusLabel, type Question } from "@/lib/questions";
+import DeleteAccount from "./DeleteAccount";
 
 export const metadata = { title: "내 예측" };
 
@@ -164,6 +165,9 @@ export default async function MyPredictionsPage({
           </ul>
         )}
       </div>
+      <section className="mt-16 border-t border-line pt-6">
+        <DeleteAccount />
+      </section>
     </PageShell>
   );
 }

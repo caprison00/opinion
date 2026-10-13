@@ -1,3 +1,4 @@
+import Footer from "./Footer";
 import Header from "./Header";
 import { container } from "./ui";
 
@@ -10,15 +11,16 @@ export default function PageShell({
   narrow?: boolean;
 }) {
   return (
-    <>
+    <div className="flex min-h-dvh flex-col">
       <Header />
       <main
-        className={`${container} pb-28 pt-5 md:pb-20 md:pt-10 ${
+        className={`${container} flex-1 pb-16 pt-5 md:pb-20 md:pt-10 ${
           narrow ? "md:max-w-[720px]" : ""
         }`}
       >
         {children}
       </main>
-    </>
+      <Footer />
+    </div>
   );
 }

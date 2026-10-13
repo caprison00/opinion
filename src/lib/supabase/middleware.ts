@@ -35,7 +35,11 @@ export async function updateSession(request: NextRequest) {
 
   const path = request.nextUrl.pathname;
   const isPublic =
-    path === "/login" || path.startsWith("/auth") || path === "/onboarding";
+    path === "/login" ||
+    path.startsWith("/auth") ||
+    path === "/onboarding" ||
+    path === "/terms" ||
+    path === "/privacy";
 
   if (user && !isPublic) {
     const { data: profile } = await supabase

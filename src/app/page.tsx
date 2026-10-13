@@ -9,9 +9,9 @@ import { CATEGORIES, isCategory, type Question } from "@/lib/questions";
 export default async function Home({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ category?: string; deleted?: string }>;
 }) {
-  const { category: rawCategory } = await searchParams;
+  const { category: rawCategory, deleted } = await searchParams;
   const category = isCategory(rawCategory) ? rawCategory : null;
 
   const { supabase, user } = await getViewer();
@@ -50,6 +50,11 @@ export default async function Home({
 
   return (
     <PageShell>
+      {deleted && !user && (
+        <p className="mb-6 rounded-xl bg-bg-alt px-4 py-3 t-label-1 text-label-neutral">
+          탈퇴가 완료됐어요. 그동안 이용해 주셔서 감사합니다.
+        </p>
+      )}
       {!user && (
         <section className="relative mb-8 overflow-hidden rounded-[20px] bg-gradient-to-br from-primary to-primary-deep px-6 py-8 text-white md:mb-12 md:px-12 md:py-14">
           <p className="t-caption-1 !font-semibold tracking-[0.14em] text-white/70">
