@@ -1,4 +1,10 @@
-export type Category = "sports" | "economy";
+export type Category =
+  | "sports"
+  | "economy"
+  | "tech"
+  | "entertainment"
+  | "esports"
+  | "weather";
 export type QuestionStatus = "open" | "closed" | "resolved" | "void";
 
 export type Question = {
@@ -17,6 +23,10 @@ export type Question = {
 export const CATEGORIES: { value: Category; label: string }[] = [
   { value: "sports", label: "스포츠" },
   { value: "economy", label: "경제" },
+  { value: "tech", label: "테크" },
+  { value: "entertainment", label: "연예" },
+  { value: "esports", label: "e스포츠" },
+  { value: "weather", label: "날씨" },
 ];
 
 export function categoryLabel(category: Category) {

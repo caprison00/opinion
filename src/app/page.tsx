@@ -82,7 +82,7 @@ export default async function Home({
             마감이 가까운 순서로 보여요.
           </p>
         </div>
-        <nav className="-mx-4 flex gap-2 overflow-x-auto px-4 md:mx-0 md:px-0">
+        <nav className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] md:mx-0 md:flex-wrap md:justify-end md:px-0">
           {tabs.map((tab) => (
             <Link
               key={tab.label}

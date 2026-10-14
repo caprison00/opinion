@@ -47,7 +47,7 @@ export default function QuestionForm() {
 
       <fieldset className="flex flex-col gap-2">
         <legend className={`mb-2 ${labelClass}`}>카테고리 *</legend>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {CATEGORIES.map((c, i) => (
             <label
               key={c.value}
@@ -98,7 +98,9 @@ export default function QuestionForm() {
       </div>
 
       <p className="rounded-lg bg-accent-orange px-3 py-2.5 t-caption-1 text-caution-text">
-        국내 공직선거·정당 지지도 관련 질문은 만들 수 없어요.
+        국내 공직선거·정당 지지도 관련 질문은 만들 수 없어요. 연예 질문은
+        시청률·음원 차트·시상식처럼 공식 기록으로 판정할 수 있는 것만 다루고,
+        사생활이나 소문은 피해 주세요.
       </p>
 
       {state.error && (

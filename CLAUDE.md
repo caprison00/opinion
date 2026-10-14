@@ -23,7 +23,7 @@
 
 ## 데이터 모델 (초안)
 - profiles: id, nickname, created_at
-- questions: id, title, description, category(sports | economy), resolution_source(판정 출처 텍스트), close_at(예측 마감), resolve_at(결과 확정 예정), status(open | closed | resolved | void), outcome(yes | no | null), created_by
+- questions: id, title, description, category(sports | economy | tech | entertainment | esports | weather), resolution_source(판정 출처 텍스트), close_at(예측 마감), resolve_at(결과 확정 예정), status(open | closed | resolved | void), outcome(yes | no | null), created_by
 - predictions: id, user_id, question_id, probability(1–99 정수, YES 확률), reason(한 줄 근거, 선택), created_at, updated_at — 사용자·질문당 1건, 마감 전까지 수정 가능
 - 사용자는 본인 예측만 생성·수정 가능. 질문 생성·판정은 관리자만 가능 (Supabase RLS로 강제).
 
@@ -34,7 +34,7 @@
 - 집단 확률 = 해당 질문 예측 확률의 평균 (MVP는 단순 평균).
 
 ## 화면
-1. 홈: 진행 중 질문 목록 (마감 임박순), 카테고리 탭(스포츠·경제)
+1. 홈: 진행 중 질문 목록 (마감 임박순), 카테고리 탭(스포츠·경제·테크·연예·e스포츠·날씨)
 2. 질문 상세: 설명, 판정 출처, 마감일, 현재 집단 확률, 내 예측 입력(슬라이더 1–99%) + 한 줄 근거, 다른 사람 근거 목록
 3. 내 예측: 진행 중 / 판정 완료 목록, 질문별 점수, 누적 점수
 4. 랭킹: 누적 점수 순위 (판정된 예측 3건 이상인 사용자만)
