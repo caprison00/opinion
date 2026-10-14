@@ -6,7 +6,7 @@ export default function AuthShell({ children }: { children: React.ReactNode }) {
   return (
     <main className="flex min-h-dvh flex-col items-center justify-center bg-bg-alt px-4 py-10">
       <div className="w-full max-w-[400px] rounded-3xl bg-white p-7 shadow-large md:p-10">
-        <Logo />
+        <Logo className="h-11 w-auto" />
         {children}
       </div>
       <nav className="mt-6 flex gap-4 t-caption-1">
