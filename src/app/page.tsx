@@ -29,12 +29,10 @@ export default async function Home({
   const counts = new Map<string, number>();
   for (const q of all)
     counts.set(q.category, (counts.get(q.category) ?? 0) + 1);
-  // 질문이 있는 카테고리만 탭으로 보여준다 (선택한 카테고리는 비어도 남긴다).
+  // 질문이 없어도 모든 카테고리를 탭으로 보여준다.
   const tabs = [
     { value: null, label: "전체", count: all.length },
-    ...CATEGORIES.filter(
-      (c) => counts.has(c.value) || c.value === category,
-    ).map((c) => ({ ...c, count: counts.get(c.value) ?? 0 })),
+    ...CATEGORIES.map((c) => ({ ...c, count: counts.get(c.value) ?? 0 })),
   ];
   const currentLabel = category
     ? CATEGORIES.find((c) => c.value === category)?.label
