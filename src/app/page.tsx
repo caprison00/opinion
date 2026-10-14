@@ -75,14 +75,14 @@ export default async function Home({
         </section>
       )}
 
-      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+      <div className="flex flex-col gap-4">
         <div>
           <h1 className="t-heading-1 md:t-title-3">진행 중인 질문</h1>
           <p className="mt-1 t-label-1 text-label-alt">
             마감이 가까운 순서로 보여요.
           </p>
         </div>
-        <nav className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] md:mx-0 md:flex-wrap md:justify-end md:px-0">
+        <nav className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] md:mx-0 md:flex-wrap md:px-0">
           {tabs.map((tab) => (
             <Link
               key={tab.label}
