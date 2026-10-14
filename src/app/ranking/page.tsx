@@ -69,7 +69,7 @@ export default async function RankingPage() {
                   <span
                     className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full t-label-1 !font-bold tabular-nums ${
                       r.rank <= 3
-                        ? "bg-primary text-white"
+                        ? "bg-brand text-white"
                         : "bg-fill text-label-alt"
                     }`}
                   >

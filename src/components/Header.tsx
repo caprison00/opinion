@@ -2,13 +2,14 @@ import Link from "next/link";
 import { getViewer } from "@/lib/auth";
 import Logo from "./Logo";
 import NavLinks from "./NavLinks";
+import ThemeToggle from "./ThemeToggle";
 import { button, container } from "./ui";
 
 export default async function Header() {
   const { user, isAdmin } = await getViewer();
 
   return (
-    <header className="sticky top-0 z-20 border-b border-line bg-white/95 backdrop-blur-md">
+    <header className="sticky top-0 z-20 border-b border-line bg-surface/95 backdrop-blur-md">
       <div
         className={`${container} flex h-[52px] items-center justify-between md:h-16`}
       >
@@ -16,7 +17,8 @@ export default async function Header() {
           <Logo />
           <NavLinks isAdmin={isAdmin} />
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
+          <ThemeToggle />
           {isAdmin && (
             <Link
               href="/admin"

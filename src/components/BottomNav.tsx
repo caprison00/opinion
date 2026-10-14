@@ -16,7 +16,7 @@ export default function BottomNav() {
   if (HIDDEN_PATHS.includes(pathname)) return null;
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden">
       <ul className="flex">
         {NAV_ITEMS.map(({ href, label }) => {
           const Icon = ICONS[href as keyof typeof ICONS];

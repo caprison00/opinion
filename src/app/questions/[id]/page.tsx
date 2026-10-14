@@ -158,7 +158,7 @@ export default async function QuestionPage({
             </section>
           )}
 
-          <section className="rounded-[20px] bg-gradient-to-br from-primary to-primary-deep p-6 text-white">
+          <section className="rounded-[20px] bg-gradient-to-br from-brand to-primary-deep p-6 text-white">
             <p className="t-label-1 text-white/75">
               {accepting ? "현재 집단 확률" : "최종 집단 확률"}
             </p>

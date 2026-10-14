@@ -79,12 +79,12 @@ export default function DailyChart({ rows }: { rows: DailyRow[] }) {
                     className="w-full rounded-t-[4px] bg-primary transition-colors group-hover:bg-primary-heavy group-focus-visible:bg-primary-heavy"
                     style={{ height: h }}
                   />
-                  <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 hidden -translate-x-1/2 whitespace-nowrap rounded-lg bg-inverse px-3 py-2 text-white shadow-medium group-hover:block group-focus-visible:block">
-                    <p className="t-caption-1 text-white/70">{r.day}</p>
+                  <div className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 hidden -translate-x-1/2 whitespace-nowrap rounded-lg bg-inverse px-3 py-2 text-on-inverse shadow-medium group-hover:block group-focus-visible:block">
+                    <p className="t-caption-1 text-on-inverse/70">{r.day}</p>
                     <p className="t-label-1 !font-bold tabular-nums">
                       방문자 {r.visitors}명
                     </p>
-                    <p className="t-caption-1 tabular-nums text-white/80">
+                    <p className="t-caption-1 tabular-nums text-on-inverse/80">
                       페이지뷰 {r.page_views}회
                     </p>
                   </div>

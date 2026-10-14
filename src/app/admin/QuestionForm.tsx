@@ -51,7 +51,7 @@ export default function QuestionForm() {
           {CATEGORIES.map((c, i) => (
             <label
               key={c.value}
-              className="inline-flex h-[38px] cursor-pointer items-center rounded-full border border-line-neutral px-4 t-label-1 !font-semibold text-label-neutral transition-colors has-[:checked]:border-inverse has-[:checked]:bg-inverse has-[:checked]:text-white"
+              className="inline-flex h-[38px] cursor-pointer items-center rounded-full border border-line-neutral px-4 t-label-1 !font-semibold text-label-neutral transition-colors has-[:checked]:border-inverse has-[:checked]:bg-inverse has-[:checked]:text-on-inverse"
             >
               <input
                 type="radio"

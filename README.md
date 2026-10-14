@@ -4,7 +4,7 @@
 
 - 작업 지침: [CLAUDE.md](./CLAUDE.md)
 - 기술 스택: Next.js(App Router) + TypeScript + Tailwind CSS, Supabase, Vercel
-- 디자인: [Wanted Design System (Community)](design/wanted/README.md) 토큰 사용 — © Wanted Lab, CC BY 4.0. 토큰은 `src/app/globals.css`, 공통 클래스는 `src/components/ui.ts`. 원티드 로고·브랜드명은 쓰지 않는다.
+- 디자인: [Wanted Design System (Community)](design/wanted/README.md) 토큰 사용, 다크(기본)·라이트 테마 (`src/app/globals.css`의 `--c-*` 변수) — © Wanted Lab, CC BY 4.0. 토큰은 `src/app/globals.css`, 공통 클래스는 `src/components/ui.ts`. 원티드 로고·브랜드명은 쓰지 않는다.
 
 ## 처음 설정하기
 

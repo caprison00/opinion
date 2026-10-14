@@ -16,16 +16,29 @@ export default async function Home({
 
   const { supabase, user } = await getViewer();
 
-  let query = supabase
+  // 진행 중인 질문을 한 번에 가져와 카테고리별 개수와 목록을 함께 만든다.
+  const { data } = await supabase
     .from("questions")
     .select("*")
     .eq("status", "open")
     .gt("close_at", new Date().toISOString())
     .order("close_at", { ascending: true });
-  if (category) query = query.eq("category", category);
+  const all = (data ?? []) as Question[];
+  const questions = category ? all.filter((q) => q.category === category) : all;
 
-  const { data } = await query;
-  const questions = (data ?? []) as Question[];
+  const counts = new Map<string, number>();
+  for (const q of all)
+    counts.set(q.category, (counts.get(q.category) ?? 0) + 1);
+  // 질문이 있는 카테고리만 탭으로 보여준다 (선택한 카테고리는 비어도 남긴다).
+  const tabs = [
+    { value: null, label: "전체", count: all.length },
+    ...CATEGORIES.filter(
+      (c) => counts.has(c.value) || c.value === category,
+    ).map((c) => ({ ...c, count: counts.get(c.value) ?? 0 })),
+  ];
+  const currentLabel = category
+    ? CATEGORIES.find((c) => c.value === category)?.label
+    : null;
 
   const { data: statsData } = questions.length
     ? await supabase
@@ -46,8 +59,6 @@ export default async function Home({
     ).map((s) => [s.question_id, s]),
   );
 
-  const tabs = [{ value: null, label: "전체" }, ...CATEGORIES];
-
   return (
     <PageShell>
       {deleted && !user && (
@@ -56,7 +67,7 @@ export default async function Home({
         </p>
       )}
       {!user && (
-        <section className="relative mb-8 overflow-hidden rounded-[20px] bg-gradient-to-br from-primary to-primary-deep px-6 py-8 text-white md:mb-12 md:px-12 md:py-14">
+        <section className="relative mb-8 overflow-hidden rounded-[20px] bg-gradient-to-br from-brand to-primary-deep px-6 py-8 text-white md:mb-12 md:px-12 md:py-14">
           <p className="t-caption-1 !font-semibold tracking-[0.14em] text-white/70">
             예측 게임
           </p>
@@ -68,36 +79,60 @@ export default async function Home({
           </p>
           <Link
             href="/login"
-            className="mt-6 inline-flex h-10 items-center rounded-full bg-white px-5 t-label-1 !font-semibold text-primary transition-colors hover:bg-white/90"
+            className="mt-6 inline-flex h-10 items-center rounded-full bg-white px-5 t-label-1 !font-semibold text-brand transition-colors hover:bg-white/90"
           >
             로그인하고 시작하기
           </Link>
         </section>
       )}
 
-      <div className="flex flex-col gap-4">
-        <div>
-          <h1 className="t-heading-1 md:t-title-3">진행 중인 질문</h1>
-          <p className="mt-1 t-label-1 text-label-alt">
-            마감이 가까운 순서로 보여요.
-          </p>
-        </div>
-        <nav className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] md:mx-0 md:flex-wrap md:px-0">
-          {tabs.map((tab) => (
-            <Link
-              key={tab.label}
-              href={tab.value ? `/?category=${tab.value}` : "/"}
-              className={chip(tab.value === category)}
-            >
-              {tab.label}
-            </Link>
-          ))}
-        </nav>
+      <div>
+        <h1 className="t-heading-1 md:t-title-3">
+          {currentLabel ? `${currentLabel} 질문` : "진행 중인 질문"}
+        </h1>
+        <p className="mt-1 t-label-1 text-label-alt">
+          마감이 가까운 순서로 보여요.
+        </p>
       </div>
 
-      <section className="mt-6">
+      {/* 카테고리 바: 스크롤해도 상단 메뉴 아래에 붙어 있다 */}
+      <nav
+        aria-label="카테고리"
+        className="sticky top-[52px] z-10 -mx-4 mt-4 border-b border-line bg-bg/95 backdrop-blur-md md:top-16 md:-mx-6"
+      >
+        <div className="scroll-row flex gap-2 overflow-x-auto px-4 py-3 md:px-6">
+          {tabs.map((tab) => {
+            const active = tab.value === category;
+            return (
+              <Link
+                key={tab.label}
+                href={tab.value ? `/?category=${tab.value}` : "/"}
+                aria-current={active ? "page" : undefined}
+                className={`${chip(active)} shrink-0 gap-1.5`}
+              >
+                {tab.label}
+                <span
+                  className={`t-caption-1 tabular-nums ${
+                    active ? "text-on-inverse/60" : "text-label-assist"
+                  }`}
+                >
+                  {tab.count}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
+
+      <section className="mt-5">
         {questions.length === 0 ? (
-          <EmptyState message="진행 중인 질문이 없어요." />
+          <EmptyState
+            message={
+              currentLabel
+                ? `${currentLabel} 카테고리에 진행 중인 질문이 없어요.`
+                : "진행 중인 질문이 없어요."
+            }
+          />
         ) : (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
             {questions.map((q) => (

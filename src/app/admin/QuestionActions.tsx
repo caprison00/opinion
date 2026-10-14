@@ -13,7 +13,7 @@ const RESULT_BUTTONS = [
   {
     value: "no",
     label: "NO",
-    className: `${button.smallPrimary} !bg-negative hover:!bg-negative-strong`,
+    className: `${button.smallPrimary} !bg-[#e52222] hover:!bg-[#b20c0c]`,
   },
   { value: "void", label: "무효", className: button.smallSecondary },
 ] as const;

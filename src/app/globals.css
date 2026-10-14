@@ -4,61 +4,156 @@
   Wanted Design System 토큰 (design/wanted/colors_and_type.css 기준)
   Wanted Design System (Community) by Wanted Lab — CC BY 4.0
 */
-@theme {
+/* 라이트·다크 테마 값. <html data-theme="dark|light">로 바뀐다 (기본: 다크) */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+  --c-primary: #0066ff;
+  --c-primary-strong: #005eeb;
+  --c-primary-heavy: #0054d1;
+  --c-primary-deep: #001536;
+  /* 흰 글씨를 얹는 채움색 (버튼·배지). 두 테마 모두 4.5:1 이상 */
+  --c-brand: #0066ff;
+  --c-brand-strong: #005eeb;
+  --c-brand-heavy: #0054d1;
+
+  --c-label: rgb(23 23 25);
+  --c-label-neutral: rgb(46 47 51 / 0.88);
+  --c-label-alt: rgb(55 56 60 / 0.61);
+  --c-label-assist: rgb(55 56 60 / 0.28);
+  --c-label-disable: rgb(55 56 60 / 0.16);
+
+  --c-bg: #ffffff;
+  --c-bg-alt: #f7f7f8;
+  --c-surface: #ffffff;
+  --c-inverse: #171719;
+  --c-on-inverse: #ffffff;
+
+  --c-line: rgb(112 115 124 / 0.22);
+  --c-line-neutral: rgb(112 115 124 / 0.45);
+  --c-line-alt: rgb(112 115 124 / 0.08);
+
+  --c-fill: rgb(112 115 124 / 0.08);
+  --c-fill-alt: rgb(112 115 124 / 0.05);
+  --c-fill-strong: rgb(112 115 124 / 0.16);
+
+  --c-positive: #00bf40;
+  --c-caution: #ff9200;
+  --c-caution-text: #d47800;
+  --c-negative: #ff4242;
+  --c-negative-strong: #e52222;
+
+  --c-accent-blue: #eaf2fe;
+  --c-accent-red: #feecec;
+  --c-accent-green: #d9ffe6;
+  --c-accent-orange: #fef4e6;
+
+  --c-shadow: 23 23 23;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  /* Wanted 다크 테마: 글자·선으로 쓰는 파랑은 밝게, 글자는 흰색 투명도 */
+  --c-primary: #4f95ff;
+  --c-primary-strong: #69a5ff;
+  --c-primary-heavy: #9ec5ff;
+  --c-primary-deep: #001536;
+  --c-brand: #0066ff;
+  --c-brand-strong: #1a75ff;
+  --c-brand-heavy: #3385ff;
+
+  --c-label: rgb(255 255 255 / 0.95);
+  --c-label-neutral: rgb(255 255 255 / 0.82);
+  --c-label-alt: rgb(255 255 255 / 0.6);
+  --c-label-assist: rgb(255 255 255 / 0.32);
+  --c-label-disable: rgb(255 255 255 / 0.16);
+
+  --c-bg: #141415;
+  --c-bg-alt: #1b1c1e;
+  --c-surface: #1b1c1e;
+  --c-inverse: #f7f7f8;
+  --c-on-inverse: #171719;
+
+  --c-line: rgb(255 255 255 / 0.12);
+  --c-line-neutral: rgb(255 255 255 / 0.24);
+  --c-line-alt: rgb(255 255 255 / 0.06);
+
+  --c-fill: rgb(255 255 255 / 0.08);
+  --c-fill-alt: rgb(255 255 255 / 0.05);
+  --c-fill-strong: rgb(255 255 255 / 0.16);
+
+  --c-positive: #1ed45a;
+  --c-caution: #ffa938;
+  --c-caution-text: #ffc06e;
+  --c-negative: #ff6363;
+  --c-negative-strong: #ff8c8c;
+
+  --c-accent-blue: rgb(51 133 255 / 0.16);
+  --c-accent-red: rgb(255 99 99 / 0.16);
+  --c-accent-green: rgb(30 212 90 / 0.16);
+  --c-accent-orange: rgb(255 169 56 / 0.16);
+
+  --c-shadow: 0 0 0;
+}
+
+/*
+  Wanted Design System 토큰 (design/wanted/colors_and_type.css 기준)
+  Wanted Design System (Community) by Wanted Lab — CC BY 4.0
+*/
+@theme inline {
   --font-sans:
     "Pretendard JP", "Pretendard", -apple-system, BlinkMacSystemFont,
     "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
 
-  /* Primary */
-  --color-primary: #0066ff;
-  --color-primary-strong: #005eeb;
-  --color-primary-heavy: #0054d1;
-  --color-primary-deep: #001536;
+  --color-primary: var(--c-primary);
+  --color-primary-strong: var(--c-primary-strong);
+  --color-primary-heavy: var(--c-primary-heavy);
+  --color-primary-deep: var(--c-primary-deep);
+  --color-brand: var(--c-brand);
+  --color-brand-strong: var(--c-brand-strong);
+  --color-brand-heavy: var(--c-brand-heavy);
 
-  /* Label (text) */
-  --color-label: rgb(23 23 25);
-  --color-label-neutral: rgb(46 47 51 / 0.88);
-  --color-label-alt: rgb(55 56 60 / 0.61);
-  --color-label-assist: rgb(55 56 60 / 0.28);
-  --color-label-disable: rgb(55 56 60 / 0.16);
+  --color-label: var(--c-label);
+  --color-label-neutral: var(--c-label-neutral);
+  --color-label-alt: var(--c-label-alt);
+  --color-label-assist: var(--c-label-assist);
+  --color-label-disable: var(--c-label-disable);
 
-  /* Background */
-  --color-bg: #ffffff;
-  --color-bg-alt: #f7f7f8;
-  --color-inverse: #171719;
+  --color-bg: var(--c-bg);
+  --color-bg-alt: var(--c-bg-alt);
+  --color-surface: var(--c-surface);
+  --color-inverse: var(--c-inverse);
+  --color-on-inverse: var(--c-on-inverse);
 
-  /* Line */
-  --color-line: rgb(112 115 124 / 0.22);
-  --color-line-neutral: rgb(112 115 124 / 0.45);
-  --color-line-alt: rgb(112 115 124 / 0.08);
+  --color-line: var(--c-line);
+  --color-line-neutral: var(--c-line-neutral);
+  --color-line-alt: var(--c-line-alt);
 
-  /* Fill */
-  --color-fill: rgb(112 115 124 / 0.08);
-  --color-fill-alt: rgb(112 115 124 / 0.05);
-  --color-fill-strong: rgb(112 115 124 / 0.16);
+  --color-fill: var(--c-fill);
+  --color-fill-alt: var(--c-fill-alt);
+  --color-fill-strong: var(--c-fill-strong);
 
-  /* Status */
-  --color-positive: #00bf40;
-  --color-caution: #ff9200;
-  --color-caution-text: #d47800;
-  --color-negative: #ff4242;
-  --color-negative-strong: #e52222;
+  --color-positive: var(--c-positive);
+  --color-caution: var(--c-caution);
+  --color-caution-text: var(--c-caution-text);
+  --color-negative: var(--c-negative);
+  --color-negative-strong: var(--c-negative-strong);
 
-  /* Accent backgrounds */
-  --color-accent-blue: #eaf2fe;
-  --color-accent-red: #feecec;
-  --color-accent-green: #d9ffe6;
-  --color-accent-orange: #fef4e6;
+  --color-accent-blue: var(--c-accent-blue);
+  --color-accent-red: var(--c-accent-red);
+  --color-accent-green: var(--c-accent-green);
+  --color-accent-orange: var(--c-accent-orange);
 
-  /* Elevation */
-  --shadow-xsmall: 0px 1px 2px -1px rgb(23 23 23 / 0.1);
+  --shadow-xsmall: 0px 1px 2px -1px rgb(var(--c-shadow) / 0.1);
   --shadow-small:
-    0px 4px 6px -1px rgb(23 23 23 / 0.06), 0px 2px 4px -2px rgb(23 23 23 / 0.06);
+    0px 4px 6px -1px rgb(var(--c-shadow) / 0.06),
+    0px 2px 4px -2px rgb(var(--c-shadow) / 0.06);
   --shadow-medium:
-    0px 10px 15px -3px rgb(23 23 23 / 0.07), 0px 4px 6px -2px rgb(0 0 0 / 0.07);
+    0px 10px 15px -3px rgb(var(--c-shadow) / 0.12),
+    0px 4px 6px -2px rgb(var(--c-shadow) / 0.1);
   --shadow-large:
-    0px 16px 24px -6px rgb(23 23 23 / 0.08),
-    0px 6px 10px -4px rgb(23 23 23 / 0.08);
+    0px 16px 24px -6px rgb(var(--c-shadow) / 0.16),
+    0px 6px 10px -4px rgb(var(--c-shadow) / 0.12);
 }
 
 /* 타이포그래피 (Wanted 7단계 스케일) */
@@ -166,7 +261,7 @@ input[type="range"].probability-slider::-webkit-slider-thumb {
   border-radius: 9999px;
   background: #fff;
   border: 1px solid var(--color-line);
-  box-shadow: var(--shadow-medium);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.3);
 }
 input[type="range"].probability-slider::-moz-range-thumb {
   width: 26px;
@@ -179,4 +274,12 @@ input[type="range"].probability-slider::-moz-range-thumb {
 input[type="range"].probability-slider:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 6px;
+}
+
+/* 가로로 넘기는 탭 줄: 스크롤바 숨김 */
+.scroll-row {
+  scrollbar-width: none;
+}
+.scroll-row::-webkit-scrollbar {
+  display: none;
 }

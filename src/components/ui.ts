@@ -6,22 +6,22 @@ const buttonBase =
   "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-xl font-semibold transition-colors duration-150 disabled:cursor-not-allowed";
 
 export const button = {
-  primary: `${buttonBase} h-12 px-5 t-body-2 !font-semibold bg-primary text-white hover:bg-primary-strong active:bg-primary-heavy disabled:bg-fill disabled:text-label-disable`,
-  secondary: `${buttonBase} h-12 px-5 t-body-2 !font-semibold border border-line-neutral bg-white text-label hover:bg-fill-alt active:bg-fill disabled:text-label-disable`,
-  smallPrimary: `${buttonBase} h-8 rounded-lg px-3 t-label-2 !font-semibold bg-primary text-white hover:bg-primary-strong active:bg-primary-heavy`,
-  smallSecondary: `${buttonBase} h-8 rounded-lg px-3 t-label-2 !font-semibold border border-line-neutral bg-white text-label hover:bg-fill-alt`,
+  primary: `${buttonBase} h-12 px-5 t-body-2 !font-semibold bg-brand text-white hover:bg-brand-strong active:bg-brand-heavy disabled:bg-fill disabled:text-label-disable`,
+  secondary: `${buttonBase} h-12 px-5 t-body-2 !font-semibold border border-line-neutral bg-surface text-label hover:bg-fill-alt active:bg-fill disabled:text-label-disable`,
+  smallPrimary: `${buttonBase} h-8 rounded-lg px-3 t-label-2 !font-semibold bg-brand text-white hover:bg-brand-strong active:bg-brand-heavy`,
+  smallSecondary: `${buttonBase} h-8 rounded-lg px-3 t-label-2 !font-semibold border border-line-neutral bg-surface text-label hover:bg-fill-alt`,
 };
 
 export const input =
-  "w-full rounded-lg border border-line-neutral bg-white px-3.5 py-3 t-body-2 text-label outline-none transition-colors placeholder:text-label-assist focus:border-primary";
+  "w-full rounded-lg border border-line-neutral bg-surface px-3.5 py-3 t-body-2 text-label outline-none transition-colors placeholder:text-label-assist focus:border-primary";
 
-export const card = "rounded-2xl border border-line bg-white";
+export const card = "rounded-2xl border border-line bg-surface";
 
 export function chip(active: boolean) {
   return `inline-flex h-[38px] items-center whitespace-nowrap rounded-full px-4 t-label-1 !font-semibold transition-colors ${
     active
-      ? "bg-inverse text-white"
-      : "border border-line-neutral bg-white text-label-neutral hover:bg-fill-alt"
+      ? "bg-inverse text-on-inverse"
+      : "border border-line-neutral bg-surface text-label-neutral hover:bg-fill-alt"
   }`;
 }
 
