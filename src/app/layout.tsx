@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import BottomNav from "@/components/BottomNav";
+import VisitTracker from "@/components/VisitTracker";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -35,6 +36,7 @@ export default function RootLayout({
       <body className="min-h-dvh bg-bg font-sans text-label">
         {children}
         <BottomNav />
+        <VisitTracker />
       </body>
     </html>
   );

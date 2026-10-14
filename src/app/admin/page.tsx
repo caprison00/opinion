@@ -39,9 +39,14 @@ export default async function AdminPage() {
     <PageShell>
       <div className="flex items-center justify-between">
         <h1 className="t-heading-1 md:t-title-3">관리자</h1>
-        <Link href="/admin/legal" className={button.smallSecondary}>
-          약관 관리
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/admin/stats" className={button.smallSecondary}>
+            통계
+          </Link>
+          <Link href="/admin/legal" className={button.smallSecondary}>
+            약관 관리
+          </Link>
+        </div>
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-[440px_minmax(0,1fr)] lg:gap-10">
