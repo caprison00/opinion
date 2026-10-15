@@ -97,13 +97,7 @@ export default function PreviewQuestion() {
                   c: COMMENTS[1],
                 },
               ].map((s) => (
-                <div
-                  key={s.side}
-                  className="card"
-                  style={{
-                    borderTop: `4px solid var(--${s.cls === "y" ? "yes" : "no"})`,
-                  }}
-                >
+                <div key={s.side} className="card">
                   <div
                     style={{
                       display: "flex",
