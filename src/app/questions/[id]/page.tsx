@@ -163,6 +163,7 @@ export default async function QuestionPage({
               {myScore !== undefined && (
                 <p className="mt-0.5 t-label-1">
                   내 점수 {scoreText(myScore)}점
+                  <span className="opacity-70"> · 기간 평균</span>
                 </p>
               )}
             </section>
@@ -187,13 +188,19 @@ export default async function QuestionPage({
                 로그인하고 예측하기
               </Link>
             ) : accepting ? (
-              <PredictionForm
-                questionId={q.id}
-                type={q.type}
-                options={q.options}
-                myProbs={myProbs}
-                canWriteReason={!hasMyComment}
-              />
+              <>
+                <PredictionForm
+                  questionId={q.id}
+                  type={q.type}
+                  options={q.options}
+                  myProbs={myProbs}
+                  canWriteReason={!hasMyComment}
+                />
+                <p className="mt-4 border-t border-line-alt pt-3 t-caption-1 text-label-alt">
+                  점수는 예측을 유지한 시간만큼 반영돼요. 일찍 맞힐수록 높고,
+                  예측하기 전 기간은 그때의 집단 확률로 계산해요.
+                </p>
+              </>
             ) : myProbs ? (
               <div>
                 <Stance probs={myProbs} options={q.options} big />
