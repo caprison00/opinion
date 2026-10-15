@@ -7,8 +7,8 @@ import { NAV_ITEMS, isActivePath } from "./NavLinks";
 
 const ICONS = { "/": HomeIcon, "/ranking": TrophyIcon, "/me": UserIcon };
 
-// 로그인·닉네임 설정 화면에서는 숨긴다.
-const HIDDEN_PATHS = ["/login", "/onboarding"];
+// 로그인·닉네임 설정·디자인 의견 화면에서는 숨긴다.
+const HIDDEN_PATHS = ["/login", "/onboarding", "/compare"];
 
 // 모바일 하단 탭 (데스크톱에서는 상단 메뉴를 쓴다)
 export default function BottomNav() {
