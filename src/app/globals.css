@@ -295,6 +295,11 @@ input[type="range"].probability-slider:focus-visible {
   outline-offset: 6px;
 }
 
+/* 강조 박스(시즌·배너): 진한 파랑으로 내려가는 그라데이션 (원티드 스타일). 두 테마 공통 */
+@utility bg-hero {
+  background-image: linear-gradient(to bottom right, #0066ff, #001536);
+}
+
 /* 가로로 넘기는 탭 줄: 스크롤바 숨김 */
 .scroll-row {
   scrollbar-width: none;

@@ -200,7 +200,7 @@ export default async function Home({
         </p>
       )}
       {!user && (
-        <section className="mb-6 flex flex-col gap-4 rounded-2xl bg-brand px-6 py-6 text-white md:flex-row md:items-center md:justify-between md:px-8">
+        <section className="mb-6 flex flex-col gap-4 rounded-2xl bg-hero px-6 py-6 text-white md:flex-row md:items-center md:justify-between md:px-8">
           <div>
             <h1 className="t-heading-1">미래를 확률로 맞혀 보세요</h1>
             <p className="mt-1 t-body-3 text-white/80">
@@ -209,7 +209,7 @@ export default async function Home({
           </div>
           <Link
             href="/login"
-            className="inline-flex h-10 shrink-0 items-center self-start rounded-full bg-white px-5 t-label-1 !font-semibold text-[#1b64da] transition-colors hover:bg-white/90 md:self-auto"
+            className="inline-flex h-10 shrink-0 items-center self-start rounded-full bg-white px-5 t-label-1 !font-semibold text-[#0066ff] transition-colors hover:bg-white/90 md:self-auto"
           >
             로그인하고 시작하기
           </Link>
@@ -572,7 +572,7 @@ function SeasonBox({
 }) {
   const month = Number(currentSeason().slice(5));
   return (
-    <section className="rounded-2xl bg-brand p-5 text-white">
+    <section className="rounded-2xl bg-hero p-5 text-white">
       <p className="t-label-2 text-white/75">{month}월 시즌</p>
       {season ? (
         <>
@@ -603,7 +603,7 @@ function SeasonBox({
       )}
       <Link
         href={season ? "/ranking" : "/login"}
-        className="mt-4 flex h-10 items-center justify-center gap-1 rounded-xl bg-white t-label-1 !font-bold text-[#1b64da] transition-colors hover:bg-white/90"
+        className="mt-4 flex h-10 items-center justify-center gap-1 rounded-xl bg-white t-label-1 !font-bold text-[#0066ff] transition-colors hover:bg-white/90"
       >
         {season ? "랭킹 보기" : "로그인하기"}
         <ChevronRightIcon className="h-4 w-4" />

@@ -108,7 +108,7 @@ export default async function MyPredictionsPage({
       </div>
 
       <section className="mt-5 grid grid-cols-2 gap-3 md:gap-4">
-        <div className="rounded-2xl bg-brand p-5 text-white">
+        <div className="rounded-2xl bg-hero p-5 text-white">
           <p className="t-label-2 text-white/75">
             {seasonLabel(season)} 시즌 점수
           </p>
