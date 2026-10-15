@@ -1,7 +1,9 @@
 export type Category =
-  | "sports"
+  | "career"
   | "economy"
+  | "sports"
   | "culture"
+  | "food"
   | "tech"
   | "game"
   | "life";
@@ -75,12 +77,14 @@ export function outcomeLabel(q: Pick<Question, "options" | "outcome_index">) {
 
 // 화면에 보이는 순서 (CLAUDE.md '분야' 참고)
 export const CATEGORIES: { value: Category; label: string }[] = [
+  { value: "career", label: "직장·커리어" },
+  { value: "economy", label: "금융·경제·재테크" },
   { value: "sports", label: "스포츠" },
-  { value: "economy", label: "경제·재테크" },
-  { value: "culture", label: "연예·컬처" },
+  { value: "culture", label: "연예·아이돌·컬처" },
+  { value: "food", label: "음식·맛집" },
   { value: "tech", label: "테크·AI" },
   { value: "game", label: "게임·e스포츠" },
-  { value: "life", label: "생활·트렌드" },
+  { value: "life", label: "생활·트렌드·밈" },
 ];
 
 export function categoryLabel(category: Category) {
