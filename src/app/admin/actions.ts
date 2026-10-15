@@ -382,3 +382,11 @@ function revalidateQuestion(id: string) {
   revalidatePath("/me");
   revalidatePath(`/questions/${id}`);
 }
+
+// 모든 사용자의 뱃지를 다시 계산 (시즌 마스터는 매달 초에 한 번 눌러 주면 반영된다)
+export async function refreshAllBadges() {
+  const { supabase, user, isAdmin } = await getViewer();
+  if (!user || !isAdmin) return;
+  await supabase.rpc("refresh_all_badges");
+  revalidatePath("/", "layout");
+}

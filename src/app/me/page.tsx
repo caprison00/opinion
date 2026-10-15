@@ -8,6 +8,9 @@ import { getViewer } from "@/lib/auth";
 import { currentSeason } from "@/lib/board";
 import TierMark from "@/components/TierMark";
 import { getTiers, seasonLabel } from "@/lib/tiers";
+import { getBoards } from "@/lib/board";
+import { badgeDef, getFeaturedBadges, questionBadgeKeys } from "@/lib/badges";
+import BadgeIcon from "@/components/BadgeIcon";
 import {
   formatDate,
   stanceOf,
@@ -42,6 +45,7 @@ export default async function MyPredictionsPage({
     { data: profile },
     { data: seasonData },
     tiers,
+    featured,
   ] = await Promise.all([
     supabase
       .from("predictions")
@@ -62,7 +66,9 @@ export default async function MyPredictionsPage({
       .eq("user_id", user.id)
       .eq("season", season),
     getTiers(supabase, [user.id]),
+    getFeaturedBadges(supabase, [user.id]),
   ]);
+  const myBadge = featured.get(user.id);
   const seasonScores = (seasonData ?? []) as { score: number }[];
   const seasonTotal = seasonScores.reduce((a, r) => a + r.score, 0);
 
@@ -85,6 +91,16 @@ export default async function MyPredictionsPage({
       b.questions.resolve_at.localeCompare(a.questions.resolve_at),
     );
   const list = tab === "done" ? done : active;
+  // 판정된 질문의 적중 비율 (소수파 적중·족집게 조건 표시용)
+  const boards =
+    tab === "done"
+      ? await getBoards(
+          supabase,
+          done
+            .filter((p) => p.questions.status === "resolved")
+            .map((p) => p.questions.id),
+        )
+      : new Map();
 
   return (
     <PageShell narrow>
@@ -95,6 +111,9 @@ export default async function MyPredictionsPage({
             className="flex items-center gap-1.5 t-label-1 text-label-alt hover:text-label"
           >
             <TierMark tier={tiers.get(user.id) ?? "newbie"} />
+            {myBadge && (
+              <BadgeIcon badgeKey={myBadge.key} level={myBadge.level} />
+            )}
             {profile?.nickname}
           </Link>
           <h1 className="t-heading-1 md:t-title-3">내 예측</h1>
@@ -182,6 +201,32 @@ export default async function MyPredictionsPage({
                           })()}
                         </span>
                       </p>
+                      {tab === "done" &&
+                        q.status === "resolved" &&
+                        (() => {
+                          const b = boards.get(q.id);
+                          const keys = b
+                            ? questionBadgeKeys(
+                                stanceOf(p.probs.map(Number), q.options)
+                                  .index === q.outcome_index,
+                                b.participants,
+                                b.hitRate,
+                              )
+                            : [];
+                          return keys.length ? (
+                            <p className="mt-1.5 flex flex-wrap gap-2 t-caption-1 text-label-neutral">
+                              {keys.map((k) => (
+                                <span
+                                  key={k}
+                                  className="inline-flex items-center gap-1"
+                                >
+                                  <BadgeIcon badgeKey={k} level={1} size={16} />
+                                  {badgeDef(k)?.name}
+                                </span>
+                              ))}
+                            </p>
+                          ) : null;
+                        })()}
                     </div>
                     {tab === "done" ? (
                       q.status === "void" || score === undefined ? (

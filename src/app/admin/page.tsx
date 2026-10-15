@@ -12,7 +12,7 @@ import {
   statusLabel,
   type Question,
 } from "@/lib/questions";
-import { setQuestionIssue } from "./actions";
+import { refreshAllBadges, setQuestionIssue } from "./actions";
 import PrivateActions from "./PrivateActions";
 import DeleteIssueButton from "./DeleteIssueButton";
 import IssueForm from "./IssueForm";
@@ -113,7 +113,7 @@ export default async function AdminPage({
     <PageShell>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="t-heading-1 md:t-title-3">관리자</h1>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Link href="/admin/stats" className={button.smallSecondary}>
             통계
           </Link>
@@ -126,6 +126,14 @@ export default async function AdminPage({
           <Link href="/admin/legal" className={button.smallSecondary}>
             약관 관리
           </Link>
+          <form action={refreshAllBadges}>
+            <button
+              className={button.smallSecondary}
+              title="모든 사용자의 뱃지를 다시 계산해요. 매달 초 시즌 마스터 반영용."
+            >
+              뱃지 재계산
+            </button>
+          </form>
         </div>
       </div>
 

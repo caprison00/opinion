@@ -2,6 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import TierMark from "@/components/TierMark";
+import BadgeIcon from "@/components/BadgeIcon";
+import type { UserBadge } from "@/lib/badges";
+import BadgeShelf from "./BadgeShelf";
 import { card, scoreColor, scoreText } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
 import { categoryLabel, isCategory } from "@/lib/questions";
@@ -45,10 +48,27 @@ export default async function ProfilePage({
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
 
   const supabase = await createClient();
-  const [{ data }, { data: auth }] = await Promise.all([
-    supabase.rpc("profile_stats", { p_user: id }),
-    supabase.auth.getUser(),
-  ]);
+  const [{ data }, { data: auth }, { data: prefs }, { data: badgeData }] =
+    await Promise.all([
+      supabase.rpc("profile_stats", { p_user: id }),
+      supabase.auth.getUser(),
+      supabase
+        .from("profiles")
+        .select("featured_badge, show_badges")
+        .eq("id", id)
+        .maybeSingle(),
+      // 본인은 전부, 다른 사람은 공개로 둔 경우 받은 뱃지만 돌아온다 (DB 규칙)
+      supabase
+        .from("user_badges")
+        .select("badge_key, level, progress, seen_level, earned_at")
+        .eq("user_id", id),
+    ]);
+  const owned = (badgeData ?? []) as UserBadge[];
+  const showBadges = prefs?.show_badges ?? true;
+  const featuredKey = (prefs?.featured_badge as string | null) ?? null;
+  const featuredBadge = owned.find(
+    (b) => b.badge_key === featuredKey && b.level > 0,
+  );
   const s = data as Stats | null;
   if (!s) notFound();
 
@@ -81,6 +101,13 @@ export default async function ProfilePage({
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <TierMark tier={tier} size="md" />
+            {featuredBadge && (
+              <BadgeIcon
+                badgeKey={featuredBadge.badge_key}
+                level={featuredBadge.level}
+                size={24}
+              />
+            )}
             {isMe && <span className="t-label-2 text-primary">나</span>}
           </div>
           <h1 className="mt-1 truncate t-heading-1 md:t-title-3">
@@ -115,6 +142,23 @@ export default async function ProfilePage({
       <p className="mt-2 t-caption-1 text-label-alt">
         적중률은 판정된 질문에서 정답을 가장 높은 확률로 고른 비율이에요.
       </p>
+
+      <section className="mt-8">
+        <h2 className="t-heading-2">
+          뱃지{" "}
+          {(isMe || showBadges) && (
+            <span className="t-body-2 text-label-assist">
+              {owned.filter((b) => b.level > 0).length}/12
+            </span>
+          )}
+        </h2>
+        <BadgeShelf
+          owned={owned}
+          isMe={isMe}
+          showBadges={showBadges}
+          featured={featuredKey}
+        />
+      </section>
 
       <section className="mt-8">
         <h2 className="t-heading-2">{month}월 분야별 순위</h2>

@@ -16,6 +16,8 @@ import {
 import type { ReactionKind } from "@/lib/discussion";
 import { createClient } from "@/lib/supabase/server";
 import { getTiers } from "@/lib/tiers";
+import { badgeDef, getFeaturedBadges, questionBadgeKeys } from "@/lib/badges";
+import BadgeIcon from "@/components/BadgeIcon";
 import {
   categoryLabel,
   formatDate,
@@ -116,7 +118,7 @@ export default async function QuestionPage({
   // 토론: 리액션 합계·내 리액션, 작성자 누적 점수
   const commentIds = comments.map((c) => c.id);
   const authorIds = [...new Set(comments.map((c) => c.user_id))];
-  const [{ data: reactionData }, { data: authorScoreData }, tiers] =
+  const [{ data: reactionData }, { data: authorScoreData }, tiers, featured] =
     await Promise.all([
       commentIds.length
         ? supabase
@@ -131,6 +133,7 @@ export default async function QuestionPage({
             .in("user_id", authorIds)
         : Promise.resolve({ data: [] }),
       getTiers(supabase, authorIds),
+      getFeaturedBadges(supabase, authorIds),
     ]);
   const authorScores = new Map<string, number>();
   for (const r of (authorScoreData ?? []) as {
@@ -151,6 +154,7 @@ export default async function QuestionPage({
       userId: c.user_id,
       nickname: c.profiles?.nickname ?? "알 수 없음",
       tier: tiers.get(c.user_id) ?? "newbie",
+      badge: featured.get(c.user_id) ?? null,
       body: c.body,
       createdAt: c.created_at,
       parentId: c.parent_id,
@@ -352,6 +356,28 @@ export default async function QuestionPage({
                   <span className="opacity-70"> · 기간 평균</span>
                 </p>
               )}
+              {myProbs &&
+                (() => {
+                  const keys = questionBadgeKeys(
+                    stanceOf(myProbs, q.options).index === q.outcome_index,
+                    board.participants,
+                    board.hitRate,
+                  );
+                  return keys.length ? (
+                    <p className="mt-2 flex flex-wrap items-center justify-center gap-1.5 t-label-2 text-label">
+                      {keys.map((k) => (
+                        <span
+                          key={k}
+                          className="inline-flex items-center gap-1"
+                        >
+                          <BadgeIcon badgeKey={k} level={1} size={18} />
+                          {badgeDef(k)?.name}
+                        </span>
+                      ))}
+                      <span className="text-label-alt">조건을 채웠어요</span>
+                    </p>
+                  ) : null;
+                })()}
             </section>
           )}
           {q.status === "void" && (
@@ -564,6 +590,13 @@ function BattlePanel({
                 {reason && (
                   <p className="mt-3 line-clamp-2 t-label-2 text-label-neutral">
                     <TierMark tier={reason.tier} />{" "}
+                    {reason.badge && (
+                      <BadgeIcon
+                        badgeKey={reason.badge.key}
+                        level={reason.badge.level}
+                        size={16}
+                      />
+                    )}{" "}
                     <span className="!font-semibold text-label">
                       {reason.nickname}
                     </span>{" "}

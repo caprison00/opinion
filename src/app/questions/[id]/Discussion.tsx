@@ -12,6 +12,8 @@ import {
 import { stanceOf } from "@/lib/questions";
 import type { Tier } from "@/lib/tiers";
 import TierMark from "@/components/TierMark";
+import BadgeIcon from "@/components/BadgeIcon";
+import type { FeaturedBadge } from "@/lib/badges";
 import {
   addComment,
   deleteComment,
@@ -24,6 +26,7 @@ export type DiscussionComment = {
   userId: string;
   nickname: string;
   tier: Tier; // 작성자의 이번 시즌 티어
+  badge: FeaturedBadge | null; // 작성자가 고른 대표 뱃지
   body: string;
   createdAt: string;
   parentId: string | null;
@@ -228,6 +231,9 @@ function CommentItem({
           className="inline-flex items-center gap-1 !font-semibold text-label-neutral hover:underline"
         >
           <TierMark tier={c.tier} />
+          {c.badge && (
+            <BadgeIcon badgeKey={c.badge.key} level={c.badge.level} size={16} />
+          )}
           {c.nickname}
           {mine && " (나)"}
         </Link>

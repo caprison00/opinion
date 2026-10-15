@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { getViewer } from "@/lib/auth";
+import { getFeaturedBadges } from "@/lib/badges";
 import { getTiers } from "@/lib/tiers";
+import BadgeIcon from "./BadgeIcon";
 import Logo from "./Logo";
 import NavLinks from "./NavLinks";
 import ThemeToggle from "./ThemeToggle";
@@ -10,7 +12,7 @@ import { button, container } from "./ui";
 export default async function Header() {
   const { supabase, user, isAdmin } = await getViewer();
   // 닉네임 + 이번 시즌 티어 (프로필로 이동)
-  const [profile, tiers] = user
+  const [profile, tiers, featured] = user
     ? await Promise.all([
         supabase
           .from("profiles")
@@ -19,8 +21,10 @@ export default async function Header() {
           .maybeSingle()
           .then((r) => r.data as { nickname: string } | null),
         getTiers(supabase, [user.id]),
+        getFeaturedBadges(supabase, [user.id]),
       ])
-    : [null, null];
+    : [null, null, null];
+  const myBadge = user ? featured?.get(user.id) : undefined;
 
   return (
     <header className="sticky top-0 z-20 border-b border-line bg-bg/90 backdrop-blur-md">
@@ -48,6 +52,9 @@ export default async function Header() {
               aria-label="내 프로필"
             >
               <TierMark tier={tiers?.get(user.id) ?? "newbie"} />
+              {myBadge && (
+                <BadgeIcon badgeKey={myBadge.key} level={myBadge.level} />
+              )}
               <span className="hidden max-w-[120px] truncate t-label-1 !font-semibold text-label md:inline">
                 {profile.nickname}
               </span>

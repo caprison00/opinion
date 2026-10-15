@@ -2,6 +2,8 @@ import Link from "next/link";
 import EmptyState from "@/components/EmptyState";
 import PageShell from "@/components/PageShell";
 import TierMark from "@/components/TierMark";
+import BadgeIcon from "@/components/BadgeIcon";
+import { getFeaturedBadges, type FeaturedBadge } from "@/lib/badges";
 import { card, chip, scoreColor, scoreText } from "@/components/ui";
 import { getViewer } from "@/lib/auth";
 import { currentSeason } from "@/lib/board";
@@ -72,6 +74,10 @@ export default async function RankingPage({
       : Promise.resolve({ data: null }),
   ]);
   const all = (data ?? []) as Row[];
+  const featured = await getFeaturedBadges(
+    supabase,
+    all.map((r) => r.user_id),
+  );
   const me = user ? all.find((r) => r.user_id === user.id) : undefined;
   const rows = all.filter((r) => r.rank <= 100);
   const eligible = all[0]?.eligible ?? 0;
@@ -184,6 +190,7 @@ export default async function RankingPage({
           <ol className={`${card} divide-y divide-line-alt overflow-hidden`}>
             {rows.map((r) => (
               <RankRow
+                badge={featured.get(r.user_id)}
                 key={r.user_id}
                 r={r}
                 mode={mode}
@@ -218,7 +225,13 @@ export default async function RankingPage({
           <div className="rounded-2xl border border-primary/30 bg-surface shadow-medium">
             {me ? (
               <ol>
-                <RankRow r={me} mode={mode} isMe pinned />
+                <RankRow
+                  r={me}
+                  mode={mode}
+                  isMe
+                  pinned
+                  badge={featured.get(me.user_id)}
+                />
               </ol>
             ) : (
               <p className="px-5 py-4 t-label-1 text-label-neutral">
@@ -249,11 +262,13 @@ function RankRow({
   mode,
   isMe,
   pinned = false,
+  badge,
 }: {
   r: Row;
   mode: Mode;
   isMe: boolean;
   pinned?: boolean;
+  badge?: FeaturedBadge;
 }) {
   const pct = topPercent(r.rank, r.eligible);
   const tier: Tier = isTier(r.tier) ? r.tier : "newbie";
@@ -287,6 +302,7 @@ function RankRow({
           className="flex min-w-0 items-center gap-1.5 hover:underline"
         >
           <TierMark tier={tier} />
+          {badge && <BadgeIcon badgeKey={badge.key} level={badge.level} />}
           <span className="truncate t-body-2 !font-semibold">{r.nickname}</span>
           {isMe && (
             <span className="shrink-0 t-label-2 text-primary">(나)</span>
