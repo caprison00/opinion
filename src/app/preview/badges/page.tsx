@@ -15,8 +15,9 @@ export default function BadgeGallery() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-          gap: 14,
+          gridTemplateColumns:
+            "repeat(auto-fill, minmax(min(100%, 480px), 1fr))",
+          gap: 16,
           marginTop: 24,
         }}
       >
@@ -39,14 +40,15 @@ export default function BadgeGallery() {
                 style={{
                   display: "flex",
                   flexWrap: "wrap",
-                  gap: 14,
+                  gap: 18,
                   alignItems: "flex-end",
-                  marginTop: 14,
+                  justifyContent: "center",
+                  marginTop: 18,
                 }}
               >
                 {levels.map((lv) => (
                   <figure key={lv} style={{ margin: 0, textAlign: "center" }}>
-                    <BadgeIcon badgeKey={b.key} level={lv} size={64} />
+                    <BadgeIcon badgeKey={b.key} level={lv} size={96} />
                     <figcaption className="meta">
                       {b.thresholds.length > 1
                         ? `${LEVEL_LABEL[lv]} · ${b.thresholds[lv - 1]}${b.unit}`
@@ -55,7 +57,7 @@ export default function BadgeGallery() {
                   </figure>
                 ))}
                 <figure style={{ margin: 0, textAlign: "center" }}>
-                  <BadgeIcon badgeKey={b.key} level={0} size={64} muted />
+                  <BadgeIcon badgeKey={b.key} level={0} size={96} muted />
                   <figcaption className="meta">미획득</figcaption>
                 </figure>
                 <figure
@@ -70,7 +72,7 @@ export default function BadgeGallery() {
                   <BadgeIcon
                     badgeKey={b.key}
                     level={levels.at(-1) ?? 1}
-                    size={18}
+                    size={20}
                   />
                   <span className="meta">닉네임 옆 크기</span>
                 </figure>
