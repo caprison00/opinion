@@ -8,18 +8,69 @@ export type Category =
 
 export type QuestionStatus = "open" | "closed" | "resolved" | "void";
 
+export type QuestionType = "ox" | "choice";
+
 export type Question = {
   id: string;
   title: string;
   description: string;
   category: Category;
   resolution_source: string;
+  open_at: string;
   close_at: string;
   resolve_at: string;
   status: QuestionStatus;
+  type: QuestionType;
+  options: string[];
   outcome: "yes" | "no" | null;
+  outcome_index: number | null;
+  issue_id: string | null;
   created_at: string;
 };
+
+export const OX_OPTIONS = ["예", "아니오"];
+export const CHOICE_MIN = 3;
+export const CHOICE_MAX = 5;
+
+// 확신도 (객관식): 고른 선택지에 들어가는 확률
+export const CONFIDENCE_LEVELS = [
+  { value: "low", label: "낮음", p: 0.5 },
+  { value: "mid", label: "보통", p: 0.7 },
+  { value: "high", label: "높음", p: 0.9 },
+] as const;
+export type Confidence = (typeof CONFIDENCE_LEVELS)[number]["value"];
+
+export const OX_QUICK_P = 0.7;
+
+// 고른 선택지에 p, 나머지는 똑같이 나눈다. 합이 정확히 1이 되도록 마지막 칸에서 맞춘다.
+export function buildProbs(n: number, chosen: number, p: number) {
+  const rest = (1 - p) / (n - 1);
+  const probs = Array.from({ length: n }, (_, i) =>
+    i === chosen ? p : Math.round(rest * 10000) / 10000,
+  );
+  const lastOther = chosen === n - 1 ? n - 2 : n - 1;
+  const others = probs.reduce((a, v, i) => (i === chosen ? a : a + v), 0);
+  probs[lastOther] =
+    Math.round((probs[lastOther] + (1 - p - others)) * 10000) / 10000;
+  return probs;
+}
+
+// 예측(probs)을 "예 70%"처럼 가장 높은 선택지와 그 확률로 보여준다.
+export function stanceOf(probs: number[], options: string[]) {
+  let best = 0;
+  probs.forEach((v, i) => {
+    if (v > probs[best]) best = i;
+  });
+  return {
+    index: best,
+    label: options[best] ?? "",
+    pct: Math.round(Number(probs[best]) * 100),
+  };
+}
+
+export function outcomeLabel(q: Pick<Question, "options" | "outcome_index">) {
+  return q.outcome_index === null ? null : (q.options[q.outcome_index] ?? null);
+}
 
 // 화면에 보이는 순서 (CLAUDE.md '분야' 참고)
 export const CATEGORIES: { value: Category; label: string }[] = [
@@ -48,12 +99,11 @@ const STATUS_LABELS: Record<QuestionStatus, string> = {
 
 // status가 open이어도 마감 시각이 지났으면 마감으로 보여준다.
 export function statusLabel(
-  q: Pick<Question, "status" | "close_at" | "outcome">,
+  q: Pick<Question, "status" | "close_at" | "options" | "outcome_index">,
 ) {
   if (q.status === "open" && new Date(q.close_at) <= new Date()) return "마감";
-  if (q.status === "resolved" && q.outcome) {
-    return `결과 ${q.outcome.toUpperCase()}`;
-  }
+  const outcome = outcomeLabel(q);
+  if (q.status === "resolved" && outcome) return `결과 ${outcome}`;
   return STATUS_LABELS[q.status];
 }
 

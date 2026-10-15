@@ -3,7 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getViewer } from "@/lib/auth";
-import { findBannedWord, isCategory } from "@/lib/questions";
+import {
+  CHOICE_MAX,
+  CHOICE_MIN,
+  findBannedWord,
+  isCategory,
+  OX_OPTIONS,
+} from "@/lib/questions";
 
 export type CreateQuestionState = { error?: string; ok?: boolean };
 
@@ -31,6 +37,14 @@ export async function createQuestion(
   ).trim();
   const closeAt = parseKst(formData.get("close_at"));
   const resolveAt = parseKst(formData.get("resolve_at"));
+  const type = formData.get("type") === "choice" ? "choice" : "ox";
+  const options =
+    type === "ox"
+      ? OX_OPTIONS
+      : formData
+          .getAll("options")
+          .map((o) => String(o).trim())
+          .filter(Boolean);
 
   if (title.length < 5 || title.length > 120) {
     return { error: "질문 제목은 5~120자로 써 주세요." };
@@ -51,7 +65,21 @@ export async function createQuestion(
     return { error: "결과 확정일은 예측 마감일과 같거나 뒤여야 해요." };
   }
 
-  const banned = findBannedWord(`${title} ${description}`);
+  if (type === "choice") {
+    if (options.length < CHOICE_MIN || options.length > CHOICE_MAX) {
+      return {
+        error: `객관식 선택지는 ${CHOICE_MIN}~${CHOICE_MAX}개를 채워 주세요.`,
+      };
+    }
+    if (new Set(options).size !== options.length) {
+      return { error: "선택지가 겹치지 않게 써 주세요." };
+    }
+    if (options.some((o) => o.length > 30)) {
+      return { error: "선택지는 30자 이내로 써 주세요." };
+    }
+  }
+
+  const banned = findBannedWord(`${title} ${description} ${options.join(" ")}`);
   if (banned) {
     return {
       error: `국내 공직선거·정당 관련 질문은 만들 수 없어요. (포함된 단어: "${banned}")`,
@@ -65,6 +93,8 @@ export async function createQuestion(
     resolution_source: resolutionSource,
     close_at: closeAt.toISOString(),
     resolve_at: resolveAt.toISOString(),
+    type,
+    options,
   });
 
   if (error) {
@@ -119,28 +149,35 @@ export async function resolveQuestion(
   if (!isAdmin) return { error: "관리자만 할 수 있어요." };
 
   const id = String(formData.get("id") ?? "");
+  // result = "void" 또는 정답 선택지 번호("0", "1", …)
   const result = String(formData.get("result") ?? "");
-  if (!["yes", "no", "void"].includes(result)) {
-    return { error: "판정 결과가 올바르지 않아요." };
-  }
 
   const { data: q } = await supabase
     .from("questions")
-    .select("status, close_at")
+    .select("status, close_at, options")
     .eq("id", id)
     .maybeSingle();
   if (!q) return { error: "질문을 찾을 수 없어요." };
 
-  // yes/no 판정은 예측이 잠긴 뒤(마감 후)에만 가능하다. 무효는 언제든 가능.
+  const answer = Number(result);
+  if (
+    result !== "void" &&
+    !(Number.isInteger(answer) && answer >= 0 && answer < q.options.length)
+  ) {
+    return { error: "판정 결과가 올바르지 않아요." };
+  }
+
+  // 정답 판정은 예측이 잠긴 뒤(마감 후)에만 가능하다. 무효는 언제든 가능.
   const stillOpen = q.status === "open" && new Date(q.close_at) > new Date();
   if (result !== "void" && stillOpen) {
     return { error: "먼저 마감 처리한 뒤 판정해 주세요." };
   }
 
+  // OX의 v1 결과 칸(outcome)은 DB 트리거가 정답 번호에 맞춰 함께 바꾼다.
   const update =
     result === "void"
-      ? { status: "void", outcome: null }
-      : { status: "resolved", outcome: result };
+      ? { status: "void", outcome_index: null }
+      : { status: "resolved", outcome_index: answer };
   const { error } = await supabase
     .from("questions")
     .update(update)

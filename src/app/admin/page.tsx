@@ -69,7 +69,9 @@ export default async function AdminPage() {
               <li key={q.id} className="py-4">
                 <Link href={`/questions/${q.id}`} className="block">
                   <p className="t-caption-1 text-label-alt">
-                    {categoryLabel(q.category)} · {statusLabel(q)} · 마감{" "}
+                    {categoryLabel(q.category)}
+                    {q.type === "choice" &&
+                      ` · 객관식 ${q.options.length}`} · {statusLabel(q)} · 마감{" "}
                     {formatDate(q.close_at)}
                   </p>
                   <p className="mt-1 t-body-2 !font-semibold hover:text-primary">
@@ -78,6 +80,8 @@ export default async function AdminPage() {
                 </Link>
                 <QuestionActions
                   id={q.id}
+                  type={q.type}
+                  options={q.options}
                   canClose={q.status === "open"}
                   accepting={isAccepting(q)}
                 />

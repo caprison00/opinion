@@ -8,29 +8,34 @@ import {
   type AdminActionState,
 } from "./actions";
 
-const RESULT_BUTTONS = [
-  { value: "yes", label: "YES", className: button.smallPrimary },
-  {
-    value: "no",
-    label: "NO",
-    className: `${button.smallPrimary} !bg-[#e52222] hover:!bg-[#b20c0c]`,
-  },
-  { value: "void", label: "무효", className: button.smallSecondary },
-] as const;
-
 export default function QuestionActions({
   id,
+  type,
+  options,
   canClose,
   accepting,
 }: {
   id: string;
+  type: "ox" | "choice";
+  options: string[];
   canClose: boolean;
   accepting: boolean;
 }) {
-  // 예측을 받는 중에는 무효 처리만, 마감 후에는 YES/NO/무효 판정(재판정 포함)
-  const resultButtons = accepting
-    ? RESULT_BUTTONS.filter((b) => b.value === "void")
-    : RESULT_BUTTONS;
+  // 예측을 받는 중에는 무효 처리만, 마감 후에는 정답 선택지 또는 무효로 판정(재판정 포함)
+  const answers = accepting
+    ? []
+    : options.map((label, i) => ({
+        value: String(i),
+        label,
+        className:
+          type === "ox" && i === 1
+            ? `${button.smallPrimary} !bg-[#e52222] hover:!bg-[#b20c0c]`
+            : button.smallPrimary,
+      }));
+  const resultButtons = [
+    ...answers,
+    { value: "void", label: "무효", className: button.smallSecondary },
+  ];
   const [closeState, closeAction, closing] = useActionState<
     AdminActionState,
     FormData
@@ -64,7 +69,13 @@ export default function QuestionActions({
             key={b.value}
             action={resolveAction}
             onSubmit={(e) => {
-              if (!confirm(`결과를 "${b.label}"(으)로 판정할까요?`)) {
+              if (
+                !confirm(
+                  b.value === "void"
+                    ? "이 질문을 무효 처리할까요? 채점하지 않아요."
+                    : `정답을 "${b.label}"(으)로 판정할까요?`,
+                )
+              ) {
                 e.preventDefault();
               }
             }}

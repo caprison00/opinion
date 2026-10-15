@@ -5,15 +5,19 @@ import { ChevronRightIcon } from "@/components/icons";
 import PageShell from "@/components/PageShell";
 import { card, chip, scoreColor, scoreText } from "@/components/ui";
 import { getViewer } from "@/lib/auth";
-import { formatDate, statusLabel, type Question } from "@/lib/questions";
+import {
+  formatDate,
+  stanceOf,
+  statusLabel,
+  type Question,
+} from "@/lib/questions";
 import DeleteAccount from "./DeleteAccount";
 
 export const metadata = { title: "내 예측" };
 
 type MyPrediction = {
   id: string;
-  probability: number;
-  reason: string;
+  probs: number[];
   questions: Question;
 };
 
@@ -32,7 +36,7 @@ export default async function MyPredictionsPage({
     await Promise.all([
       supabase
         .from("predictions")
-        .select("id, probability, reason, questions(*)")
+        .select("id, probs, questions(*)")
         .eq("user_id", user.id),
       supabase
         .from("prediction_scores")
@@ -139,7 +143,10 @@ export default async function MyPredictionsPage({
                       <p className="mt-1 t-label-1 text-label-neutral">
                         내 예측{" "}
                         <span className="!font-semibold text-primary">
-                          {p.probability}%
+                          {(() => {
+                            const st = stanceOf(p.probs.map(Number), q.options);
+                            return `${st.label} ${st.pct}%`;
+                          })()}
                         </span>
                       </p>
                     </div>

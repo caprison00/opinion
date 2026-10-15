@@ -38,21 +38,18 @@ export default async function Home({
     ? CATEGORIES.find((c) => c.value === category)?.label
     : null;
 
-  const { data: statsData } = questions.length
-    ? await supabase
-        .from("question_stats")
-        .select("question_id, crowd_probability, prediction_count")
-        .in(
-          "question_id",
-          questions.map((q) => q.id),
-        )
+  // 참여자 수는 모두, 집단 확률은 내가 예측한 질문만 돌아온다 (DB 함수).
+  const { data: summaryData } = questions.length
+    ? await supabase.rpc("question_summary", {
+        p_ids: questions.map((q) => q.id),
+      })
     : { data: [] };
-  const stats = new Map(
+  const summaries = new Map(
     (
-      (statsData ?? []) as {
+      (summaryData ?? []) as {
         question_id: string;
-        crowd_probability: number;
-        prediction_count: number;
+        participants: number;
+        crowd: number[] | null;
       }[]
     ).map((s) => [s.question_id, s]),
   );
@@ -137,8 +134,8 @@ export default async function Home({
               <QuestionCard
                 key={q.id}
                 question={q}
-                crowd={stats.get(q.id)?.crowd_probability}
-                count={stats.get(q.id)?.prediction_count}
+                crowd={summaries.get(q.id)?.crowd?.map(Number) ?? null}
+                count={summaries.get(q.id)?.participants ?? 0}
               />
             ))}
           </div>

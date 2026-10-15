@@ -8,17 +8,19 @@ import {
   categoryLabel,
   formatDate,
   isAccepting,
+  outcomeLabel,
+  stanceOf,
   statusLabel,
   timeLeft,
   type Question,
 } from "@/lib/questions";
 import PredictionForm from "./PredictionForm";
 
-type PredictionRow = {
+type CommentRow = {
+  id: string;
   user_id: string;
-  probability: number;
-  reason: string;
-  updated_at: string;
+  body: string;
+  created_at: string;
   profiles: { nickname: string } | null;
 };
 
@@ -33,43 +35,52 @@ export default async function QuestionPage({
   const supabase = await createClient();
   const [
     { data },
+    { data: summaryData },
+    { data: commentData },
     { data: predictionData },
     {
       data: { user },
     },
   ] = await Promise.all([
     supabase.from("questions").select("*").eq("id", id).maybeSingle(),
+    supabase.rpc("question_summary", { p_ids: [id] }),
     supabase
-      .from("predictions")
-      .select("user_id, probability, reason, updated_at, profiles(nickname)")
+      .from("comments")
+      .select("id, user_id, body, created_at, profiles(nickname)")
       .eq("question_id", id)
-      .order("updated_at", { ascending: false }),
+      .is("parent_id", null)
+      .order("created_at", { ascending: false }),
+    // 여론 공개 규칙(DB): 내가 예측했거나 마감된 질문이면 모두, 아니면 내 예측만 돌아온다.
+    supabase.from("predictions").select("user_id, probs").eq("question_id", id),
     supabase.auth.getUser(),
   ]);
   if (!data) notFound();
   const q = data as Question;
-  const predictions = (predictionData ?? []) as unknown as PredictionRow[];
 
-  const crowd =
-    predictions.length > 0
-      ? Math.round(
-          predictions.reduce((sum, p) => sum + p.probability, 0) /
-            predictions.length,
-        )
-      : null;
-  const mine = user
-    ? predictions.find((p) => p.user_id === user.id)
-    : undefined;
-  const reasons = predictions.filter((p) => p.reason);
+  const summary = (
+    (summaryData ?? []) as { participants: number; crowd: number[] | null }[]
+  )[0];
+  const participants = summary?.participants ?? 0;
+  const crowd = summary?.crowd?.map(Number) ?? null;
+
+  const stances = new Map(
+    ((predictionData ?? []) as { user_id: string; probs: number[] }[]).map(
+      (p) => [p.user_id, p.probs.map(Number)],
+    ),
+  );
+  const myProbs = user ? (stances.get(user.id) ?? null) : null;
+  const comments = (commentData ?? []) as unknown as CommentRow[];
+  const hasMyComment = !!user && comments.some((c) => c.user_id === user.id);
   const accepting = isAccepting(q);
+  const outcome = outcomeLabel(q);
 
   let myScore: number | undefined;
-  if (mine && q.status === "resolved") {
+  if (user && myProbs && q.status === "resolved") {
     const { data: scoreRow } = await supabase
       .from("prediction_scores")
       .select("score")
       .eq("question_id", q.id)
-      .eq("user_id", mine.user_id)
+      .eq("user_id", user.id)
       .maybeSingle();
     myScore = scoreRow?.score;
   }
@@ -128,23 +139,27 @@ export default async function QuestionPage({
           </dl>
 
           <section className="mt-10 hidden lg:block">
-            <Reasons reasons={reasons} userId={user?.id} />
+            <Reasons
+              comments={comments}
+              stances={stances}
+              options={q.options}
+              userId={user?.id}
+              locked={!myProbs && accepting}
+            />
           </section>
         </article>
 
         {/* 오른쪽(데스크톱) / 아래(모바일): 집단 확률과 내 예측 */}
         <aside className="flex flex-col gap-4 lg:sticky lg:top-24 lg:self-start">
-          {q.status === "resolved" && q.outcome && (
+          {q.status === "resolved" && outcome && (
             <section
               className={`rounded-2xl p-4 text-center ${
-                q.outcome === "yes"
-                  ? "bg-accent-blue text-primary"
-                  : "bg-accent-red text-negative-strong"
+                q.type === "ox" && q.outcome_index === 1
+                  ? "bg-accent-red text-negative-strong"
+                  : "bg-accent-blue text-primary"
               }`}
             >
-              <p className="t-body-1 !font-bold">
-                결과 {q.outcome.toUpperCase()}
-              </p>
+              <p className="t-body-1 !font-bold">결과: {outcome}</p>
               {myScore !== undefined && (
                 <p className="mt-0.5 t-label-1">
                   내 점수 {scoreText(myScore)}점
@@ -158,27 +173,12 @@ export default async function QuestionPage({
             </section>
           )}
 
-          <section className="rounded-[20px] bg-gradient-to-br from-brand to-primary-deep p-6 text-white">
-            <p className="t-label-1 text-white/75">
-              {accepting ? "현재 집단 확률" : "최종 집단 확률"}
-            </p>
-            <div className="mt-1 flex items-end justify-between">
-              <p className="t-display-2 tabular-nums">
-                {crowd === null ? "–" : `${crowd}%`}
-              </p>
-              <p className="pb-2 t-label-2 text-white/70">
-                {predictions.length === 0
-                  ? "예측 없음"
-                  : `${predictions.length}명 예측`}
-              </p>
-            </div>
-            <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/20">
-              <div
-                className="h-full rounded-full bg-white"
-                style={{ width: `${crowd ?? 0}%` }}
-              />
-            </div>
-          </section>
+          <CrowdPanel
+            q={q}
+            crowd={crowd}
+            participants={participants}
+            accepting={accepting}
+          />
 
           <section className={`${card} p-5`}>
             <h2 className="mb-4 t-body-1 !font-bold">내 예측</h2>
@@ -189,19 +189,14 @@ export default async function QuestionPage({
             ) : accepting ? (
               <PredictionForm
                 questionId={q.id}
-                initialProbability={mine?.probability}
-                initialReason={mine?.reason}
+                type={q.type}
+                options={q.options}
+                myProbs={myProbs}
+                canWriteReason={!hasMyComment}
               />
-            ) : mine ? (
+            ) : myProbs ? (
               <div>
-                <p className="t-title-1 tabular-nums text-primary">
-                  {mine.probability}%
-                </p>
-                {mine.reason && (
-                  <p className="mt-1 t-body-3 text-label-neutral">
-                    “{mine.reason}”
-                  </p>
-                )}
+                <Stance probs={myProbs} options={q.options} big />
                 <p className="mt-4 flex items-center gap-1.5 t-caption-1 text-label-alt">
                   <LockIcon className="h-3.5 w-3.5" />
                   마감되어 더 이상 수정할 수 없어요.
@@ -217,48 +212,172 @@ export default async function QuestionPage({
         </aside>
 
         <section className="lg:hidden">
-          <Reasons reasons={reasons} userId={user?.id} />
+          <Reasons
+            comments={comments}
+            stances={stances}
+            options={q.options}
+            userId={user?.id}
+            locked={!myProbs && accepting}
+          />
         </section>
       </div>
     </PageShell>
   );
 }
 
-function Reasons({
-  reasons,
-  userId,
+function Stance({
+  probs,
+  options,
+  big = false,
 }: {
-  reasons: PredictionRow[];
+  probs: number[];
+  options: string[];
+  big?: boolean;
+}) {
+  const s = stanceOf(probs, options);
+  return big ? (
+    <p className="t-title-1 text-primary">
+      {s.label} <span className="tabular-nums">{s.pct}%</span>
+    </p>
+  ) : (
+    <span className="whitespace-nowrap rounded-md bg-accent-blue px-1.5 py-0.5 t-caption-1 !font-semibold text-primary">
+      {s.label} {s.pct}%
+    </span>
+  );
+}
+
+// 집단 확률: 예측했거나 마감된 질문만 숫자를 보여주고, 아니면 가린다.
+function CrowdPanel({
+  q,
+  crowd,
+  participants,
+  accepting,
+}: {
+  q: Question;
+  crowd: number[] | null;
+  participants: number;
+  accepting: boolean;
+}) {
+  const title = accepting ? "현재 집단 확률" : "최종 집단 확률";
+  const count = participants === 0 ? "예측 없음" : `${participants}명 예측`;
+
+  if (!crowd) {
+    return (
+      <section className="rounded-[20px] bg-bg-alt p-6">
+        <div className="flex items-baseline justify-between">
+          <p className="t-label-1 text-label-alt">{title}</p>
+          <p className="t-label-2 text-label-alt">{count}</p>
+        </div>
+        <p className="mt-3 flex items-center gap-2 t-body-2 !font-semibold text-label-neutral">
+          <LockIcon className="h-4 w-4" />
+          {participants === 0 ? "첫 예측을 남겨 보세요" : "예측하면 보여요"}
+        </p>
+        <p className="mt-1 t-caption-1 text-label-alt">
+          다른 사람의 생각에 휩쓸리지 않도록, 내 예측을 먼저 남긴 뒤에 공개해요.
+        </p>
+      </section>
+    );
+  }
+
+  if (q.type === "ox") {
+    const yes = Math.round(crowd[0] * 100);
+    return (
+      <section className="rounded-[20px] bg-gradient-to-br from-brand to-primary-deep p-6 text-white">
+        <p className="t-label-1 text-white/75">{title}</p>
+        <div className="mt-1 flex items-end justify-between">
+          <p className="t-display-2 tabular-nums">
+            {q.options[0]} {yes}%
+          </p>
+          <p className="pb-2 t-label-2 text-white/70">{count}</p>
+        </div>
+        <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/20">
+          <div
+            className="h-full rounded-full bg-white"
+            style={{ width: `${yes}%` }}
+          />
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="rounded-[20px] bg-gradient-to-br from-brand to-primary-deep p-6 text-white">
+      <div className="flex items-baseline justify-between">
+        <p className="t-label-1 text-white/75">{title}</p>
+        <p className="t-label-2 text-white/70">{count}</p>
+      </div>
+      <ul className="mt-4 flex flex-col gap-3">
+        {q.options.map((label, i) => {
+          const pct = Math.round((crowd[i] ?? 0) * 100);
+          const isAnswer = q.outcome_index === i;
+          return (
+            <li key={label}>
+              <div className="flex items-baseline justify-between t-body-3">
+                <span className={isAnswer ? "!font-bold" : "text-white/85"}>
+                  {label}
+                  {isAnswer && " · 정답"}
+                </span>
+                <span className="!font-bold tabular-nums">{pct}%</span>
+              </div>
+              <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-white/20">
+                <div
+                  className="h-full rounded-full bg-white"
+                  style={{ width: `${pct}%` }}
+                />
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
+function Reasons({
+  comments,
+  stances,
+  options,
+  userId,
+  locked,
+}: {
+  comments: CommentRow[];
+  stances: Map<string, number[]>;
+  options: string[];
   userId?: string;
+  locked: boolean;
 }) {
   return (
     <>
       <h2 className="t-heading-2">
-        다른 사람들의 근거{" "}
-        <span className="t-body-2 text-label-assist">{reasons.length}</span>
+        근거와 토론{" "}
+        <span className="t-body-2 text-label-assist">{comments.length}</span>
       </h2>
-      {reasons.length === 0 ? (
+      {locked && comments.length > 0 && (
+        <p className="mt-2 t-caption-1 text-label-alt">
+          작성자가 어느 쪽을 예측했는지는 내가 예측하면 보여요.
+        </p>
+      )}
+      {comments.length === 0 ? (
         <p className="mt-3 rounded-2xl bg-bg-alt py-10 text-center t-label-1 text-label-alt">
           아직 근거가 없어요.
         </p>
       ) : (
         <ul className="mt-2 divide-y divide-line-alt">
-          {reasons.map((p) => (
-            <li key={p.user_id} className="flex gap-4 py-4">
-              <span className="w-12 shrink-0 text-right t-body-1 !font-bold tabular-nums text-primary">
-                {p.probability}%
-              </span>
-              <div className="min-w-0">
-                <p className="t-caption-1 text-label-alt">
-                  {p.profiles?.nickname ?? "알 수 없음"}
-                  {userId && p.user_id === userId && " (나)"}
+          {comments.map((c) => {
+            const probs = stances.get(c.user_id);
+            return (
+              <li key={c.id} className="py-4">
+                <p className="flex flex-wrap items-center gap-2 t-caption-1 text-label-alt">
+                  <span>
+                    {c.profiles?.nickname ?? "알 수 없음"}
+                    {userId && c.user_id === userId && " (나)"}
+                  </span>
+                  {probs && <Stance probs={probs} options={options} />}
                 </p>
-                <p className="mt-0.5 break-words t-body-3 text-label">
-                  {p.reason}
-                </p>
-              </div>
-            </li>
-          ))}
+                <p className="mt-1 break-words t-body-3 text-label">{c.body}</p>
+              </li>
+            );
+          })}
         </ul>
       )}
     </>
