@@ -65,6 +65,7 @@ export default async function Home({
     supabase
       .from("questions")
       .select("*")
+      .eq("is_public", true)
       .eq("status", "open")
       .gt("close_at", nowIso)
       .order("close_at", { ascending: true }),
@@ -72,6 +73,7 @@ export default async function Home({
     supabase
       .from("questions")
       .select("*")
+      .eq("is_public", true)
       .eq("status", "resolved")
       .gte("resolved_at", new Date(today.getTime() - 7 * DAY).toISOString())
       .order("resolved_at", { ascending: false })
@@ -79,6 +81,7 @@ export default async function Home({
     supabase
       .from("questions")
       .select("*")
+      .eq("is_public", true)
       .in("status", ["open", "closed"])
       .order("resolve_at", { ascending: true })
       .limit(5),

@@ -81,6 +81,7 @@ export default async function QuestionPage({
         ? supabase
             .from("questions")
             .select("*")
+            .eq("is_public", true)
             .eq("issue_id", q.issue_id)
             .neq("id", q.id)
             .order("close_at", { ascending: true })
@@ -235,6 +236,16 @@ export default async function QuestionPage({
         <ChevronLeftIcon className="h-4 w-4" />
         목록으로
       </Link>
+
+      {q.is_public === false && (
+        <p className="mt-4 rounded-xl bg-accent-orange px-4 py-3 t-label-1 text-caution-text">
+          비공개 질문 미리보기예요. 관리자에게만 보이고, 공개하기 전까지는 예측과
+          댓글을 받지 않아요.{" "}
+          <Link href="/admin?tab=private" className="!font-semibold underline">
+            비공개 질문 관리로
+          </Link>
+        </p>
+      )}
 
       <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-10">
         {/* 본문: 질문, 맥락, 진영 대결, 추이, 토론 */}

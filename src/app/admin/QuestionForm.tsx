@@ -3,39 +3,62 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import { CheckCircleIcon } from "@/components/icons";
 import { button, input } from "@/components/ui";
-import { CATEGORIES, CHOICE_MAX, CHOICE_MIN } from "@/lib/questions";
-import { createQuestion, type CreateQuestionState } from "./actions";
+import Link from "next/link";
+import {
+  CATEGORIES,
+  CHOICE_MAX,
+  CHOICE_MIN,
+  type Question,
+} from "@/lib/questions";
+import {
+  createQuestion,
+  updatePrivateQuestion,
+  type CreateQuestionState,
+} from "./actions";
+
+// ISO 시각 → <input type="datetime-local"> 값 (한국 시간)
+function toKstInput(iso: string) {
+  const d = new Date(new Date(iso).getTime() + 9 * 3_600_000);
+  return d.toISOString().slice(0, 16);
+}
 
 const labelClass = "t-label-1 !font-semibold text-label-neutral";
 
+// question이 있으면 비공개 질문 수정, 없으면 새 질문(비공개로 저장)
 export default function QuestionForm({
   issues,
+  question,
 }: {
   issues: { id: string; title: string }[];
+  question?: Question;
 }) {
   const formRef = useRef<HTMLFormElement>(null);
-  const [type, setType] = useState<"ox" | "choice">("ox");
-  const [optionCount, setOptionCount] = useState(CHOICE_MIN);
+  const [type, setType] = useState<"ox" | "choice">(question?.type ?? "ox");
+  const [optionCount, setOptionCount] = useState(
+    question?.type === "choice" ? question.options.length : CHOICE_MIN,
+  );
   const [state, formAction, pending] = useActionState<
     CreateQuestionState,
     FormData
-  >(createQuestion, {});
+  >(question ? updatePrivateQuestion : createQuestion, {});
 
   useEffect(() => {
-    if (state.ok) {
+    if (state.ok && !question) {
       formRef.current?.reset();
       setType("ox");
       setOptionCount(CHOICE_MIN);
     }
-  }, [state]);
+  }, [state, question]);
 
   return (
     <form ref={formRef} action={formAction} className="flex flex-col gap-5">
+      {question && <input type="hidden" name="id" value={question.id} />}
       <label className="flex flex-col gap-2">
         <span className={labelClass}>질문 제목 *</span>
         <input
           name="title"
           required
+          defaultValue={question?.title}
           maxLength={120}
           placeholder={
             type === "ox"
@@ -55,6 +78,7 @@ export default function QuestionForm({
         <span className={labelClass}>설명</span>
         <textarea
           name="description"
+          defaultValue={question?.description}
           rows={3}
           placeholder="판정 기준을 구체적으로 적어 주세요."
           className={input}
@@ -98,6 +122,9 @@ export default function QuestionForm({
             <input
               key={i}
               name="options"
+              defaultValue={
+                question?.type === "choice" ? question.options[i] : undefined
+              }
               required
               maxLength={30}
               placeholder={`선택지 ${i + 1}`}
@@ -143,7 +170,9 @@ export default function QuestionForm({
                 type="radio"
                 name="category"
                 value={c.value}
-                defaultChecked={i === 0}
+                defaultChecked={
+                  question ? question.category === c.value : i === 0
+                }
                 className="sr-only"
               />
               {c.label}
@@ -154,7 +183,11 @@ export default function QuestionForm({
 
       <label className="flex flex-col gap-2">
         <span className={labelClass}>이슈 묶음</span>
-        <select name="issue_id" defaultValue="" className={input}>
+        <select
+          name="issue_id"
+          defaultValue={question?.issue_id ?? ""}
+          className={input}
+        >
           <option value="">없음</option>
           {issues.map((i) => (
             <option key={i.id} value={i.id}>
@@ -171,6 +204,7 @@ export default function QuestionForm({
         <span className={labelClass}>판정 출처 *</span>
         <input
           name="resolution_source"
+          defaultValue={question?.resolution_source}
           required
           placeholder="예: 프리미어리그 공식 홈페이지 기록"
           className={input}
@@ -183,6 +217,7 @@ export default function QuestionForm({
           <input
             type="datetime-local"
             name="close_at"
+            defaultValue={question ? toKstInput(question.close_at) : undefined}
             required
             className={input}
           />
@@ -192,6 +227,9 @@ export default function QuestionForm({
           <input
             type="datetime-local"
             name="resolve_at"
+            defaultValue={
+              question ? toKstInput(question.resolve_at) : undefined
+            }
             required
             className={input}
           />
@@ -211,12 +249,22 @@ export default function QuestionForm({
       {state.ok && (
         <p className="flex items-center gap-1.5 t-label-1 text-positive">
           <CheckCircleIcon className="h-4 w-4" />
-          질문이 등록됐어요.
+          {question ? (
+            "저장했어요."
+          ) : (
+            <span>
+              비공개로 저장됐어요.{" "}
+              <Link href="/admin?tab=private" className="underline">
+                비공개 질문
+              </Link>
+              에서 확인한 뒤 공개해 주세요.
+            </span>
+          )}
         </p>
       )}
 
       <button disabled={pending} className={`${button.primary} w-full`}>
-        {pending ? "등록 중…" : "질문 등록"}
+        {pending ? "저장 중…" : question ? "수정 저장" : "비공개로 저장"}
       </button>
     </form>
   );

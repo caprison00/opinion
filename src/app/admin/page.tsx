@@ -13,6 +13,7 @@ import {
   type Question,
 } from "@/lib/questions";
 import { setQuestionIssue } from "./actions";
+import PrivateActions from "./PrivateActions";
 import DeleteIssueButton from "./DeleteIssueButton";
 import IssueForm from "./IssueForm";
 import QuestionActions from "./QuestionActions";
@@ -20,11 +21,12 @@ import QuestionForm from "./QuestionForm";
 
 export const metadata = { title: "관리자" };
 
-type Tab = "questions" | "new" | "issues";
+type Tab = "questions" | "private" | "new" | "issues";
 type Filter = "all" | "open" | "pending" | "done";
 
 const TABS: { value: Tab; label: string }[] = [
   { value: "questions", label: "질문 관리" },
+  { value: "private", label: "비공개 질문" },
   { value: "new", label: "새 질문" },
   { value: "issues", label: "이슈 묶음" },
 ];
@@ -67,10 +69,13 @@ export default async function AdminPage({
       .select("*")
       .order("created_at", { ascending: false }),
   ]);
-  const questions = (data ?? []) as Question[];
+  const all = (data ?? []) as Question[];
+  // 공개된 질문만 '질문 관리'에, 비공개는 '비공개 질문'에
+  const questions = all.filter((q) => q.is_public !== false);
+  const privates = all.filter((q) => q.is_public === false);
   const issues = (issueData ?? []) as Issue[];
   const issueCount = new Map<string, number>();
-  for (const q of questions) {
+  for (const q of all) {
     if (q.issue_id)
       issueCount.set(q.issue_id, (issueCount.get(q.issue_id) ?? 0) + 1);
   }
@@ -161,14 +166,75 @@ export default async function AdminPage({
             }`}
           >
             {t.label}
+            {t.value === "private" && privates.length > 0 && (
+              <span className="ml-1 rounded-full bg-accent-orange px-1.5 t-caption-1 !font-bold text-caution-text">
+                {privates.length}
+              </span>
+            )}
           </Link>
         ))}
       </nav>
 
       {tab === "new" && (
         <section className={`${card} mt-6 max-w-[640px] p-5 md:p-6`}>
-          <h2 className="mb-5 t-heading-2">새 질문 만들기</h2>
+          <h2 className="t-heading-2">새 질문 만들기</h2>
+          <p className="mb-5 mt-1 t-label-1 text-label-alt">
+            새 질문은 비공개로 저장돼요. &lsquo;비공개 질문&rsquo;에서
+            확인·수정한 뒤 공개하면 그때부터 예측을 받아요.
+          </p>
           <QuestionForm issues={issues} />
+        </section>
+      )}
+
+      {tab === "private" && (
+        <section className="mt-5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="t-label-1 text-label-alt">
+              사용자에게 보이지 않는 질문이에요. 공개하면 이 목록에서 사라지고
+              &lsquo;질문 관리&rsquo;로 옮겨져요.
+            </p>
+            <Link href="/admin?tab=new" className={button.smallPrimary}>
+              새 질문
+            </Link>
+          </div>
+          {privates.length === 0 ? (
+            <p className="mt-4 rounded-xl bg-bg-alt py-10 text-center t-label-1 text-label-alt">
+              비공개 질문이 없어요.
+            </p>
+          ) : (
+            <ul className="mt-3 divide-y divide-line-alt">
+              {privates.map((q) => {
+                const expired = new Date(q.close_at).getTime() <= now;
+                return (
+                  <li key={q.id} className="py-4">
+                    <p className="flex flex-wrap items-center gap-x-1.5 t-caption-1 text-label-alt">
+                      {expired && (
+                        <span className="rounded bg-accent-red px-1.5 py-0.5 !font-semibold text-negative-strong">
+                          마감일 지남 · 수정 필요
+                        </span>
+                      )}
+                      <span>
+                        {categoryLabel(q.category)}
+                        {q.type === "choice" &&
+                          ` · 객관식 ${q.options.length}`}{" "}
+                        · 마감 {formatDate(q.close_at)} · 확정{" "}
+                        {formatDate(q.resolve_at)}
+                        {q.issue_id &&
+                          ` · ${issues.find((i) => i.id === q.issue_id)?.title ?? ""}`}
+                      </span>
+                    </p>
+                    <p className="mt-1 t-body-2 !font-semibold">{q.title}</p>
+                    {q.description && (
+                      <p className="mt-0.5 line-clamp-2 t-label-1 text-label-alt">
+                        {q.description}
+                      </p>
+                    )}
+                    <PrivateActions id={q.id} />
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </section>
       )}
 

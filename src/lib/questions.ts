@@ -27,6 +27,7 @@ export type Question = {
   outcome: "yes" | "no" | null;
   outcome_index: number | null;
   issue_id: string | null;
+  is_public?: boolean; // false면 비공개 (관리자만 보임)
   resolved_at?: string | null;
   created_at: string;
 };
@@ -163,6 +164,12 @@ export function timeLeft(iso: string) {
 }
 
 // 예측을 받을 수 있는 상태인지 (DB의 question_is_accepting과 같은 기준)
-export function isAccepting(q: Pick<Question, "status" | "close_at">) {
-  return q.status === "open" && new Date(q.close_at) > new Date();
+export function isAccepting(
+  q: Pick<Question, "status" | "close_at" | "is_public">,
+) {
+  return (
+    q.is_public !== false &&
+    q.status === "open" &&
+    new Date(q.close_at) > new Date()
+  );
 }

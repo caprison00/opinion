@@ -21,14 +21,22 @@ function parseKst(value: FormDataEntryValue | null) {
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
-export async function createQuestion(
-  _prev: CreateQuestionState,
-  formData: FormData,
-): Promise<CreateQuestionState> {
-  const { supabase, user, isAdmin } = await getViewer();
-  if (!user) redirect("/login");
-  if (!isAdmin) return { error: "관리자만 질문을 만들 수 있어요." };
+type QuestionInput = {
+  title: string;
+  description: string;
+  category: string;
+  resolution_source: string;
+  close_at: string;
+  resolve_at: string;
+  type: "ox" | "choice";
+  options: string[];
+  issue_id: string | null;
+};
 
+// 질문 만들기·수정에서 같이 쓰는 입력 검사
+function parseQuestion(
+  formData: FormData,
+): { data: QuestionInput } | { error: string } {
   const title = String(formData.get("title") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
   const category = formData.get("category");
@@ -86,26 +94,112 @@ export async function createQuestion(
     };
   }
 
-  const issueId = String(formData.get("issue_id") ?? "") || null;
+  return {
+    data: {
+      title,
+      description,
+      category,
+      resolution_source: resolutionSource,
+      close_at: closeAt.toISOString(),
+      resolve_at: resolveAt.toISOString(),
+      type,
+      options,
+      issue_id: String(formData.get("issue_id") ?? "") || null,
+    },
+  };
+}
 
-  const { error } = await supabase.from("questions").insert({
-    issue_id: issueId,
-    title,
-    description,
-    category,
-    resolution_source: resolutionSource,
-    close_at: closeAt.toISOString(),
-    resolve_at: resolveAt.toISOString(),
-    type,
-    options,
-  });
+// 새 질문은 비공개로 저장된다. '비공개 질문'에서 확인·수정한 뒤 공개한다.
+export async function createQuestion(
+  _prev: CreateQuestionState,
+  formData: FormData,
+): Promise<CreateQuestionState> {
+  const { supabase, user, isAdmin } = await getViewer();
+  if (!user) redirect("/login");
+  if (!isAdmin) return { error: "관리자만 질문을 만들 수 있어요." };
 
+  const parsed = parseQuestion(formData);
+  if ("error" in parsed) return parsed;
+
+  const { error } = await supabase
+    .from("questions")
+    .insert({ ...parsed.data, is_public: false });
   if (error) {
     return { error: `저장에 실패했어요: ${error.message}` };
   }
 
-  revalidatePath("/");
   revalidatePath("/admin");
+  return { ok: true };
+}
+
+// 비공개 질문 수정 (공개된 질문은 고칠 수 없다)
+export async function updatePrivateQuestion(
+  _prev: CreateQuestionState,
+  formData: FormData,
+): Promise<CreateQuestionState> {
+  const { supabase, user, isAdmin } = await getViewer();
+  if (!user) redirect("/login");
+  if (!isAdmin) return { error: "관리자만 할 수 있어요." };
+
+  const id = String(formData.get("id") ?? "");
+  const parsed = parseQuestion(formData);
+  if ("error" in parsed) return parsed;
+
+  const { data, error } = await supabase
+    .from("questions")
+    .update(parsed.data)
+    .eq("id", id)
+    .eq("is_public", false)
+    .select("id");
+  if (error) return { error: `저장에 실패했어요: ${error.message}` };
+  if (!data?.length) {
+    return { error: "이미 공개된 질문이거나 찾을 수 없어요." };
+  }
+
+  revalidatePath("/admin");
+  revalidatePath(`/questions/${id}`);
+  return { ok: true };
+}
+
+// 비공개 질문 삭제
+export async function deletePrivateQuestion(formData: FormData) {
+  const { supabase, user, isAdmin } = await getViewer();
+  if (!user || !isAdmin) return;
+  const id = String(formData.get("id") ?? "");
+  await supabase.from("questions").delete().eq("id", id).eq("is_public", false);
+  revalidatePath("/admin");
+}
+
+// 공개 전환: 이때부터 예측을 받는다 (예측 시작 시각 = 공개한 순간)
+export async function publishQuestion(
+  _prev: AdminActionState,
+  formData: FormData,
+): Promise<AdminActionState> {
+  const { supabase, user, isAdmin } = await getViewer();
+  if (!user) redirect("/login");
+  if (!isAdmin) return { error: "관리자만 할 수 있어요." };
+
+  const id = String(formData.get("id") ?? "");
+  const { data: q } = await supabase
+    .from("questions")
+    .select("close_at, is_public")
+    .eq("id", id)
+    .maybeSingle();
+  if (!q) return { error: "질문을 찾을 수 없어요." };
+  if (q.is_public) return { error: "이미 공개된 질문이에요." };
+  if (new Date(q.close_at) <= new Date()) {
+    return {
+      error: "예측 마감일이 지났어요. 수정에서 마감일을 바꾼 뒤 공개해 주세요.",
+    };
+  }
+
+  const { error } = await supabase
+    .from("questions")
+    .update({ is_public: true, open_at: new Date().toISOString() })
+    .eq("id", id);
+  if (error) return { error: `공개 전환 실패: ${error.message}` };
+
+  revalidateQuestion(id);
   return { ok: true };
 }
 

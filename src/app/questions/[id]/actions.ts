@@ -31,13 +31,13 @@ export async function savePrediction(
 
   const { data } = await supabase
     .from("questions")
-    .select("status, close_at, type, options")
+    .select("status, close_at, type, options, is_public")
     .eq("id", questionId)
     .maybeSingle();
   if (!data) return { error: "질문을 찾을 수 없어요." };
   const question = data as Pick<
     Question,
-    "status" | "close_at" | "type" | "options"
+    "status" | "close_at" | "type" | "options" | "is_public"
   >;
   if (!isAccepting(question)) return { error: "예측이 마감된 질문이에요." };
 
