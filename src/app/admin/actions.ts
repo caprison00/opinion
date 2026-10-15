@@ -160,9 +160,7 @@ export async function deleteIssue(formData: FormData) {
   revalidatePath("/", "layout");
 }
 
-function parseIssue(
-  formData: FormData,
-):
+function parseIssue(formData: FormData):
   | {
       title: string;
       context_lines: string[];

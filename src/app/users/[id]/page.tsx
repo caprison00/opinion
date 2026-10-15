@@ -89,7 +89,7 @@ export default async function ProfilePage({
         </div>
       </section>
 
-      <section className="mt-6 rounded-[20px] bg-gradient-to-br from-brand to-primary-deep p-5 text-white md:p-6">
+      <section className="mt-6 rounded-2xl bg-brand p-5 text-white md:p-6">
         <p className="t-label-2 text-white/75">{seasonLabel(s.season)} 시즌</p>
         <div className="mt-1 flex flex-wrap items-end justify-between gap-2">
           <p className="t-title-2 tabular-nums">

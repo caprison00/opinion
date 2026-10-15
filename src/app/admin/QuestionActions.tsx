@@ -28,9 +28,7 @@ export default function QuestionActions({
         value: String(i),
         label,
         className:
-          type === "ox" && i === 1
-            ? `${button.smallPrimary} !bg-[#e52222] hover:!bg-[#b20c0c]`
-            : button.smallPrimary,
+          type === "ox" && i === 1 ? button.smallDanger : button.smallPrimary,
       }));
   const resultButtons = [
     ...answers,

@@ -108,7 +108,7 @@ export default async function MyPredictionsPage({
       </div>
 
       <section className="mt-5 grid grid-cols-2 gap-3 md:gap-4">
-        <div className="rounded-[20px] bg-gradient-to-br from-brand to-primary-deep p-5 text-white">
+        <div className="rounded-2xl bg-brand p-5 text-white">
           <p className="t-label-2 text-white/75">
             {seasonLabel(season)} 시즌 점수
           </p>
@@ -119,7 +119,7 @@ export default async function MyPredictionsPage({
             이번 달 판정 {seasonScores.length}건
           </p>
         </div>
-        <div className="rounded-[20px] bg-bg-alt p-5">
+        <div className="rounded-2xl bg-bg-alt p-5">
           <p className="t-label-2 text-label-alt">전체 누적 점수</p>
           <p className="mt-1 t-title-1 tabular-nums">{scoreText(totalScore)}</p>
           <p className="mt-0.5 t-caption-1 text-label-alt">

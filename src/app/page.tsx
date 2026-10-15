@@ -4,7 +4,7 @@ import EmptyState from "@/components/EmptyState";
 import { ChevronRightIcon } from "@/components/icons";
 import PageShell from "@/components/PageShell";
 import QuestionCard from "@/components/QuestionCard";
-import { card, chip, scoreText } from "@/components/ui";
+import { card, scoreText, textTab } from "@/components/ui";
 import { getViewer } from "@/lib/auth";
 import {
   changeOf,
@@ -200,7 +200,7 @@ export default async function Home({
         </p>
       )}
       {!user && (
-        <section className="mb-6 flex flex-col gap-4 rounded-[20px] bg-gradient-to-br from-brand to-primary-deep px-6 py-6 text-white md:flex-row md:items-center md:justify-between md:px-8">
+        <section className="mb-6 flex flex-col gap-4 rounded-2xl bg-brand px-6 py-6 text-white md:flex-row md:items-center md:justify-between md:px-8">
           <div>
             <h1 className="t-heading-1">미래를 확률로 맞혀 보세요</h1>
             <p className="mt-1 t-body-3 text-white/80">
@@ -209,7 +209,7 @@ export default async function Home({
           </div>
           <Link
             href="/login"
-            className="inline-flex h-10 shrink-0 items-center self-start rounded-full bg-white px-5 t-label-1 !font-semibold text-brand transition-colors hover:bg-white/90 md:self-auto"
+            className="inline-flex h-10 shrink-0 items-center self-start rounded-full bg-white px-5 t-label-1 !font-semibold text-[#1b64da] transition-colors hover:bg-white/90 md:self-auto"
           >
             로그인하고 시작하기
           </Link>
@@ -221,7 +221,7 @@ export default async function Home({
         aria-label="분야"
         className="sticky top-[52px] z-10 -mx-4 border-b border-line bg-bg/95 backdrop-blur-md md:top-16 md:-mx-6"
       >
-        <div className="scroll-row flex gap-2 overflow-x-auto px-4 py-3 md:px-6">
+        <div className="scroll-row flex gap-1 overflow-x-auto px-2 py-1.5 md:px-4">
           {tabs.map((tab) => {
             const active = tab.value === category;
             return (
@@ -229,15 +229,11 @@ export default async function Home({
                 key={tab.label}
                 href={tab.value ? `/?category=${tab.value}` : "/"}
                 aria-current={active ? "page" : undefined}
-                className={`${chip(active)} shrink-0 gap-1.5`}
+                className={`${textTab(active)} shrink-0 gap-1`}
               >
                 {tab.label}
                 {tab.count !== null && (
-                  <span
-                    className={`t-caption-1 tabular-nums ${
-                      active ? "text-on-inverse/60" : "text-label-assist"
-                    }`}
-                  >
+                  <span className="t-caption-1 tabular-nums text-label-assist">
                     {tab.count}
                   </span>
                 )}
@@ -576,7 +572,7 @@ function SeasonBox({
 }) {
   const month = Number(currentSeason().slice(5));
   return (
-    <section className="rounded-2xl bg-gradient-to-br from-brand to-primary-deep p-5 text-white">
+    <section className="rounded-2xl bg-brand p-5 text-white">
       <p className="t-label-2 text-white/75">{month}월 시즌</p>
       {season ? (
         <>
@@ -607,7 +603,7 @@ function SeasonBox({
       )}
       <Link
         href={season ? "/ranking" : "/login"}
-        className="mt-4 flex h-10 items-center justify-center gap-1 rounded-xl bg-white t-label-1 !font-bold text-brand transition-colors hover:bg-white/90"
+        className="mt-4 flex h-10 items-center justify-center gap-1 rounded-xl bg-white t-label-1 !font-bold text-[#1b64da] transition-colors hover:bg-white/90"
       >
         {season ? "랭킹 보기" : "로그인하기"}
         <ChevronRightIcon className="h-4 w-4" />

@@ -44,10 +44,7 @@ export default function DeleteAccount() {
         >
           취소
         </button>
-        <button
-          disabled={pending}
-          className={`${button.primary} flex-1 !bg-[#e52222] hover:!bg-[#b20c0c]`}
-        >
+        <button disabled={pending} className={`${button.danger} flex-1`}>
           {pending ? "처리 중…" : "탈퇴하기"}
         </button>
       </div>

@@ -27,7 +27,7 @@ export default function Footer() {
           © {year} 예감. All rights reserved.
         </p>
         <p className="mt-1 t-caption-1 text-label-assist">
-          UI는 Wanted Design System(© Wanted Lab)을 바탕으로 만들었어요 ·{" "}
+          타이포그래피 단계는 Wanted Design System(© Wanted Lab)을 참고했어요 ·{" "}
           <a
             href="https://creativecommons.org/licenses/by/4.0/deed.ko"
             target="_blank"

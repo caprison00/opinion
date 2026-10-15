@@ -14,7 +14,7 @@ export function Wordmark({ className = "h-8 w-auto" }: { className?: string }) {
         cy="50"
         r="19"
         fill="none"
-        stroke="var(--color-primary)"
+        stroke="var(--color-brand)"
         strokeOpacity="0.22"
         strokeWidth="12"
       />
@@ -23,7 +23,7 @@ export function Wordmark({ className = "h-8 w-auto" }: { className?: string }) {
         cy="50"
         r="19"
         fill="none"
-        stroke="var(--color-primary)"
+        stroke="var(--color-brand)"
         strokeWidth="12"
         strokeLinecap="round"
         strokeDasharray="83.6 119.4"

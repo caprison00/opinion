@@ -125,11 +125,7 @@ export default async function AdminReportsPage() {
                   </form>
                   <form action={removeComment}>
                     <input type="hidden" name="id" value={c.id} />
-                    <button
-                      className={`${button.smallPrimary} !bg-[#e52222] hover:!bg-[#b20c0c]`}
-                    >
-                      삭제
-                    </button>
+                    <button className={button.smallDanger}>삭제</button>
                   </form>
                 </div>
               </li>
