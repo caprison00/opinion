@@ -98,9 +98,9 @@ export default function QuestionForm() {
       </div>
 
       <p className="rounded-lg bg-accent-orange px-3 py-2.5 t-caption-1 text-caution-text">
-        국내 공직선거·정당 지지도 관련 질문은 만들 수 없어요. 연예·크리에이터
-        질문은 시청률·차트·구독자 수처럼 공식 기록으로 판정할 수 있는 것만
-        다루고, 사생활이나 소문은 피해 주세요.
+        국내 공직선거·정당 지지도 관련 질문은 만들 수 없어요. 연예·컬처 질문은
+        시청률·차트·구독자 수처럼 공식 기록으로 판정할 수 있는 것만 다루고,
+        사생활이나 소문은 피해 주세요.
       </p>
 
       {state.error && (

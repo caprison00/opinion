@@ -4,7 +4,7 @@
   Wanted Design System 토큰 (design/wanted/colors_and_type.css 기준)
   Wanted Design System (Community) by Wanted Lab — CC BY 4.0
 */
-/* 라이트·다크 테마 값. <html data-theme="dark|light">로 바뀐다 (기본: 다크) */
+/* 라이트·다크 테마 값. <html data-theme="light|dark">로 바뀐다 (기본: 라이트) */
 :root,
 [data-theme="light"] {
   color-scheme: light;

@@ -1,20 +1,10 @@
 export type Category =
   | "sports"
   | "economy"
-  | "entertainment"
-  | "film"
-  | "music"
-  | "game"
-  | "esports"
+  | "culture"
   | "tech"
-  | "ai"
-  | "creator"
-  | "travel"
-  | "food"
-  | "crypto"
-  | "realestate"
-  | "science"
-  | "weather";
+  | "game"
+  | "life";
 
 export type QuestionStatus = "open" | "closed" | "resolved" | "void";
 
@@ -31,24 +21,14 @@ export type Question = {
   created_at: string;
 };
 
-// 화면에 보이는 순서
+// 화면에 보이는 순서 (CLAUDE.md '분야' 참고)
 export const CATEGORIES: { value: Category; label: string }[] = [
   { value: "sports", label: "스포츠" },
-  { value: "economy", label: "경제" },
-  { value: "entertainment", label: "연예" },
-  { value: "film", label: "영화·드라마" },
-  { value: "music", label: "음악" },
-  { value: "game", label: "게임" },
-  { value: "esports", label: "e스포츠" },
-  { value: "tech", label: "테크" },
-  { value: "ai", label: "AI" },
-  { value: "creator", label: "유튜브·크리에이터" },
-  { value: "travel", label: "여행" },
-  { value: "food", label: "먹거리·유행" },
-  { value: "crypto", label: "가상자산" },
-  { value: "realestate", label: "부동산" },
-  { value: "science", label: "과학·우주" },
-  { value: "weather", label: "날씨" },
+  { value: "economy", label: "경제·재테크" },
+  { value: "culture", label: "연예·컬처" },
+  { value: "tech", label: "테크·AI" },
+  { value: "game", label: "게임·e스포츠" },
+  { value: "life", label: "생활·트렌드" },
 ];
 
 export function categoryLabel(category: Category) {
