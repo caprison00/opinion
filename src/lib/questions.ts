@@ -1,4 +1,5 @@
 export type Category =
+  | "trend"
   | "career"
   | "economy"
   | "sports"
@@ -78,6 +79,7 @@ export function outcomeLabel(q: Pick<Question, "options" | "outcome_index">) {
 
 // 화면에 보이는 순서 (CLAUDE.md '분야' 참고)
 export const CATEGORIES: { value: Category; label: string }[] = [
+  { value: "trend", label: "종합 트렌드" },
   { value: "career", label: "직장·커리어" },
   { value: "economy", label: "금융·경제·재테크" },
   { value: "sports", label: "스포츠" },

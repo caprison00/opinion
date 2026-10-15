@@ -163,7 +163,7 @@ export default async function Home({
   for (const q of open)
     counts.set(q.category, (counts.get(q.category) ?? 0) + 1);
   const tabs = [
-    { value: null, label: "종합 트렌드", count: null },
+    { value: null, label: "핫이슈", count: null },
     ...CATEGORIES.map((c) => ({ ...c, count: counts.get(c.value) ?? 0 })),
   ];
   const currentLabel = category
@@ -219,7 +219,7 @@ export default async function Home({
         </section>
       )}
 
-      {/* 상단 탭: 종합 트렌드 + 8개 분야. 스크롤해도 상단 메뉴 아래에 붙어 있다 */}
+      {/* 상단 탭: 핫이슈 + 9개 분야. 스크롤해도 상단 메뉴 아래에 붙어 있다 */}
       <nav
         aria-label="분야"
         className="sticky top-[52px] z-10 -mx-4 border-b border-line bg-bg/95 backdrop-blur-md md:top-16 md:-mx-6"
