@@ -1,8 +1,17 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Change, Locked } from "@/components/CrowdBits";
 import { ChevronLeftIcon, LockIcon } from "@/components/icons";
 import PageShell from "@/components/PageShell";
 import { button, card, scoreText } from "@/components/ui";
+import {
+  changeOf,
+  EMPTY_BOARD,
+  getBoards,
+  maxGainNow,
+  type Board,
+  type Issue,
+} from "@/lib/board";
 import type { ReactionKind } from "@/lib/discussion";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -17,6 +26,7 @@ import {
 } from "@/lib/questions";
 import Discussion, { type DiscussionComment } from "./Discussion";
 import PredictionForm from "./PredictionForm";
+import TrendChart from "./TrendChart";
 
 type CommentRow = {
   id: string;
@@ -38,7 +48,6 @@ export default async function QuestionPage({
   const supabase = await createClient();
   const [
     { data },
-    { data: summaryData },
     { data: commentData },
     { data: predictionData },
     {
@@ -46,7 +55,6 @@ export default async function QuestionPage({
     },
   ] = await Promise.all([
     supabase.from("questions").select("*").eq("id", id).maybeSingle(),
-    supabase.rpc("question_summary", { p_ids: [id] }),
     supabase
       .from("comments")
       .select("id, user_id, parent_id, body, created_at, profiles(nickname)")
@@ -59,11 +67,36 @@ export default async function QuestionPage({
   if (!data) notFound();
   const q = data as Question;
 
-  const summary = (
-    (summaryData ?? []) as { participants: number; crowd: number[] | null }[]
-  )[0];
-  const participants = summary?.participants ?? 0;
-  const crowd = summary?.crowd?.map(Number) ?? null;
+  // 같은 이슈의 질문, 이슈 맥락, 확률 추이
+  const [{ data: issueData }, { data: siblingData }, { data: historyData }] =
+    await Promise.all([
+      q.issue_id
+        ? supabase.from("issues").select("*").eq("id", q.issue_id).maybeSingle()
+        : Promise.resolve({ data: null }),
+      q.issue_id
+        ? supabase
+            .from("questions")
+            .select("*")
+            .eq("issue_id", q.issue_id)
+            .neq("id", q.id)
+            .order("close_at", { ascending: true })
+            .limit(5)
+        : Promise.resolve({ data: [] }),
+      // 볼 수 없으면 DB 함수가 빈 목록을 돌려준다 (여론 공개 규칙)
+      supabase.rpc("crowd_history", { qid: id, p_points: 40 }),
+    ]);
+  const issue = issueData as Issue | null;
+  const siblings = (siblingData ?? []) as Question[];
+  const history = (
+    (historyData ?? []) as { t: string; crowd: (number | string)[] | null }[]
+  ).map((p) => ({ t: p.t, crowd: p.crowd?.map(Number) ?? null }));
+
+  const boards = await getBoards(supabase, [
+    q.id,
+    ...siblings.map((s) => s.id),
+  ]);
+  const board = boards.get(q.id) ?? EMPTY_BOARD;
+  const crowd = board.crowd;
 
   const stances = new Map(
     ((predictionData ?? []) as { user_id: string; probs: number[] }[]).map(
@@ -128,6 +161,19 @@ export default async function QuestionPage({
   const accepting = isAccepting(q);
   const outcome = outcomeLabel(q);
 
+  // 진영별 대표 근거: 그 선택지를 가장 높게 본 작성자의 댓글 중 리액션이 가장 많은 것
+  const topReasons = q.options.map((_, i) => {
+    const best = discussion
+      .filter((c) => !c.parentId && c.stance)
+      .filter((c) => stanceOf(c.stance!, q.options).index === i)
+      .map((c) => ({
+        c,
+        total: c.reactions.confident + c.reactions.anxious + c.reactions.absurd,
+      }))
+      .sort((a, b) => b.total - a.total)[0];
+    return best?.c ?? null;
+  });
+
   let myScore: number | undefined;
   if (user && myProbs && q.status === "resolved") {
     const { data: scoreRow } = await supabase
@@ -139,6 +185,42 @@ export default async function QuestionPage({
     myScore = scoreRow?.score;
   }
 
+  const locked = !myProbs && accepting;
+  const discussionEl = (
+    <Discussion
+      questionId={q.id}
+      comments={discussion}
+      options={q.options}
+      outcomeIndex={q.status === "resolved" ? q.outcome_index : null}
+      viewerId={user?.id ?? null}
+      locked={locked}
+    />
+  );
+  const insightsEl = (
+    <>
+      <BattlePanel
+        q={q}
+        board={board}
+        accepting={accepting}
+        topReasons={topReasons}
+      />
+
+      <section>
+        <h2 className="t-heading-2">확률 추이</h2>
+        <div className="mt-3">
+          {crowd ? (
+            <TrendChart points={history} options={q.options} type={q.type} />
+          ) : (
+            <p className="rounded-xl bg-bg-alt py-8 text-center">
+              <Locked />
+            </p>
+          )}
+        </div>
+      </section>
+    </>
+  );
+  const maxGain = accepting ? maxGainNow(q, q.options.length) : 0;
+
   return (
     <PageShell>
       <Link
@@ -149,62 +231,91 @@ export default async function QuestionPage({
         목록으로
       </Link>
 
-      <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-10">
-        {/* 왼쪽: 질문 내용과 근거 목록 */}
-        <article className="min-w-0">
-          <div className="flex items-center gap-2">
-            <span className="rounded-md bg-fill px-2 py-0.5 t-caption-1 !font-semibold text-label-neutral">
-              {categoryLabel(q.category)}
-            </span>
-            <span
-              className={`rounded-md px-2 py-0.5 t-caption-1 !font-semibold ${
-                accepting
-                  ? "bg-accent-blue text-primary"
-                  : "bg-fill text-label-alt"
-              }`}
-            >
-              {statusLabel(q)}
-            </span>
-          </div>
-          <h1 className="mt-3 t-heading-1 md:t-title-2">{q.title}</h1>
-
-          {q.description && (
-            <p className="mt-4 whitespace-pre-line t-body-2 text-label-neutral">
-              {q.description}
-            </p>
-          )}
-
-          <dl className="mt-6 grid grid-cols-[auto_1fr] gap-x-6 gap-y-3 rounded-2xl bg-bg-alt p-5 t-label-1">
-            <dt className="text-label-alt">예측 마감</dt>
-            <dd className="text-label">
-              {formatDate(q.close_at)}
-              {accepting && (
-                <span className="ml-1.5 !font-semibold text-caution-text">
-                  {timeLeft(q.close_at)}
+      <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-10">
+        {/* 본문: 질문, 맥락, 진영 대결, 추이, 토론 */}
+        <article className="flex min-w-0 flex-col gap-8">
+          <header>
+            <div className="flex flex-wrap items-center gap-2">
+              {issue && (
+                <span className="rounded-md bg-accent-blue px-2 py-0.5 t-caption-1 !font-semibold text-primary">
+                  {issue.title}
                 </span>
               )}
-            </dd>
-            <dt className="text-label-alt">결과 확정</dt>
-            <dd className="text-label">{formatDate(q.resolve_at)} 예정</dd>
-            <dt className="text-label-alt">판정 출처</dt>
-            <dd className="whitespace-pre-line break-words text-label">
-              {q.resolution_source}
-            </dd>
-          </dl>
+              <span className="rounded-md bg-fill px-2 py-0.5 t-caption-1 !font-semibold text-label-neutral">
+                {categoryLabel(q.category)}
+              </span>
+              <span
+                className={`rounded-md px-2 py-0.5 t-caption-1 !font-semibold ${
+                  accepting
+                    ? "bg-accent-orange text-caution-text"
+                    : "bg-fill text-label-alt"
+                }`}
+              >
+                {accepting ? timeLeft(q.close_at) : statusLabel(q)}
+              </span>
+            </div>
+            <h1 className="mt-3 t-heading-1 md:t-title-2">{q.title}</h1>
 
-          <section className="mt-10 hidden lg:block">
-            <Discussion
-              questionId={q.id}
-              comments={discussion}
-              options={q.options}
-              outcomeIndex={q.status === "resolved" ? q.outcome_index : null}
-              viewerId={user?.id ?? null}
-              locked={!myProbs && accepting}
-            />
-          </section>
+            <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-5 gap-y-1.5 t-label-1">
+              <dt className="text-label-alt">판정 출처</dt>
+              <dd className="whitespace-pre-line break-words text-label">
+                {q.resolution_source}
+              </dd>
+              <dt className="text-label-alt">예측 마감</dt>
+              <dd className="text-label">{formatDate(q.close_at)}</dd>
+              <dt className="text-label-alt">결과 확정</dt>
+              <dd className="text-label">{formatDate(q.resolve_at)} 예정</dd>
+            </dl>
+          </header>
+
+          {(issue?.context_lines.length || q.description) && (
+            <section className="rounded-2xl bg-bg-alt p-5">
+              {issue && issue.context_lines.length > 0 && (
+                <>
+                  <h2 className="t-label-1 !font-bold text-label">3줄 맥락</h2>
+                  <ol className="mt-2 flex flex-col gap-1.5">
+                    {issue.context_lines.map((line, i) => (
+                      <li
+                        key={i}
+                        className="flex gap-2 t-body-3 text-label-neutral"
+                      >
+                        <span className="!font-bold text-primary">{i + 1}</span>
+                        {line}
+                      </li>
+                    ))}
+                  </ol>
+                  {issue.context_source_url && (
+                    <a
+                      href={issue.context_source_url}
+                      target="_blank"
+                      rel="noopener noreferrer nofollow"
+                      className="mt-2 inline-block break-all t-caption-1 text-label-alt underline hover:text-label"
+                    >
+                      출처: {hostOf(issue.context_source_url)}
+                    </a>
+                  )}
+                </>
+              )}
+              {q.description && (
+                <p
+                  className={`whitespace-pre-line t-body-3 text-label-neutral ${
+                    issue?.context_lines.length
+                      ? "mt-4 border-t border-line pt-4"
+                      : ""
+                  }`}
+                >
+                  {q.description}
+                </p>
+              )}
+            </section>
+          )}
+
+          <div className="hidden flex-col gap-8 lg:flex">{insightsEl}</div>
+
+          <section className="hidden lg:block">{discussionEl}</section>
         </article>
 
-        {/* 오른쪽(데스크톱) / 아래(모바일): 집단 확률과 내 예측 */}
+        {/* 사이드바(PC) / 본문 아래(모바일): 예측 패널, 같은 이슈의 다른 질문 */}
         <aside className="flex flex-col gap-4 lg:sticky lg:top-24 lg:self-start">
           {q.status === "resolved" && outcome && (
             <section
@@ -229,15 +340,15 @@ export default async function QuestionPage({
             </section>
           )}
 
-          <CrowdPanel
-            q={q}
-            crowd={crowd}
-            participants={participants}
-            accepting={accepting}
-          />
-
           <section className={`${card} p-5`}>
-            <h2 className="mb-4 t-body-1 !font-bold">내 예측</h2>
+            <div className="mb-4 flex items-baseline justify-between gap-2">
+              <h2 className="t-body-1 !font-bold">내 예측</h2>
+              {accepting && maxGain > 0 && (
+                <span className="t-caption-1 !font-semibold text-primary">
+                  지금 맞히면 최대 +{maxGain}점
+                </span>
+              )}
+            </div>
             {!user ? (
               <Link href="/login" className={`${button.primary} w-full`}>
                 로그인하고 예측하기
@@ -252,8 +363,9 @@ export default async function QuestionPage({
                   canWriteReason={!hasMyComment}
                 />
                 <p className="mt-4 border-t border-line-alt pt-3 t-caption-1 text-label-alt">
-                  점수는 예측을 유지한 시간만큼 반영돼요. 일찍 맞힐수록 높고,
-                  예측하기 전 기간은 그때의 집단 확률로 계산해요.
+                  점수는 예측을 유지한 시간만큼 반영돼요. &lsquo;최대&rsquo;는
+                  남은 기간을 가장 높은 확률로 맞혔을 때이고, 예측하기 전 기간은
+                  그때의 집단 확률로 따로 계산해요.
                 </p>
               </>
             ) : myProbs ? (
@@ -271,21 +383,45 @@ export default async function QuestionPage({
               </p>
             )}
           </section>
+
+          {siblings.length > 0 && (
+            <section className={`${card} p-5`}>
+              <h2 className="t-body-1 !font-bold">같은 이슈의 다른 질문</h2>
+              <ul className="mt-3 flex flex-col gap-3">
+                {siblings.map((s) => (
+                  <li key={s.id}>
+                    <Link href={`/questions/${s.id}`} className="group block">
+                      <p className="line-clamp-2 t-label-1 text-label group-hover:text-primary">
+                        {s.title}
+                      </p>
+                      <p className="mt-0.5 t-caption-1 text-label-alt">
+                        {statusLabel(s)} ·{" "}
+                        {(boards.get(s.id) ?? EMPTY_BOARD).participants}명 예측
+                      </p>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
         </aside>
 
-        <section className="lg:hidden">
-          <Discussion
-            questionId={q.id}
-            comments={discussion}
-            options={q.options}
-            outcomeIndex={q.status === "resolved" ? q.outcome_index : null}
-            viewerId={user?.id ?? null}
-            locked={!myProbs && accepting}
-          />
-        </section>
+        {/* 모바일: 예측 패널 다음에 진영 대결·추이·토론 */}
+        <div className="flex flex-col gap-8 lg:hidden">
+          {insightsEl}
+          {discussionEl}
+        </div>
       </div>
     </PageShell>
   );
+}
+
+function hostOf(url: string) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url;
+  }
 }
 
 function Stance({
@@ -309,89 +445,104 @@ function Stance({
   );
 }
 
-// 집단 확률: 예측했거나 마감된 질문만 숫자를 보여주고, 아니면 가린다.
-function CrowdPanel({
+// 진영 대결: 선택지별 확률·오늘 변화량·대표 근거. 예측했거나 마감된 질문만 숫자를 보여준다.
+function BattlePanel({
   q,
-  crowd,
-  participants,
+  board,
   accepting,
+  topReasons,
 }: {
   q: Question;
-  crowd: number[] | null;
-  participants: number;
+  board: Board;
   accepting: boolean;
+  topReasons: (DiscussionComment | null)[];
 }) {
-  const title = accepting ? "현재 집단 확률" : "최종 집단 확률";
-  const count = participants === 0 ? "예측 없음" : `${participants}명 예측`;
-
-  if (!crowd) {
-    return (
-      <section className="rounded-[20px] bg-bg-alt p-6">
-        <div className="flex items-baseline justify-between">
-          <p className="t-label-1 text-label-alt">{title}</p>
-          <p className="t-label-2 text-label-alt">{count}</p>
-        </div>
-        <p className="mt-3 flex items-center gap-2 t-body-2 !font-semibold text-label-neutral">
-          <LockIcon className="h-4 w-4" />
-          {participants === 0 ? "첫 예측을 남겨 보세요" : "예측하면 보여요"}
-        </p>
-        <p className="mt-1 t-caption-1 text-label-alt">
-          다른 사람의 생각에 휩쓸리지 않도록, 내 예측을 먼저 남긴 뒤에 공개해요.
-        </p>
-      </section>
-    );
-  }
-
-  if (q.type === "ox") {
-    const yes = Math.round(crowd[0] * 100);
-    return (
-      <section className="rounded-[20px] bg-gradient-to-br from-brand to-primary-deep p-6 text-white">
-        <p className="t-label-1 text-white/75">{title}</p>
-        <div className="mt-1 flex items-end justify-between">
-          <p className="t-display-2 tabular-nums">
-            {q.options[0]} {yes}%
-          </p>
-          <p className="pb-2 t-label-2 text-white/70">{count}</p>
-        </div>
-        <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/20">
-          <div
-            className="h-full rounded-full bg-white"
-            style={{ width: `${yes}%` }}
-          />
-        </div>
-      </section>
-    );
-  }
+  const crowd = board.crowd;
+  const count =
+    board.participants === 0
+      ? "아직 예측 없음"
+      : `${board.participants}명 예측`;
+  const isOx = q.type === "ox";
 
   return (
-    <section className="rounded-[20px] bg-gradient-to-br from-brand to-primary-deep p-6 text-white">
-      <div className="flex items-baseline justify-between">
-        <p className="t-label-1 text-white/75">{title}</p>
-        <p className="t-label-2 text-white/70">{count}</p>
+    <section>
+      <div className="flex items-baseline justify-between gap-2">
+        <h2 className="t-heading-2">{accepting ? "진영 대결" : "최종 진영"}</h2>
+        <p className="t-label-1 text-label-alt">{count}</p>
       </div>
-      <ul className="mt-4 flex flex-col gap-3">
-        {q.options.map((label, i) => {
-          const pct = Math.round((crowd[i] ?? 0) * 100);
-          const isAnswer = q.outcome_index === i;
-          return (
-            <li key={label}>
-              <div className="flex items-baseline justify-between t-body-3">
-                <span className={isAnswer ? "!font-bold" : "text-white/85"}>
-                  {label}
-                  {isAnswer && " · 정답"}
-                </span>
-                <span className="!font-bold tabular-nums">{pct}%</span>
-              </div>
-              <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-white/20">
-                <div
-                  className="h-full rounded-full bg-white"
-                  style={{ width: `${pct}%` }}
-                />
-              </div>
-            </li>
-          );
-        })}
-      </ul>
+
+      {!crowd ? (
+        <div className="mt-3 rounded-2xl bg-bg-alt p-5">
+          <p className="flex items-center gap-2 t-body-2 !font-semibold text-label-neutral">
+            <LockIcon className="h-4 w-4" />
+            {board.participants === 0
+              ? "첫 예측을 남겨 보세요"
+              : "예측하면 보여요"}
+          </p>
+          <p className="mt-1 t-caption-1 text-label-alt">
+            다른 사람의 생각에 휩쓸리지 않도록, 내 예측을 먼저 남긴 뒤에
+            확률·변화량·진영별 대표 근거를 공개해요.
+          </p>
+        </div>
+      ) : (
+        <ul
+          className={`mt-3 grid gap-3 ${
+            isOx ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1"
+          }`}
+        >
+          {q.options.map((label, i) => {
+            const pct = Math.round((crowd[i] ?? 0) * 100);
+            const isAnswer = q.status === "resolved" && q.outcome_index === i;
+            const reason = topReasons[i];
+            const red = isOx && i === 1;
+            return (
+              <li
+                key={label}
+                className={`rounded-2xl border p-4 ${
+                  isAnswer ? "border-primary" : "border-line"
+                } bg-surface`}
+              >
+                <div className="flex items-baseline justify-between gap-2">
+                  <span className="t-body-2 !font-bold text-label">
+                    {label}
+                    {isAnswer && (
+                      <span className="ml-1.5 t-caption-1 text-primary">
+                        정답
+                      </span>
+                    )}
+                  </span>
+                  <span className="flex items-baseline gap-2">
+                    <Change value={changeOf(board, i)} />
+                    <span
+                      className={`t-heading-1 tabular-nums ${
+                        red ? "text-negative" : "text-primary"
+                      }`}
+                    >
+                      {pct}%
+                    </span>
+                  </span>
+                </div>
+                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-fill-strong">
+                  <div
+                    className={`h-full rounded-full ${
+                      red ? "bg-negative" : "bg-primary"
+                    }`}
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
+                {reason && (
+                  <p className="mt-3 line-clamp-2 t-label-2 text-label-neutral">
+                    <span className="!font-semibold text-label">
+                      {reason.nickname}
+                    </span>{" "}
+                    &ldquo;{reason.body}&rdquo;
+                  </p>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </section>
   );
 }

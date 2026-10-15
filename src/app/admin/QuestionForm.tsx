@@ -8,7 +8,11 @@ import { createQuestion, type CreateQuestionState } from "./actions";
 
 const labelClass = "t-label-1 !font-semibold text-label-neutral";
 
-export default function QuestionForm() {
+export default function QuestionForm({
+  issues,
+}: {
+  issues: { id: string; title: string }[];
+}) {
   const formRef = useRef<HTMLFormElement>(null);
   const [type, setType] = useState<"ox" | "choice">("ox");
   const [optionCount, setOptionCount] = useState(CHOICE_MIN);
@@ -147,6 +151,21 @@ export default function QuestionForm() {
           ))}
         </div>
       </fieldset>
+
+      <label className="flex flex-col gap-2">
+        <span className={labelClass}>이슈 묶음</span>
+        <select name="issue_id" defaultValue="" className={input}>
+          <option value="">없음</option>
+          {issues.map((i) => (
+            <option key={i.id} value={i.id}>
+              {i.title}
+            </option>
+          ))}
+        </select>
+        <span className="t-caption-1 text-label-alt">
+          홈의 &lsquo;오늘의 핫이슈&rsquo;에 이슈 단위로 묶여 보여요.
+        </span>
+      </label>
 
       <label className="flex flex-col gap-2">
         <span className={labelClass}>판정 출처 *</span>

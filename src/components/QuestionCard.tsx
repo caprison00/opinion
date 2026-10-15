@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LockIcon } from "./icons";
+import { changeOf, type Board } from "@/lib/board";
 import {
   categoryLabel,
   formatDate,
@@ -7,21 +7,25 @@ import {
   timeLeft,
   type Question,
 } from "@/lib/questions";
+import { Change, Locked } from "./CrowdBits";
 import { card } from "./ui";
 
 export default function QuestionCard({
   question,
-  crowd,
-  count = 0,
+  board,
 }: {
   question: Question;
-  crowd: number[] | null; // 볼 수 없으면 null (여론 공개 규칙)
-  count?: number;
+  board: Board; // crowd가 null이면 가린다 (여론 공개 규칙)
 }) {
+  const crowd = board.crowd;
   // OX는 '예'의 확률, 객관식은 가장 높은 선택지를 보여준다.
   const shown = crowd
     ? question.type === "ox"
-      ? { label: question.options[0], pct: Math.round(crowd[0] * 100) }
+      ? {
+          index: 0,
+          label: question.options[0],
+          pct: Math.round(crowd[0] * 100),
+        }
       : stanceOf(crowd, question.options)
     : null;
 
@@ -54,15 +58,15 @@ export default function QuestionCard({
         <div className="flex items-end justify-between gap-2">
           <span className="t-caption-1 text-label-alt">집단 확률</span>
           {shown ? (
-            <span className="min-w-0 truncate t-heading-2 text-primary">
-              <span className="t-label-1 !font-semibold">{shown.label} </span>
-              <span className="tabular-nums">{shown.pct}%</span>
+            <span className="flex min-w-0 items-baseline gap-1.5">
+              <Change value={changeOf(board, shown.index)} />
+              <span className="min-w-0 truncate t-heading-2 text-primary">
+                <span className="t-label-1 !font-semibold">{shown.label} </span>
+                <span className="tabular-nums">{shown.pct}%</span>
+              </span>
             </span>
           ) : (
-            <span className="flex items-center gap-1 t-label-2 text-label-alt">
-              <LockIcon className="h-3.5 w-3.5" />
-              예측하면 보여요
-            </span>
+            <Locked />
           )}
         </div>
         <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-fill-strong">
@@ -72,7 +76,7 @@ export default function QuestionCard({
           />
         </div>
         <p className="mt-3 t-caption-1 text-label-alt">
-          마감 {formatDate(question.close_at)} · {count}명 예측
+          마감 {formatDate(question.close_at)} · {board.participants}명 예측
         </p>
       </div>
     </Link>

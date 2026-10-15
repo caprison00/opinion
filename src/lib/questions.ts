@@ -25,6 +25,7 @@ export type Question = {
   outcome: "yes" | "no" | null;
   outcome_index: number | null;
   issue_id: string | null;
+  resolved_at?: string | null;
   created_at: string;
 };
 

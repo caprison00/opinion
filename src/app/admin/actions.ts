@@ -86,7 +86,10 @@ export async function createQuestion(
     };
   }
 
+  const issueId = String(formData.get("issue_id") ?? "") || null;
+
   const { error } = await supabase.from("questions").insert({
+    issue_id: issueId,
     title,
     description,
     category,
@@ -106,7 +109,61 @@ export async function createQuestion(
   return { ok: true };
 }
 
-export type AdminActionState = { error?: string };
+export type AdminActionState = { error?: string; ok?: boolean };
+
+// 이슈 묶음: 제목 + 3줄 맥락 + 출처 링크
+export async function createIssue(
+  _prev: AdminActionState,
+  formData: FormData,
+): Promise<AdminActionState> {
+  const { supabase, user, isAdmin } = await getViewer();
+  if (!user) redirect("/login");
+  if (!isAdmin) return { error: "관리자만 할 수 있어요." };
+
+  const title = String(formData.get("title") ?? "").trim();
+  const lines = formData
+    .getAll("context")
+    .map((l) => String(l).trim())
+    .filter(Boolean);
+  const url = String(formData.get("source_url") ?? "").trim();
+
+  if (title.length < 2 || title.length > 80) {
+    return { error: "이슈 이름은 2~80자로 써 주세요." };
+  }
+  if (lines.length > 3 || lines.some((l) => l.length > 100)) {
+    return { error: "맥락은 3줄까지, 줄마다 100자 이내로 써 주세요." };
+  }
+  if (url && !/^https?:\/\/\S+$/.test(url)) {
+    return { error: "출처 링크는 http:// 또는 https://로 시작해야 해요." };
+  }
+  const banned = findBannedWord(`${title} ${lines.join(" ")}`);
+  if (banned) {
+    return {
+      error: `국내 공직선거·정당 관련 이슈는 만들 수 없어요. (포함된 단어: "${banned}")`,
+    };
+  }
+
+  const { error } = await supabase.from("issues").insert({
+    title,
+    context_lines: lines,
+    context_source_url: url || null,
+  });
+  if (error) return { error: `저장에 실패했어요: ${error.message}` };
+
+  revalidatePath("/");
+  revalidatePath("/admin");
+  return { ok: true };
+}
+
+// 질문을 이슈 묶음에 넣거나 뺀다
+export async function setQuestionIssue(formData: FormData) {
+  const { supabase, user, isAdmin } = await getViewer();
+  if (!user || !isAdmin) return;
+  const id = String(formData.get("id") ?? "");
+  const issueId = String(formData.get("issue_id") ?? "") || null;
+  await supabase.from("questions").update({ issue_id: issueId }).eq("id", id);
+  revalidateQuestion(id);
+}
 
 // 마감 처리: 마감 시각 전이라도 예측을 더 받지 않는다.
 export async function closeQuestion(
