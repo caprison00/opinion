@@ -44,10 +44,11 @@ export default async function Header() {
           {user && profile && (
             <Link
               href={`/users/${user.id}`}
-              className="hidden items-center gap-1.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-fill md:flex"
+              className="flex items-center gap-1.5 rounded-lg px-1.5 py-1.5 transition-colors hover:bg-fill md:px-2"
+              aria-label="내 프로필"
             >
               <TierMark tier={tiers?.get(user.id) ?? "newbie"} />
-              <span className="max-w-[120px] truncate t-label-1 !font-semibold text-label">
+              <span className="hidden max-w-[120px] truncate t-label-1 !font-semibold text-label md:inline">
                 {profile.nickname}
               </span>
             </Link>

@@ -11,7 +11,7 @@ const COLORS = [
 
 const W = 600;
 const H = 180;
-const PAD = { top: 10, right: 8, bottom: 8, left: 40 };
+const PAD = { top: 10, right: 8, bottom: 8, left: 46 };
 
 export type TrendPoint = { t: string; crowd: number[] | null };
 
@@ -66,7 +66,7 @@ export default function TrendChart({
               x={PAD.left - 6}
               y={y(g) + 4}
               textAnchor="end"
-              fontSize="11"
+              fontSize="14"
               fill="var(--color-label-alt)"
             >
               {g * 100}%

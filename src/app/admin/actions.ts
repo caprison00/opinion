@@ -120,6 +120,55 @@ export async function createIssue(
   if (!user) redirect("/login");
   if (!isAdmin) return { error: "관리자만 할 수 있어요." };
 
+  const parsed = parseIssue(formData);
+  if ("error" in parsed) return parsed;
+
+  const { error } = await supabase.from("issues").insert(parsed);
+  if (error) return { error: `저장에 실패했어요: ${error.message}` };
+
+  revalidatePath("/");
+  revalidatePath("/admin");
+  return { ok: true };
+}
+
+// 이슈 묶음 수정 (제목·3줄 맥락·출처 링크)
+export async function updateIssue(
+  _prev: AdminActionState,
+  formData: FormData,
+): Promise<AdminActionState> {
+  const { supabase, user, isAdmin } = await getViewer();
+  if (!user) redirect("/login");
+  if (!isAdmin) return { error: "관리자만 할 수 있어요." };
+
+  const id = String(formData.get("id") ?? "");
+  const parsed = parseIssue(formData);
+  if ("error" in parsed) return parsed;
+
+  const { error } = await supabase.from("issues").update(parsed).eq("id", id);
+  if (error) return { error: `저장에 실패했어요: ${error.message}` };
+
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
+// 이슈 묶음 삭제: 묶여 있던 질문은 지워지지 않고 '이슈 없음'이 된다.
+export async function deleteIssue(formData: FormData) {
+  const { supabase, user, isAdmin } = await getViewer();
+  if (!user || !isAdmin) return;
+  const id = String(formData.get("id") ?? "");
+  await supabase.from("issues").delete().eq("id", id);
+  revalidatePath("/", "layout");
+}
+
+function parseIssue(
+  formData: FormData,
+):
+  | {
+      title: string;
+      context_lines: string[];
+      context_source_url: string | null;
+    }
+  | { error: string } {
   const title = String(formData.get("title") ?? "").trim();
   const lines = formData
     .getAll("context")
@@ -142,17 +191,7 @@ export async function createIssue(
       error: `국내 공직선거·정당 관련 이슈는 만들 수 없어요. (포함된 단어: "${banned}")`,
     };
   }
-
-  const { error } = await supabase.from("issues").insert({
-    title,
-    context_lines: lines,
-    context_source_url: url || null,
-  });
-  if (error) return { error: `저장에 실패했어요: ${error.message}` };
-
-  revalidatePath("/");
-  revalidatePath("/admin");
-  return { ok: true };
+  return { title, context_lines: lines, context_source_url: url || null };
 }
 
 // 질문을 이슈 묶음에 넣거나 뺀다

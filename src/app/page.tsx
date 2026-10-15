@@ -249,6 +249,12 @@ export default async function Home({
 
       <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-10">
         <div className="flex min-w-0 flex-col gap-10">
+          {/* 좁은 화면: 내 시즌 티어·랭킹 바로가기를 맨 위에 */}
+          {season && (
+            <div className="-mb-4 lg:hidden">
+              <SeasonBox season={season} />
+            </div>
+          )}
           {category ? (
             <section>
               <SectionTitle
@@ -331,7 +337,9 @@ export default async function Home({
 
         {/* 사이드바: PC는 오른쪽, 좁은 화면은 본문 아래 */}
         <aside className="flex flex-col gap-4 lg:sticky lg:top-36 lg:self-start">
-          <SeasonBox season={season} />
+          <div className="hidden lg:block">
+            <SeasonBox season={season} />
+          </div>
 
           <section className={`${card} p-5`}>
             <h2 className="t-body-1 !font-bold">트렌딩 TOP 5</h2>
