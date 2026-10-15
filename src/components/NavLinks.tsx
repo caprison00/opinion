@@ -16,9 +16,9 @@ export function isActivePath(pathname: string, href: string) {
 // 데스크톱 상단 메뉴
 export default function NavLinks({ isAdmin }: { isAdmin: boolean }) {
   const pathname = usePathname();
-  const items = isAdmin
-    ? [...NAV_ITEMS, { href: "/admin", label: "관리자" }]
-    : NAV_ITEMS;
+  // 홈은 로고로 가므로 PC 메뉴에서는 뺀다 (모바일 하단 탭에는 남긴다)
+  const base = NAV_ITEMS.filter((item) => item.href !== "/");
+  const items = isAdmin ? [...base, { href: "/admin", label: "관리자" }] : base;
 
   return (
     <nav className="hidden items-center gap-1 md:flex">
