@@ -21,7 +21,30 @@ function parseKst(value: FormDataEntryValue | null) {
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
-type QuestionInput = {
+type ImageInput = {
+  image_url: string | null;
+  image_credit: string | null;
+  image_alt: string | null;
+};
+
+// 이미지(선택): 우리 사진 저장소에 올린 주소만 받고, 사진이 있으면 출처는 필수
+function parseImage(formData: FormData): ImageInput | { error: string } {
+  const url = String(formData.get("image_url") ?? "").trim();
+  if (!url) return { image_url: null, image_credit: null, image_alt: null };
+  const base = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/question-images/`;
+  if (!url.startsWith(base) || !/^[\w-]+\.webp$/.test(url.slice(base.length))) {
+    return { error: "사진을 다시 올려 주세요." };
+  }
+  const credit = String(formData.get("image_credit") ?? "").trim();
+  const alt = String(formData.get("image_alt") ?? "").trim();
+  if (!credit) return { error: "사진 출처를 써 주세요." };
+  if (credit.length > 80 || alt.length > 100) {
+    return { error: "사진 출처는 80자, 설명은 100자 이내로 써 주세요." };
+  }
+  return { image_url: url, image_credit: credit, image_alt: alt || null };
+}
+
+type QuestionInput = ImageInput & {
   title: string;
   description: string;
   category: string;
@@ -87,6 +110,9 @@ function parseQuestion(
     }
   }
 
+  const image = parseImage(formData);
+  if ("error" in image) return image;
+
   const banned = findBannedWord(`${title} ${description} ${options.join(" ")}`);
   if (banned) {
     return {
@@ -105,6 +131,7 @@ function parseQuestion(
       type,
       options,
       issue_id: String(formData.get("issue_id") ?? "") || null,
+      ...image,
     },
   };
 }
@@ -255,11 +282,11 @@ export async function deleteIssue(formData: FormData) {
 }
 
 function parseIssue(formData: FormData):
-  | {
+  | (ImageInput & {
       title: string;
       context_lines: string[];
       context_source_url: string | null;
-    }
+    })
   | { error: string } {
   const title = String(formData.get("title") ?? "").trim();
   const lines = formData
@@ -277,13 +304,20 @@ function parseIssue(formData: FormData):
   if (url && !/^https?:\/\/\S+$/.test(url)) {
     return { error: "출처 링크는 http:// 또는 https://로 시작해야 해요." };
   }
+  const image = parseImage(formData);
+  if ("error" in image) return image;
   const banned = findBannedWord(`${title} ${lines.join(" ")}`);
   if (banned) {
     return {
       error: `국내 공직선거·정당 관련 이슈는 만들 수 없어요. (포함된 단어: "${banned}")`,
     };
   }
-  return { title, context_lines: lines, context_source_url: url || null };
+  return {
+    title,
+    context_lines: lines,
+    context_source_url: url || null,
+    ...image,
+  };
 }
 
 // 질문을 이슈 묶음에 넣거나 뺀다

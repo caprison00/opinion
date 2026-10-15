@@ -8,7 +8,7 @@
 
 ## 처음 설정하기
 
-1. Supabase 프로젝트를 만들고 `supabase/migrations/` 의 SQL(0001~0021)을 순서대로 SQL Editor에서 실행한다.
+1. Supabase 프로젝트를 만들고 `supabase/migrations/` 의 SQL(0001~0022)을 순서대로 SQL Editor에서 실행한다.
    관리자 지정: `insert into public.admins (user_id) select id from public.profiles where nickname = '닉네임';`
 2. Supabase > Authentication > Providers 에서 Google 로그인을 켠다.
 3. `.env.example` 을 `.env.local` 로 복사하고 값을 채운다. (Vercel에서는 Environment Variables에 같은 값을 넣는다.)
