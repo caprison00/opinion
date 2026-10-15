@@ -10,6 +10,8 @@ import {
   type ReactionKind,
 } from "@/lib/discussion";
 import { stanceOf } from "@/lib/questions";
+import type { Tier } from "@/lib/tiers";
+import TierMark from "@/components/TierMark";
 import {
   addComment,
   deleteComment,
@@ -21,6 +23,7 @@ export type DiscussionComment = {
   id: string;
   userId: string;
   nickname: string;
+  tier: Tier; // 작성자의 이번 시즌 티어
   body: string;
   createdAt: string;
   parentId: string | null;
@@ -219,10 +222,14 @@ function CommentItem({
   return (
     <div className={pending ? "opacity-60" : ""}>
       <p className="flex flex-wrap items-center gap-x-2 gap-y-1 t-caption-1 text-label-alt">
-        <span className="!font-semibold text-label-neutral">
+        <Link
+          href={`/users/${c.userId}`}
+          className="inline-flex items-center gap-1 !font-semibold text-label-neutral hover:underline"
+        >
+          <TierMark tier={c.tier} />
           {c.nickname}
           {mine && " (나)"}
-        </span>
+        </Link>
         {stance && (
           <span className="whitespace-nowrap rounded-md bg-accent-blue px-1.5 py-0.5 !font-semibold text-primary">
             {stance.label} {stance.pct}%

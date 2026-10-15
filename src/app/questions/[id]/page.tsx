@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Change, Locked } from "@/components/CrowdBits";
 import { ChevronLeftIcon, LockIcon } from "@/components/icons";
 import PageShell from "@/components/PageShell";
+import TierMark from "@/components/TierMark";
 import { button, card, scoreText } from "@/components/ui";
 import {
   changeOf,
@@ -14,6 +15,7 @@ import {
 } from "@/lib/board";
 import type { ReactionKind } from "@/lib/discussion";
 import { createClient } from "@/lib/supabase/server";
+import { getTiers } from "@/lib/tiers";
 import {
   categoryLabel,
   formatDate,
@@ -111,8 +113,8 @@ export default async function QuestionPage({
   // 토론: 리액션 합계·내 리액션, 작성자 누적 점수
   const commentIds = comments.map((c) => c.id);
   const authorIds = [...new Set(comments.map((c) => c.user_id))];
-  const [{ data: reactionData }, { data: authorScoreData }] = await Promise.all(
-    [
+  const [{ data: reactionData }, { data: authorScoreData }, tiers] =
+    await Promise.all([
       commentIds.length
         ? supabase
             .from("comment_reactions")
@@ -125,8 +127,8 @@ export default async function QuestionPage({
             .select("user_id, score")
             .in("user_id", authorIds)
         : Promise.resolve({ data: [] }),
-    ],
-  );
+      getTiers(supabase, authorIds),
+    ]);
   const authorScores = new Map<string, number>();
   for (const r of (authorScoreData ?? []) as {
     user_id: string;
@@ -145,6 +147,7 @@ export default async function QuestionPage({
       id: c.id,
       userId: c.user_id,
       nickname: c.profiles?.nickname ?? "알 수 없음",
+      tier: tiers.get(c.user_id) ?? "newbie",
       body: c.body,
       createdAt: c.created_at,
       parentId: c.parent_id,
@@ -532,6 +535,7 @@ function BattlePanel({
                 </div>
                 {reason && (
                   <p className="mt-3 line-clamp-2 t-label-2 text-label-neutral">
+                    <TierMark tier={reason.tier} />{" "}
                     <span className="!font-semibold text-label">
                       {reason.nickname}
                     </span>{" "}

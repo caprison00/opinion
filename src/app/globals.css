@@ -49,6 +49,13 @@
   --c-accent-orange: #fef4e6;
 
   --c-shadow: 23 23 23;
+  /* 티어 마크 색 */
+  --tier-master: #7c3aed;
+  --tier-diamond: #0369a1;
+  --tier-platinum: #0f766e;
+  --tier-gold: #b45309;
+  --tier-silver: #64748b;
+  --tier-bronze: #9a3412;
 }
 
 [data-theme="dark"] {
@@ -94,6 +101,12 @@
   --c-accent-orange: rgb(255 169 56 / 0.16);
 
   --c-shadow: 0 0 0;
+  --tier-master: #b794ff;
+  --tier-diamond: #5cc8ff;
+  --tier-platinum: #4fd1c5;
+  --tier-gold: #f6b84b;
+  --tier-silver: #b8c2d0;
+  --tier-bronze: #e8946a;
 }
 
 /*

@@ -5,6 +5,9 @@ import { ChevronRightIcon } from "@/components/icons";
 import PageShell from "@/components/PageShell";
 import { card, chip, scoreColor, scoreText } from "@/components/ui";
 import { getViewer } from "@/lib/auth";
+import { currentSeason } from "@/lib/board";
+import TierMark from "@/components/TierMark";
+import { getTiers, seasonLabel } from "@/lib/tiers";
 import {
   formatDate,
   stanceOf,
@@ -32,22 +35,36 @@ export default async function MyPredictionsPage({
   const { supabase, user } = await getViewer();
   if (!user) redirect("/login");
 
-  const [{ data: predictionData }, { data: scoreData }, { data: profile }] =
-    await Promise.all([
-      supabase
-        .from("predictions")
-        .select("id, probs, questions(*)")
-        .eq("user_id", user.id),
-      supabase
-        .from("prediction_scores")
-        .select("prediction_id, score")
-        .eq("user_id", user.id),
-      supabase
-        .from("profiles")
-        .select("nickname")
-        .eq("id", user.id)
-        .maybeSingle(),
-    ]);
+  const season = currentSeason();
+  const [
+    { data: predictionData },
+    { data: scoreData },
+    { data: profile },
+    { data: seasonData },
+    tiers,
+  ] = await Promise.all([
+    supabase
+      .from("predictions")
+      .select("id, probs, questions(*)")
+      .eq("user_id", user.id),
+    supabase
+      .from("prediction_scores")
+      .select("prediction_id, score")
+      .eq("user_id", user.id),
+    supabase
+      .from("profiles")
+      .select("nickname")
+      .eq("id", user.id)
+      .maybeSingle(),
+    supabase
+      .from("question_scores")
+      .select("score")
+      .eq("user_id", user.id)
+      .eq("season", season),
+    getTiers(supabase, [user.id]),
+  ]);
+  const seasonScores = (seasonData ?? []) as { score: number }[];
+  const seasonTotal = seasonScores.reduce((a, r) => a + r.score, 0);
 
   const predictions = (predictionData ?? []) as unknown as MyPrediction[];
   const scores = new Map(
@@ -73,7 +90,13 @@ export default async function MyPredictionsPage({
     <PageShell narrow>
       <div className="flex items-end justify-between">
         <div>
-          <p className="t-label-1 text-label-alt">{profile?.nickname}</p>
+          <Link
+            href={`/users/${user.id}`}
+            className="flex items-center gap-1.5 t-label-1 text-label-alt hover:text-label"
+          >
+            <TierMark tier={tiers.get(user.id) ?? "newbie"} />
+            {profile?.nickname}
+          </Link>
           <h1 className="t-heading-1 md:t-title-3">내 예측</h1>
         </div>
         <Link
@@ -86,12 +109,22 @@ export default async function MyPredictionsPage({
 
       <section className="mt-5 grid grid-cols-2 gap-3 md:gap-4">
         <div className="rounded-[20px] bg-gradient-to-br from-brand to-primary-deep p-5 text-white">
-          <p className="t-label-2 text-white/75">누적 점수</p>
-          <p className="mt-1 t-title-1 tabular-nums">{scoreText(totalScore)}</p>
+          <p className="t-label-2 text-white/75">
+            {seasonLabel(season)} 시즌 점수
+          </p>
+          <p className="mt-1 t-title-1 tabular-nums">
+            {scoreText(seasonTotal)}
+          </p>
+          <p className="mt-0.5 t-caption-1 text-white/75">
+            이번 달 판정 {seasonScores.length}건
+          </p>
         </div>
         <div className="rounded-[20px] bg-bg-alt p-5">
-          <p className="t-label-2 text-label-alt">채점된 예측</p>
-          <p className="mt-1 t-title-1 tabular-nums">{scores.size}</p>
+          <p className="t-label-2 text-label-alt">전체 누적 점수</p>
+          <p className="mt-1 t-title-1 tabular-nums">{scoreText(totalScore)}</p>
+          <p className="mt-0.5 t-caption-1 text-label-alt">
+            채점된 예측 {scores.size}건
+          </p>
         </div>
       </section>
 

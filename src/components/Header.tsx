@@ -1,12 +1,26 @@
 import Link from "next/link";
 import { getViewer } from "@/lib/auth";
+import { getTiers } from "@/lib/tiers";
 import Logo from "./Logo";
 import NavLinks from "./NavLinks";
 import ThemeToggle from "./ThemeToggle";
+import TierMark from "./TierMark";
 import { button, container } from "./ui";
 
 export default async function Header() {
-  const { user, isAdmin } = await getViewer();
+  const { supabase, user, isAdmin } = await getViewer();
+  // 닉네임 + 이번 시즌 티어 (프로필로 이동)
+  const [profile, tiers] = user
+    ? await Promise.all([
+        supabase
+          .from("profiles")
+          .select("nickname")
+          .eq("id", user.id)
+          .maybeSingle()
+          .then((r) => r.data as { nickname: string } | null),
+        getTiers(supabase, [user.id]),
+      ])
+    : [null, null];
 
   return (
     <header className="sticky top-0 z-20 border-b border-line bg-surface/95 backdrop-blur-md">
@@ -25,6 +39,17 @@ export default async function Header() {
               className="rounded-full bg-accent-blue px-3 py-1 t-label-2 !font-semibold text-primary md:hidden"
             >
               관리자
+            </Link>
+          )}
+          {user && profile && (
+            <Link
+              href={`/users/${user.id}`}
+              className="hidden items-center gap-1.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-fill md:flex"
+            >
+              <TierMark tier={tiers?.get(user.id) ?? "newbie"} />
+              <span className="max-w-[120px] truncate t-label-1 !font-semibold text-label">
+                {profile.nickname}
+              </span>
             </Link>
           )}
           {user ? (

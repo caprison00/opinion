@@ -24,6 +24,13 @@ import {
   timeLeft,
   type Question,
 } from "@/lib/questions";
+import {
+  isTier,
+  SEASON_MIN,
+  tierLabel,
+  topPercent,
+  type Tier,
+} from "@/lib/tiers";
 
 const DAY = 86_400_000;
 
@@ -53,6 +60,7 @@ export default async function Home({
     { data: movingData },
     { data: trendingData },
     { data: seasonData },
+    { data: rankData },
   ] = await Promise.all([
     supabase
       .from("questions")
@@ -82,6 +90,13 @@ export default async function Home({
           .select("score")
           .eq("user_id", user.id)
           .eq("season", currentSeason())
+      : Promise.resolve({ data: null }),
+    // 내 시즌 순위·티어 (1위 행 + 내 행이 돌아온다)
+    user
+      ? supabase.rpc("season_leaderboard", {
+          p_season: currentSeason(),
+          p_limit: 1,
+        })
       : Promise.resolve({ data: null }),
   ]);
 
@@ -157,10 +172,23 @@ export default async function Home({
   const closingSoon = open.slice(0, 6);
 
   const seasonScores = (seasonData ?? []) as { score: number }[];
+  const myRank = user
+    ? (
+        (rankData ?? []) as {
+          user_id: string;
+          rank: number;
+          eligible: number;
+          tier: string;
+        }[]
+      ).find((r) => r.user_id === user.id)
+    : undefined;
   const season = user
     ? {
         total: seasonScores.reduce((a, s) => a + s.score, 0),
         count: seasonScores.length,
+        rank: myRank?.rank ?? null,
+        eligible: myRank?.eligible ?? 0,
+        tier: (isTier(myRank?.tier) ? myRank.tier : "newbie") as Tier,
       }
     : null;
 
@@ -530,7 +558,13 @@ function ResolvedCard({ q, board }: { q: Question; board: Board }) {
 function SeasonBox({
   season,
 }: {
-  season: { total: number; count: number } | null;
+  season: {
+    total: number;
+    count: number;
+    rank: number | null;
+    eligible: number;
+    tier: Tier;
+  } | null;
 }) {
   const month = Number(currentSeason().slice(5));
   return (
@@ -538,12 +572,24 @@ function SeasonBox({
       <p className="t-label-2 text-white/75">{month}월 시즌</p>
       {season ? (
         <>
-          <p className="mt-1 t-title-3 tabular-nums">
+          <div className="mt-2 flex items-center gap-2">
+            <span className="rounded-md bg-white/20 px-2 py-0.5 t-label-2 !font-bold">
+              ◆ {tierLabel(season.tier)}
+            </span>
+            {season.rank !== null && (
+              <span className="t-label-1 !font-semibold">
+                {season.rank}위 · 상위{" "}
+                {topPercent(season.rank, season.eligible)}%
+              </span>
+            )}
+          </div>
+          <p className="mt-2 t-title-3 tabular-nums">
             {scoreText(season.total)}점
           </p>
           <p className="mt-0.5 t-caption-1 text-white/75">
             이번 달 판정된 예측 {season.count}건
-            {season.count < 3 && " · 3건부터 랭킹에 올라요"}
+            {season.count < SEASON_MIN &&
+              ` · ${SEASON_MIN}건부터 랭킹·티어에 올라요`}
           </p>
         </>
       ) : (
