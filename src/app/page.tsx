@@ -4,6 +4,7 @@ import EmptyState from "@/components/EmptyState";
 import { ChevronRightIcon } from "@/components/icons";
 import PageShell from "@/components/PageShell";
 import QuestionCard from "@/components/QuestionCard";
+import { Thumb } from "@/components/QuestionImage";
 import { card, pillBar, scoreText, textTab } from "@/components/ui";
 import { getViewer } from "@/lib/auth";
 import {
@@ -14,6 +15,7 @@ import {
   type Board,
   type Issue,
 } from "@/lib/board";
+import { pickImage, type PickedImage } from "@/lib/images";
 import {
   CATEGORIES,
   categoryLabel,
@@ -138,6 +140,11 @@ export default async function Home({
     ...upcoming.map((q) => q.id),
   ]);
   const boardOf = (id: string) => boards.get(id) ?? EMPTY_BOARD;
+  const issueById = new Map(
+    ((issueData ?? []) as Issue[]).map((i) => [i.id, i]),
+  );
+  const imageOf = (q: Question) =>
+    pickImage(q, q.issue_id ? issueById.get(q.issue_id) : null);
 
   const hotIssues = ((issueData ?? []) as Issue[])
     .map((issue) => {
@@ -261,7 +268,11 @@ export default async function Home({
                   message={`${currentLabel} 분야에 진행 중인 질문이 없어요.`}
                 />
               ) : (
-                <CardGrid questions={categoryQuestions} boardOf={boardOf} />
+                <CardGrid
+                  questions={categoryQuestions}
+                  boardOf={boardOf}
+                  imageOf={imageOf}
+                />
               )}
             </section>
           ) : (
@@ -295,7 +306,12 @@ export default async function Home({
                 ) : (
                   <ul className={`${card} divide-y divide-line-alt`}>
                     {moving.map((q) => (
-                      <MovingRow key={q.id} q={q} board={boardOf(q.id)} />
+                      <MovingRow
+                        key={q.id}
+                        q={q}
+                        board={boardOf(q.id)}
+                        image={imageOf(q)}
+                      />
                     ))}
                   </ul>
                 )}
@@ -326,7 +342,11 @@ export default async function Home({
                 {closingSoon.length === 0 ? (
                   <EmptyState message="진행 중인 질문이 없어요." />
                 ) : (
-                  <CardGrid questions={closingSoon} boardOf={boardOf} />
+                  <CardGrid
+                    questions={closingSoon}
+                    boardOf={boardOf}
+                    imageOf={imageOf}
+                  />
                 )}
               </section>
             </>
@@ -419,14 +439,21 @@ function SectionTitle({
 function CardGrid({
   questions,
   boardOf,
+  imageOf,
 }: {
   questions: Question[];
   boardOf: (id: string) => Board;
+  imageOf: (q: Question) => PickedImage | null;
 }) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
       {questions.map((q) => (
-        <QuestionCard key={q.id} question={q} board={boardOf(q.id)} />
+        <QuestionCard
+          key={q.id}
+          question={q}
+          board={boardOf(q.id)}
+          image={imageOf(q)}
+        />
       ))}
     </div>
   );
@@ -468,45 +495,63 @@ function IssueCard({
   more: number;
   reactions: number;
 }) {
+  // 이슈 묶음 카드는 이슈 이미지가 먼저, 없으면 대표 질문의 이미지
+  const image = pickImage(issue, lead);
   return (
     <Link
       href={`/questions/${lead.id}`}
-      className={`${card} group block p-5 transition duration-150 hover:shadow-medium md:p-6`}
+      className={`${card} group flex flex-col overflow-hidden transition duration-150 hover:shadow-medium md:flex-row`}
     >
-      <p className="flex items-center gap-2 t-caption-1 !font-semibold text-primary">
-        <span className="rounded-full border border-line bg-accent-soft px-2.5 py-0.5 !font-bold text-accent-ink">
-          {issue.title}
-        </span>
-        <span className="text-label-alt">{categoryLabel(lead.category)}</span>
-      </p>
-      <h3 className="mt-3 t-heading-2 text-label group-hover:text-primary">
-        {lead.title}
-      </h3>
-      {issue.context_lines.length > 0 && (
-        <ul className="mt-3 flex flex-col gap-1 border-l-2 border-line pl-3">
-          {issue.context_lines.map((line, i) => (
-            <li key={i} className="t-body-3 text-label-neutral">
-              {line}
-            </li>
-          ))}
-        </ul>
+      {image && (
+        <Thumb
+          image={image}
+          className="aspect-[2/1] w-full md:aspect-auto md:w-[220px] md:self-stretch"
+        />
       )}
-      <div className="mt-4">
-        <CrowdLine q={lead} board={board} />
-      </div>
-      <p className="mt-3 flex flex-wrap gap-x-3 t-caption-1 text-label-alt">
-        <span>{board.participants}명 예측</span>
-        <span>리액션 {reactions}</span>
-        <span>{timeLeft(lead.close_at)}</span>
-        {more > 0 && (
-          <span className="text-primary">같은 이슈 질문 {more}개 더</span>
+      <div className="min-w-0 flex-1 p-5 md:p-6">
+        <p className="flex items-center gap-2 t-caption-1 !font-semibold text-primary">
+          <span className="rounded-full border border-line bg-accent-soft px-2.5 py-0.5 !font-bold text-accent-ink">
+            {issue.title}
+          </span>
+          <span className="text-label-alt">{categoryLabel(lead.category)}</span>
+        </p>
+        <h3 className="mt-3 t-heading-2 text-label group-hover:text-primary">
+          {lead.title}
+        </h3>
+        {issue.context_lines.length > 0 && (
+          <ul className="mt-3 flex flex-col gap-1 border-l-2 border-line pl-3">
+            {issue.context_lines.map((line, i) => (
+              <li key={i} className="t-body-3 text-label-neutral">
+                {line}
+              </li>
+            ))}
+          </ul>
         )}
-      </p>
+        <div className="mt-4">
+          <CrowdLine q={lead} board={board} />
+        </div>
+        <p className="mt-3 flex flex-wrap gap-x-3 t-caption-1 text-label-alt">
+          <span>{board.participants}명 예측</span>
+          <span>리액션 {reactions}</span>
+          <span>{timeLeft(lead.close_at)}</span>
+          {more > 0 && (
+            <span className="text-primary">같은 이슈 질문 {more}개 더</span>
+          )}
+        </p>
+      </div>
     </Link>
   );
 }
 
-function MovingRow({ q, board }: { q: Question; board: Board }) {
+function MovingRow({
+  q,
+  board,
+  image,
+}: {
+  q: Question;
+  board: Board;
+  image: PickedImage | null;
+}) {
   const top = board.crowd
     ? q.type === "ox"
       ? { index: 0, label: q.options[0], pct: Math.round(board.crowd[0] * 100) }
@@ -518,7 +563,8 @@ function MovingRow({ q, board }: { q: Question; board: Board }) {
         href={`/questions/${q.id}`}
         className="group flex items-center justify-between gap-3 px-5 py-4"
       >
-        <div className="min-w-0">
+        {image && <Thumb image={image} className="h-11 w-11 rounded-lg" />}
+        <div className="min-w-0 flex-1">
           <p className="t-caption-1 text-label-alt">
             {categoryLabel(q.category)} · {board.participants}명 예측
           </p>

@@ -18,6 +18,9 @@ import { createClient } from "@/lib/supabase/server";
 import { getTiers } from "@/lib/tiers";
 import { badgeDef, getFeaturedBadges, questionBadgeKeys } from "@/lib/badges";
 import BadgeIcon from "@/components/BadgeIcon";
+import { HeroImage } from "@/components/QuestionImage";
+import { pickImage, type ImageFields } from "@/lib/images";
+import type { Metadata } from "next";
 import {
   categoryLabel,
   formatDate,
@@ -40,6 +43,42 @@ type CommentRow = {
   created_at: string;
   profiles: { nickname: string } | null;
 };
+
+// 링크 공유 미리보기: 질문 제목 + 이미지(질문 → 이슈 묶음 순서)
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return {};
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("questions")
+    .select("title, issue_id, image_url, image_credit, image_alt")
+    .eq("id", id)
+    .maybeSingle();
+  if (!data) return {};
+  const q = data as ImageFields & { title: string; issue_id: string | null };
+  const { data: issue } = q.issue_id
+    ? await supabase
+        .from("issues")
+        .select("title, image_url, image_credit, image_alt")
+        .eq("id", q.issue_id)
+        .maybeSingle()
+    : { data: null };
+  const image = pickImage(q, issue as (ImageFields & { title: string }) | null);
+  const description = "당신의 예감은? 확률로 예측하고 결과를 확인해보세요.";
+  return {
+    title: q.title,
+    description,
+    openGraph: {
+      title: q.title,
+      description,
+      images: image ? [{ url: image.url, alt: image.alt }] : undefined,
+    },
+  };
+}
 
 export default async function QuestionPage({
   params,
@@ -93,6 +132,7 @@ export default async function QuestionPage({
       supabase.rpc("crowd_history", { qid: id, p_points: 40 }),
     ]);
   const issue = issueData as Issue | null;
+  const image = pickImage(q, issue);
   const siblings = (siblingData ?? []) as Question[];
   const history = (
     (historyData ?? []) as { t: string; crowd: (number | string)[] | null }[]
@@ -257,6 +297,11 @@ export default async function QuestionPage({
         {/* 본문: 질문, 맥락, 진영 대결, 추이, 토론 */}
         <article className="flex min-w-0 flex-col gap-8">
           <header>
+            {image && (
+              <div className="mb-5">
+                <HeroImage image={image} />
+              </div>
+            )}
             <div className="flex flex-wrap items-center gap-2">
               {issue && (
                 <span className="rounded-full border border-line bg-accent-soft px-2.5 py-0.5 t-caption-1 !font-bold text-accent-ink">

@@ -1,3 +1,4 @@
+import type { ImageFields } from "./images";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 // question_board(DB 함수)의 결과. 집단 확률·24시간 전 확률은 볼 수 있을 때만 들어온다.
@@ -87,4 +88,4 @@ export type Issue = {
   context_lines: string[];
   context_source_url: string | null;
   created_at: string;
-};
+} & ImageFields;

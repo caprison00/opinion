@@ -9,12 +9,16 @@ import {
 } from "@/lib/questions";
 import { Change, Locked } from "./CrowdBits";
 import { card } from "./ui";
+import type { PickedImage } from "@/lib/images";
+import { Thumb } from "./QuestionImage";
 
 export default function QuestionCard({
   question,
   board,
+  image,
 }: {
   question: Question;
+  image?: PickedImage | null;
   board: Board; // crowd가 null이면 가린다 (여론 공개 규칙)
 }) {
   const crowd = board.crowd;
@@ -50,9 +54,12 @@ export default function QuestionCard({
         </span>
       </div>
 
-      <h2 className="mt-3 line-clamp-2 t-body-1 !font-bold text-label">
-        {question.title}
-      </h2>
+      <div className="mt-3 flex items-start gap-3">
+        <h2 className="line-clamp-2 min-w-0 flex-1 t-body-1 !font-bold text-label">
+          {question.title}
+        </h2>
+        {image && <Thumb image={image} className="h-16 w-16 rounded-xl" />}
+      </div>
 
       <div className="mt-auto pt-5">
         <div className="flex items-end justify-between gap-2">

@@ -15,6 +15,7 @@ import {
   updatePrivateQuestion,
   type CreateQuestionState,
 } from "./actions";
+import ImageField from "./ImageField";
 
 // ISO 시각 → <input type="datetime-local"> 값 (한국 시간)
 function toKstInput(iso: string) {
@@ -84,6 +85,11 @@ export default function QuestionForm({
           className={input}
         />
       </label>
+
+      <ImageField
+        value={question}
+        hint="직접 만들었거나 사용이 허락된 사진만 올려 주세요(뉴스·연예인·중계 화면 사진은 안 돼요). 결과를 암시하는 사진도 피해 주세요. 비워두면 이슈 묶음의 사진을 써요."
+      />
 
       <fieldset className="flex flex-col gap-2">
         <legend className={`mb-2 ${labelClass}`}>질문 유형 *</legend>

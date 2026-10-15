@@ -1,3 +1,4 @@
+import type { ImageFields } from "./images";
 export type Category =
   | "trend"
   | "career"
@@ -31,7 +32,7 @@ export type Question = {
   is_public?: boolean; // false면 비공개 (관리자만 보임)
   resolved_at?: string | null;
   created_at: string;
-};
+} & ImageFields;
 
 export const OX_OPTIONS = ["예", "아니오"];
 export const CHOICE_MIN = 3;

@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useRef } from "react";
 import { CheckCircleIcon } from "@/components/icons";
 import { button, input } from "@/components/ui";
+import ImageField from "./ImageField";
 import type { Issue } from "@/lib/board";
 import { createIssue, updateIssue, type AdminActionState } from "./actions";
 
@@ -60,6 +61,11 @@ export default function IssueForm({ issue }: { issue?: Issue }) {
           className={input}
         />
       </label>
+
+      <ImageField
+        value={issue}
+        hint="직접 만들었거나 사용이 허락된 사진만 올려 주세요(뉴스·연예인·중계 화면 사진은 안 돼요). 결과를 암시하는 사진도 피해 주세요. 홈 핫이슈 카드와, 사진이 없는 질문에 쓰여요."
+      />
 
       {state.error && (
         <p className="t-label-1 text-negative-strong">{state.error}</p>
