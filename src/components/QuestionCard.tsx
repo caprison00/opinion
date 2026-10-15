@@ -40,7 +40,7 @@ export default function QuestionCard({
             {categoryLabel(question.category)}
           </span>
           {question.type === "choice" && (
-            <span className="rounded-md bg-accent-blue px-2 py-0.5 t-caption-1 !font-semibold text-primary">
+            <span className="rounded-full border border-line bg-accent-soft px-2.5 py-0.5 t-caption-1 !font-bold text-accent-ink">
               객관식 {question.options.length}
             </span>
           )}
@@ -60,7 +60,7 @@ export default function QuestionCard({
           {shown ? (
             <span className="flex min-w-0 items-baseline gap-1.5">
               <Change value={changeOf(board, shown.index)} />
-              <span className="min-w-0 truncate t-heading-2 text-primary">
+              <span className="min-w-0 truncate t-heading-2 text-label">
                 <span className="t-label-1 !font-semibold">{shown.label} </span>
                 <span className="tabular-nums">{shown.pct}%</span>
               </span>

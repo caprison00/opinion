@@ -23,7 +23,7 @@ export default async function Header() {
     : [null, null];
 
   return (
-    <header className="sticky top-0 z-20 border-b border-line bg-surface/95 backdrop-blur-md">
+    <header className="sticky top-0 z-20 border-b border-line bg-bg/90 backdrop-blur-md">
       <div
         className={`${container} flex h-[52px] items-center justify-between md:h-16`}
       >

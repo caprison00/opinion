@@ -4,7 +4,7 @@ import EmptyState from "@/components/EmptyState";
 import { ChevronRightIcon } from "@/components/icons";
 import PageShell from "@/components/PageShell";
 import QuestionCard from "@/components/QuestionCard";
-import { card, scoreText, textTab } from "@/components/ui";
+import { card, pillBar, scoreText, textTab } from "@/components/ui";
 import { getViewer } from "@/lib/auth";
 import {
   changeOf,
@@ -189,6 +189,10 @@ export default async function Home({
       }
     : null;
 
+  // 보이는 섹션 순서대로 01, 02… 번호를 붙인다
+  let sectionNo = 0;
+  const nextIdx = () => String(++sectionNo).padStart(2, "0");
+
   return (
     <PageShell>
       {deleted && !user && (
@@ -197,16 +201,18 @@ export default async function Home({
         </p>
       )}
       {!user && (
-        <section className="mb-6 flex flex-col gap-4 rounded-2xl bg-hero px-6 py-6 text-white md:flex-row md:items-center md:justify-between md:px-8">
+        <section className="mb-8 flex flex-col gap-4 pt-2 md:flex-row md:items-end md:justify-between">
           <div>
-            <h1 className="t-heading-1">미래를 확률로 맞혀 보세요</h1>
-            <p className="mt-1 t-body-3 text-white/80">
-              돈은 걸지 않아요. 예측이 맞을수록 점수가 쌓이고, 랭킹에 올라요.
+            <h1 className="t-title-2 md:t-display-2">
+              오늘, <span className="hl">무엇이 일어날까요?</span>
+            </h1>
+            <p className="mt-2 t-body-2 text-label-neutral md:t-body-1">
+              돈은 걸지 않아요. 확률로 예측하고, 맞힐수록 점수와 티어가 쌓여요.
             </p>
           </div>
           <Link
             href="/login"
-            className="inline-flex h-10 shrink-0 items-center self-start rounded-full bg-white px-5 t-label-1 !font-semibold text-[#0066ff] transition-colors hover:bg-white/90 md:self-auto"
+            className="inline-flex h-11 shrink-0 items-center self-start rounded-full bg-brand px-6 t-label-1 !font-bold text-white transition-colors hover:bg-brand-strong md:self-auto"
           >
             로그인하고 시작하기
           </Link>
@@ -216,9 +222,9 @@ export default async function Home({
       {/* 상단 탭: 핫이슈 + 9개 분야. 스크롤해도 상단 메뉴 아래에 붙어 있다 */}
       <nav
         aria-label="분야"
-        className="sticky top-[52px] z-10 -mx-4 border-b border-line bg-bg/95 backdrop-blur-md md:top-16 md:-mx-6"
+        className="sticky top-[52px] z-10 -mx-4 bg-bg/95 px-4 py-2 backdrop-blur-md md:top-16 md:-mx-6 md:px-6"
       >
-        <div className="scroll-row flex gap-1 overflow-x-auto px-2 py-1.5 md:px-4">
+        <div className={`scroll-row ${pillBar}`}>
           {tabs.map((tab) => {
             const active = tab.value === category;
             return (
@@ -246,6 +252,7 @@ export default async function Home({
           {category ? (
             <section>
               <SectionTitle
+                idx={nextIdx()}
                 title={`${currentLabel} 질문`}
                 hint="마감이 가까운 순서로 보여요."
               />
@@ -261,7 +268,7 @@ export default async function Home({
             <>
               {hotIssues.length > 0 && (
                 <section>
-                  <SectionTitle title="오늘의 핫이슈" />
+                  <SectionTitle idx={nextIdx()} title="오늘의 핫이슈" />
                   <div className="flex flex-col gap-4">
                     {hotIssues.map((h) => (
                       <IssueCard
@@ -279,6 +286,7 @@ export default async function Home({
 
               <section>
                 <SectionTitle
+                  idx={nextIdx()}
                   title="지금 여론이 움직이는 질문"
                   hint="지난 24시간 동안 집단 확률이 크게 바뀐 순서예요."
                 />
@@ -296,6 +304,7 @@ export default async function Home({
               {resolvedList.length > 0 && (
                 <section>
                   <SectionTitle
+                    idx={nextIdx()}
                     title={
                       yesterday.length ? "어제 판정된 질문" : "최근 판정된 질문"
                     }
@@ -310,6 +319,7 @@ export default async function Home({
 
               <section>
                 <SectionTitle
+                  idx={nextIdx()}
                   title="곧 마감되는 질문"
                   hint="마감이 가까운 순서로 보여요."
                 />
@@ -385,11 +395,23 @@ export default async function Home({
   );
 }
 
-function SectionTitle({ title, hint }: { title: string; hint?: string }) {
+// 섹션 제목: 호박색 번호(01, 02…) + 굵은 제목 (B안)
+function SectionTitle({
+  idx,
+  title,
+  hint,
+}: {
+  idx: string;
+  title: string;
+  hint?: string;
+}) {
   return (
-    <div className="mb-3">
-      <h2 className="t-heading-2">{title}</h2>
-      {hint && <p className="mt-0.5 t-label-2 text-label-alt">{hint}</p>}
+    <div className="mb-4">
+      <h2 className="flex items-baseline gap-2.5 t-heading-2">
+        <span className="sec-idx">{idx}</span>
+        {title}
+      </h2>
+      {hint && <p className="mt-0.5 t-label-1 text-label-neutral">{hint}</p>}
     </div>
   );
 }
@@ -452,7 +474,7 @@ function IssueCard({
       className={`${card} group block p-5 transition duration-150 hover:shadow-medium md:p-6`}
     >
       <p className="flex items-center gap-2 t-caption-1 !font-semibold text-primary">
-        <span className="rounded-md bg-accent-blue px-2 py-0.5">
+        <span className="rounded-full border border-line bg-accent-soft px-2.5 py-0.5 !font-bold text-accent-ink">
           {issue.title}
         </span>
         <span className="text-label-alt">{categoryLabel(lead.category)}</span>
@@ -534,8 +556,8 @@ function ResolvedCard({ q, board }: { q: Question; board: Board }) {
         <p className="line-clamp-2 t-body-3 !font-semibold text-label group-hover:text-primary">
           {q.title}
         </p>
-        <p className="mt-auto flex items-baseline justify-between gap-2 pt-3">
-          <span className="t-label-1 !font-bold text-primary">
+        <p className="mt-auto flex items-center justify-between gap-2 pt-3">
+          <span className="rounded-full border border-accent bg-accent-soft px-2.5 py-0.5 t-caption-1 !font-bold text-accent-ink">
             결과 {answer}
           </span>
           <span className="t-caption-1 text-label-neutral">
@@ -565,7 +587,9 @@ function SeasonBox({
   const month = Number(currentSeason().slice(5));
   return (
     <section className="rounded-2xl bg-hero p-5 text-white">
-      <p className="t-label-2 text-white/75">{month}월 시즌</p>
+      <p className="t-label-2 !font-bold tracking-wide text-accent">
+        {month}월 시즌
+      </p>
       {season ? (
         <>
           <div className="mt-2 flex items-center gap-2">
@@ -595,7 +619,7 @@ function SeasonBox({
       )}
       <Link
         href={season ? "/ranking" : "/login"}
-        className="mt-4 flex h-10 items-center justify-center gap-1 rounded-xl bg-white t-label-1 !font-bold text-[#0066ff] transition-colors hover:bg-white/90"
+        className="mt-4 flex h-10 items-center justify-center gap-1 rounded-xl bg-accent t-label-1 !font-bold text-[#1a1405] transition hover:brightness-105"
       >
         {season ? "랭킹 보기" : "로그인하기"}
         <ChevronRightIcon className="h-4 w-4" />

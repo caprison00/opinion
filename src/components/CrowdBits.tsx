@@ -50,7 +50,7 @@ export function OxBar({
   return (
     <div>
       <div className="flex justify-between t-label-2 !font-semibold">
-        <span className="text-primary">
+        <span className="text-positive">
           {options[0]} <span className="tabular-nums">{yes}%</span>
         </span>
         <span className="text-negative">
@@ -58,8 +58,8 @@ export function OxBar({
         </span>
       </div>
       <div className="mt-1.5 flex h-2 gap-0.5 overflow-hidden rounded-full">
-        <div className="bg-primary" style={{ width: `${yes}%` }} />
-        <div className="flex-1 bg-negative/70" />
+        <div className="bg-positive" style={{ width: `${yes}%` }} />
+        <div className="flex-1 bg-negative" />
       </div>
     </div>
   );

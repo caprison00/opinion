@@ -212,7 +212,9 @@ export default async function QuestionPage({
       />
 
       <section>
-        <h2 className="t-heading-2">확률 추이</h2>
+        <h2 className="flex items-baseline gap-2.5 t-heading-2">
+          <span className="sec-idx">02</span>확률 추이
+        </h2>
         <div className="mt-3">
           {crowd ? (
             <TrendChart points={history} options={q.options} type={q.type} />
@@ -239,8 +241,8 @@ export default async function QuestionPage({
 
       {q.is_public === false && (
         <p className="mt-4 rounded-xl bg-accent-orange px-4 py-3 t-label-1 text-caution-text">
-          비공개 질문 미리보기예요. 관리자에게만 보이고, 공개하기 전까지는 예측과
-          댓글을 받지 않아요.{" "}
+          비공개 질문 미리보기예요. 관리자에게만 보이고, 공개하기 전까지는
+          예측과 댓글을 받지 않아요.{" "}
           <Link href="/admin?tab=private" className="!font-semibold underline">
             비공개 질문 관리로
           </Link>
@@ -253,7 +255,7 @@ export default async function QuestionPage({
           <header>
             <div className="flex flex-wrap items-center gap-2">
               {issue && (
-                <span className="rounded-md bg-accent-blue px-2 py-0.5 t-caption-1 !font-semibold text-primary">
+                <span className="rounded-full border border-line bg-accent-soft px-2.5 py-0.5 t-caption-1 !font-bold text-accent-ink">
                   {issue.title}
                 </span>
               )}
@@ -295,7 +297,9 @@ export default async function QuestionPage({
                         key={i}
                         className="flex gap-2 t-body-3 text-label-neutral"
                       >
-                        <span className="!font-bold text-primary">{i + 1}</span>
+                        <span className="!font-extrabold text-accent-ink">
+                          {i + 1}
+                        </span>
                         {line}
                       </li>
                     ))}
@@ -360,7 +364,7 @@ export default async function QuestionPage({
             <div className="mb-4 flex items-baseline justify-between gap-2">
               <h2 className="t-body-1 !font-bold">내 예측</h2>
               {accepting && maxGain > 0 && (
-                <span className="t-caption-1 !font-semibold text-primary">
+                <span className="rounded-full border border-accent bg-accent-soft px-2.5 py-0.5 t-caption-1 !font-bold text-accent-ink">
                   지금 맞히면 최대 +{maxGain}점
                 </span>
               )}
@@ -483,7 +487,10 @@ function BattlePanel({
   return (
     <section>
       <div className="flex items-baseline justify-between gap-2">
-        <h2 className="t-heading-2">{accepting ? "진영 대결" : "최종 진영"}</h2>
+        <h2 className="flex items-baseline gap-2.5 t-heading-2">
+          <span className="sec-idx">01</span>
+          {accepting ? "진영 대결" : "최종 진영"}
+        </h2>
         <p className="t-label-1 text-label-alt">{count}</p>
       </div>
 
@@ -510,7 +517,7 @@ function BattlePanel({
             const pct = Math.round((crowd[i] ?? 0) * 100);
             const isAnswer = q.status === "resolved" && q.outcome_index === i;
             const reason = topReasons[i];
-            const red = isOx && i === 1;
+            const tone = isOx ? (i === 0 ? "positive" : "negative") : "primary";
             return (
               <li
                 key={label}
@@ -531,7 +538,11 @@ function BattlePanel({
                     <Change value={changeOf(board, i)} />
                     <span
                       className={`t-heading-1 tabular-nums ${
-                        red ? "text-negative" : "text-primary"
+                        tone === "positive"
+                          ? "text-positive"
+                          : tone === "negative"
+                            ? "text-negative"
+                            : "text-primary"
                       }`}
                     >
                       {pct}%
@@ -541,7 +552,11 @@ function BattlePanel({
                 <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-fill-strong">
                   <div
                     className={`h-full rounded-full ${
-                      red ? "bg-negative" : "bg-primary"
+                      tone === "positive"
+                        ? "bg-positive"
+                        : tone === "negative"
+                          ? "bg-negative"
+                          : "bg-primary"
                     }`}
                     style={{ width: `${pct}%` }}
                   />

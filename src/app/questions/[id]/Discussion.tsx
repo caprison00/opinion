@@ -90,7 +90,8 @@ export default function Discussion({
 
   return (
     <section>
-      <h2 className="t-heading-2">
+      <h2 className="flex items-baseline gap-2.5 t-heading-2">
+        <span className="sec-idx">03</span>
         토론{" "}
         <span className="t-body-2 text-label-assist">{comments.length}</span>
       </h2>
@@ -231,7 +232,15 @@ function CommentItem({
           {mine && " (나)"}
         </Link>
         {stance && (
-          <span className="whitespace-nowrap rounded-md bg-accent-blue px-1.5 py-0.5 !font-semibold text-primary">
+          <span
+            className={`whitespace-nowrap rounded-md px-1.5 py-0.5 !font-bold ${
+              options.length === 2
+                ? stance.index === 0
+                  ? "bg-accent-green text-positive"
+                  : "bg-accent-red text-negative"
+                : "bg-accent-blue text-primary"
+            }`}
+          >
             {stance.label} {stance.pct}%
           </span>
         )}
@@ -264,7 +273,7 @@ function CommentItem({
               aria-pressed={active}
               className={`inline-flex h-7 items-center gap-1 rounded-full border px-2.5 t-caption-1 transition-colors disabled:cursor-default ${
                 active
-                  ? "border-primary bg-accent-blue !font-semibold text-primary"
+                  ? "border-accent bg-accent-soft !font-semibold text-accent-ink"
                   : "border-line text-label-alt enabled:hover:bg-fill-alt"
               }`}
             >

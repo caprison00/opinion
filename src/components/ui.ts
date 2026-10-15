@@ -1,4 +1,4 @@
-// 공통 클래스 (토스증권 공개 웹 레퍼런스 기반: 파랑 채움 버튼, 회색 채움 보조 버튼, 12·16px 모서리)
+// 공통 클래스 (디자인 B안: 남색 채움 버튼, 종이색 바탕 위 흰 카드 + 부드러운 그림자, 알약형 탭)
 
 export const container = "mx-auto w-full max-w-[1060px] px-4 md:px-6";
 
@@ -20,24 +20,26 @@ export const button = {
 export const input =
   "w-full rounded-xl border border-line-neutral bg-surface px-3.5 py-3 t-body-2 text-label outline-none transition-colors placeholder:text-label-assist focus:border-brand focus:ring-2 focus:ring-brand/20";
 
-// 카드: 얇은 선 + 16px 모서리, 그림자 없음
-export const card = "rounded-2xl border border-line bg-surface";
+// 카드: 얇은 선 + 14px 모서리 + 부드러운 그림자
+export const card = "rounded-[14px] border border-line bg-surface shadow-small";
 
 // 칩(필터): 회색 채움 알약, 선택되면 진한 채움
 export function chip(active: boolean) {
   return `inline-flex h-9 items-center whitespace-nowrap rounded-full px-3.5 text-[14px] font-semibold transition-colors ${
     active
       ? "bg-inverse text-on-inverse"
-      : "bg-fill text-label-neutral hover:bg-fill-strong"
+      : "border border-line bg-surface text-label-neutral hover:bg-bg-alt"
   }`;
 }
 
-// 텍스트 탭: 선택되면 진하게, 아니면 흐리게 (밑줄 없음)
+// 알약 토글 탭: 회색 바 안에서 선택된 칸만 흰 바탕 + 그림자
+export const pillBar =
+  "inline-flex max-w-full gap-1 overflow-x-auto rounded-full bg-bg-alt p-1";
 export function textTab(active: boolean) {
-  return `inline-flex h-10 items-center whitespace-nowrap rounded-lg px-2.5 text-[16px] transition-colors ${
+  return `inline-flex h-9 items-center whitespace-nowrap rounded-full px-4 text-[14px] font-bold transition-colors ${
     active
-      ? "font-bold text-label"
-      : "font-medium text-label-alt hover:bg-fill-alt hover:text-label-neutral"
+      ? "bg-surface text-label shadow-small"
+      : "text-label-neutral hover:text-label"
   }`;
 }
 

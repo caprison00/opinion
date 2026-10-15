@@ -110,7 +110,7 @@ function OxForm({
               disabled={pending}
               className={`h-14 rounded-xl border t-body-1 !font-bold transition-colors disabled:opacity-50 ${
                 i === 0
-                  ? "border-primary/40 bg-accent-blue text-primary hover:border-primary"
+                  ? "border-positive/40 bg-accent-green text-positive hover:border-positive"
                   : "border-negative/40 bg-accent-red text-negative-strong hover:border-negative"
               }`}
             >
@@ -157,9 +157,7 @@ function OxForm({
           <label htmlFor="percent" className="t-label-1 text-label-neutral">
             &lsquo;{options[side]}&rsquo;일 확률
           </label>
-          <span className="t-title-1 tabular-nums text-primary">
-            {percent}%
-          </span>
+          <span className="t-title-1 tabular-nums text-label">{percent}%</span>
         </div>
         <input
           id="percent"
