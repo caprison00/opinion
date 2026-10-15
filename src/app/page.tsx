@@ -159,13 +159,7 @@ export default async function Home({
     .sort((a, b) => b.participants - a.participants)
     .slice(0, 3);
 
-  const counts = new Map<string, number>();
-  for (const q of open)
-    counts.set(q.category, (counts.get(q.category) ?? 0) + 1);
-  const tabs = [
-    { value: null, label: "핫이슈", count: null },
-    ...CATEGORIES.map((c) => ({ ...c, count: counts.get(c.value) ?? 0 })),
-  ];
+  const tabs = [{ value: null, label: "핫이슈" }, ...CATEGORIES];
   const currentLabel = category
     ? CATEGORIES.find((c) => c.value === category)?.label
     : null;
@@ -235,11 +229,6 @@ export default async function Home({
                 className={`${textTab(active)} shrink-0 gap-1`}
               >
                 {tab.label}
-                {tab.count !== null && (
-                  <span className="t-caption-1 tabular-nums text-label-assist">
-                    {tab.count}
-                  </span>
-                )}
               </Link>
             );
           })}
