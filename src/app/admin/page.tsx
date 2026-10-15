@@ -43,6 +43,9 @@ export default async function AdminPage() {
           <Link href="/admin/stats" className={button.smallSecondary}>
             통계
           </Link>
+          <Link href="/admin/reports" className={button.smallSecondary}>
+            신고
+          </Link>
           <Link href="/admin/legal" className={button.smallSecondary}>
             약관 관리
           </Link>

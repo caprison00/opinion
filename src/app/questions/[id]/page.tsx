@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ChevronLeftIcon, LockIcon } from "@/components/icons";
 import PageShell from "@/components/PageShell";
 import { button, card, scoreText } from "@/components/ui";
+import type { ReactionKind } from "@/lib/discussion";
 import { createClient } from "@/lib/supabase/server";
 import {
   categoryLabel,
@@ -14,11 +15,13 @@ import {
   timeLeft,
   type Question,
 } from "@/lib/questions";
+import Discussion, { type DiscussionComment } from "./Discussion";
 import PredictionForm from "./PredictionForm";
 
 type CommentRow = {
   id: string;
   user_id: string;
+  parent_id: string | null;
   body: string;
   created_at: string;
   profiles: { nickname: string } | null;
@@ -46,9 +49,8 @@ export default async function QuestionPage({
     supabase.rpc("question_summary", { p_ids: [id] }),
     supabase
       .from("comments")
-      .select("id, user_id, body, created_at, profiles(nickname)")
+      .select("id, user_id, parent_id, body, created_at, profiles(nickname)")
       .eq("question_id", id)
-      .is("parent_id", null)
       .order("created_at", { ascending: false }),
     // 여론 공개 규칙(DB): 내가 예측했거나 마감된 질문이면 모두, 아니면 내 예측만 돌아온다.
     supabase.from("predictions").select("user_id, probs").eq("question_id", id),
@@ -70,7 +72,59 @@ export default async function QuestionPage({
   );
   const myProbs = user ? (stances.get(user.id) ?? null) : null;
   const comments = (commentData ?? []) as unknown as CommentRow[];
-  const hasMyComment = !!user && comments.some((c) => c.user_id === user.id);
+  const hasMyComment =
+    !!user && comments.some((c) => c.user_id === user.id && !c.parent_id);
+
+  // 토론: 리액션 합계·내 리액션, 작성자 누적 점수
+  const commentIds = comments.map((c) => c.id);
+  const authorIds = [...new Set(comments.map((c) => c.user_id))];
+  const [{ data: reactionData }, { data: authorScoreData }] = await Promise.all(
+    [
+      commentIds.length
+        ? supabase
+            .from("comment_reactions")
+            .select("comment_id, user_id, kind")
+            .in("comment_id", commentIds)
+        : Promise.resolve({ data: [] }),
+      authorIds.length
+        ? supabase
+            .from("question_scores")
+            .select("user_id, score")
+            .in("user_id", authorIds)
+        : Promise.resolve({ data: [] }),
+    ],
+  );
+  const authorScores = new Map<string, number>();
+  for (const r of (authorScoreData ?? []) as {
+    user_id: string;
+    score: number;
+  }[]) {
+    authorScores.set(r.user_id, (authorScores.get(r.user_id) ?? 0) + r.score);
+  }
+  const reactionRows = (reactionData ?? []) as {
+    comment_id: string;
+    user_id: string;
+    kind: ReactionKind;
+  }[];
+  const discussion: DiscussionComment[] = comments.map((c) => {
+    const mine = reactionRows.filter((r) => r.comment_id === c.id);
+    return {
+      id: c.id,
+      userId: c.user_id,
+      nickname: c.profiles?.nickname ?? "알 수 없음",
+      body: c.body,
+      createdAt: c.created_at,
+      parentId: c.parent_id,
+      reactions: {
+        confident: mine.filter((r) => r.kind === "confident").length,
+        anxious: mine.filter((r) => r.kind === "anxious").length,
+        absurd: mine.filter((r) => r.kind === "absurd").length,
+      },
+      myReaction: mine.find((r) => r.user_id === user?.id)?.kind ?? null,
+      authorScore: authorScores.get(c.user_id) ?? 0,
+      stance: stances.get(c.user_id) ?? null,
+    };
+  });
   const accepting = isAccepting(q);
   const outcome = outcomeLabel(q);
 
@@ -139,11 +193,12 @@ export default async function QuestionPage({
           </dl>
 
           <section className="mt-10 hidden lg:block">
-            <Reasons
-              comments={comments}
-              stances={stances}
+            <Discussion
+              questionId={q.id}
+              comments={discussion}
               options={q.options}
-              userId={user?.id}
+              outcomeIndex={q.status === "resolved" ? q.outcome_index : null}
+              viewerId={user?.id ?? null}
               locked={!myProbs && accepting}
             />
           </section>
@@ -219,11 +274,12 @@ export default async function QuestionPage({
         </aside>
 
         <section className="lg:hidden">
-          <Reasons
-            comments={comments}
-            stances={stances}
+          <Discussion
+            questionId={q.id}
+            comments={discussion}
             options={q.options}
-            userId={user?.id}
+            outcomeIndex={q.status === "resolved" ? q.outcome_index : null}
+            viewerId={user?.id ?? null}
             locked={!myProbs && accepting}
           />
         </section>
@@ -337,56 +393,5 @@ function CrowdPanel({
         })}
       </ul>
     </section>
-  );
-}
-
-function Reasons({
-  comments,
-  stances,
-  options,
-  userId,
-  locked,
-}: {
-  comments: CommentRow[];
-  stances: Map<string, number[]>;
-  options: string[];
-  userId?: string;
-  locked: boolean;
-}) {
-  return (
-    <>
-      <h2 className="t-heading-2">
-        근거와 토론{" "}
-        <span className="t-body-2 text-label-assist">{comments.length}</span>
-      </h2>
-      {locked && comments.length > 0 && (
-        <p className="mt-2 t-caption-1 text-label-alt">
-          작성자가 어느 쪽을 예측했는지는 내가 예측하면 보여요.
-        </p>
-      )}
-      {comments.length === 0 ? (
-        <p className="mt-3 rounded-2xl bg-bg-alt py-10 text-center t-label-1 text-label-alt">
-          아직 근거가 없어요.
-        </p>
-      ) : (
-        <ul className="mt-2 divide-y divide-line-alt">
-          {comments.map((c) => {
-            const probs = stances.get(c.user_id);
-            return (
-              <li key={c.id} className="py-4">
-                <p className="flex flex-wrap items-center gap-2 t-caption-1 text-label-alt">
-                  <span>
-                    {c.profiles?.nickname ?? "알 수 없음"}
-                    {userId && c.user_id === userId && " (나)"}
-                  </span>
-                  {probs && <Stance probs={probs} options={options} />}
-                </p>
-                <p className="mt-1 break-words t-body-3 text-label">{c.body}</p>
-              </li>
-            );
-          })}
-        </ul>
-      )}
-    </>
   );
 }
