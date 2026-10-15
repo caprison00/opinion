@@ -59,7 +59,9 @@ export default async function QuestionPage({
     supabase.from("questions").select("*").eq("id", id).maybeSingle(),
     supabase
       .from("comments")
-      .select("id, user_id, parent_id, body, created_at, profiles(nickname)")
+      .select(
+        "id, user_id, parent_id, body, created_at, profiles!comments_user_id_fkey(nickname)",
+      )
       .eq("question_id", id)
       .order("created_at", { ascending: false }),
     // 여론 공개 규칙(DB): 내가 예측했거나 마감된 질문이면 모두, 아니면 내 예측만 돌아온다.

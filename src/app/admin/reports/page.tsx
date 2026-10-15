@@ -38,7 +38,7 @@ export default async function AdminReportsPage() {
     ? await supabase
         .from("comments")
         .select(
-          "id, question_id, body, hidden, created_at, profiles(nickname), questions(title)",
+          "id, question_id, body, hidden, created_at, profiles!comments_user_id_fkey(nickname), questions(title)",
         )
         .in("id", ids)
     : { data: [] };
