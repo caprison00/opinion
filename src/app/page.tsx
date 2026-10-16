@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Change, Locked, OxBar } from "@/components/CrowdBits";
 import EmptyState from "@/components/EmptyState";
-import { ChevronRightIcon } from "@/components/icons";
+import { ChevronRightIcon, UserIcon } from "@/components/icons";
 import PageShell from "@/components/PageShell";
 import QuestionCard from "@/components/QuestionCard";
 import Rotator from "@/components/Rotator";
@@ -22,6 +22,7 @@ import { pickImage, type PickedImage } from "@/lib/images";
 import {
   CATEGORIES,
   categoryLabel,
+  dDay,
   formatDate,
   isCategory,
   outcomeLabel,
@@ -536,9 +537,14 @@ function IssueCard({
             <CrowdLine q={q} board={board} />
           </div>
           <p className="mt-3 flex flex-wrap gap-x-3 t-caption-1 text-label-alt">
-            <span>{board.participants}명 예측</span>
-            <span>리액션 {board.reactions}</span>
-            <span>{timeLeft(q.close_at)}</span>
+            <span
+              className="inline-flex items-center gap-1"
+              aria-label={`${board.participants}명 예측`}
+            >
+              <UserIcon className="h-3.5 w-3.5" />
+              {board.participants}
+            </span>
+            <span>{dDay(q.close_at)}</span>
           </p>
         </div>
       </Link>

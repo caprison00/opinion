@@ -391,3 +391,13 @@ input[type="range"].probability-slider:focus-visible {
     opacity: 0.8;
   }
 }
+
+/* 롤링: 들어오는 장만 서서히 보이게 */
+@keyframes rotator-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

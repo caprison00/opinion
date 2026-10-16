@@ -166,6 +166,14 @@ export function timeLeft(iso: string) {
   return `${Math.floor(hours / 24)}일 남음`;
 }
 
+// 마감까지 남은 날: "D-75", 하루 안이면 "D-day", 지났으면 "마감"
+export function dDay(iso: string) {
+  const ms = new Date(iso).getTime() - Date.now();
+  if (ms <= 0) return "마감";
+  const days = Math.floor(ms / 86_400_000);
+  return days < 1 ? "D-day" : `D-${days}`;
+}
+
 // 예측을 받을 수 있는 상태인지 (DB의 question_is_accepting과 같은 기준)
 export function isAccepting(
   q: Pick<Question, "status" | "close_at" | "is_public">,

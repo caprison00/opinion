@@ -54,8 +54,10 @@ export default function Rotator({
             aria-label={`${i + 1} / ${n}`}
             aria-hidden={i !== index}
             inert={i !== index}
-            className={`col-start-1 row-start-1 transition-opacity duration-500 motion-reduce:transition-none ${
-              i === index ? "opacity-100" : "pointer-events-none opacity-0"
+            className={`col-start-1 row-start-1 ${
+              i === index
+                ? "animate-[rotator-in_400ms_ease-out] opacity-100 motion-reduce:animate-none"
+                : "pointer-events-none invisible opacity-0"
             }`}
           >
             {slide}
@@ -95,9 +97,6 @@ export default function Rotator({
           >
             <ChevronRightIcon className="h-4 w-4" />
           </button>
-          <span className="ml-1 t-caption-1 tabular-nums text-label-alt">
-            {index + 1} / {n}
-          </span>
         </div>
       )}
     </div>
