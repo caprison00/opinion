@@ -34,6 +34,7 @@ import {
 import Discussion, { type DiscussionComment } from "./Discussion";
 import PredictionForm from "./PredictionForm";
 import TrendChart from "./TrendChart";
+import ShareButton from "./ShareButton";
 
 type CommentRow = {
   id: string;
@@ -302,24 +303,29 @@ export default async function QuestionPage({
                 <HeroImage image={image} />
               </div>
             )}
-            <div className="flex flex-wrap items-center gap-2">
-              {issue && (
-                <span className="rounded-full border border-line bg-accent-soft px-2.5 py-0.5 t-caption-1 !font-bold text-accent-ink">
-                  {issue.title}
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex flex-wrap items-center gap-2 pt-1">
+                {issue && (
+                  <span className="rounded-full border border-line bg-accent-soft px-2.5 py-0.5 t-caption-1 !font-bold text-accent-ink">
+                    {issue.title}
+                  </span>
+                )}
+                <span className="rounded-md bg-fill px-2 py-0.5 t-caption-1 !font-semibold text-label-neutral">
+                  {categoryLabel(q.category)}
                 </span>
+                <span
+                  className={`rounded-md px-2 py-0.5 t-caption-1 !font-semibold ${
+                    accepting
+                      ? "bg-accent-orange text-caution-text"
+                      : "bg-fill text-label-alt"
+                  }`}
+                >
+                  {accepting ? timeLeft(q.close_at) : statusLabel(q)}
+                </span>
+              </div>
+              {q.is_public !== false && (
+                <ShareButton questionId={q.id} title={q.title} />
               )}
-              <span className="rounded-md bg-fill px-2 py-0.5 t-caption-1 !font-semibold text-label-neutral">
-                {categoryLabel(q.category)}
-              </span>
-              <span
-                className={`rounded-md px-2 py-0.5 t-caption-1 !font-semibold ${
-                  accepting
-                    ? "bg-accent-orange text-caution-text"
-                    : "bg-fill text-label-alt"
-                }`}
-              >
-                {accepting ? timeLeft(q.close_at) : statusLabel(q)}
-              </span>
             </div>
             <h1 className="mt-3 t-heading-1 md:t-title-2">{q.title}</h1>
 
