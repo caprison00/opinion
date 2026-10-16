@@ -2,10 +2,10 @@ import { formatDate } from "@/lib/questions";
 
 // 선택지별 선 색 (OX는 예=파랑만 그린다)
 const COLORS = [
-  "var(--color-primary)",
-  "var(--color-negative)",
-  "var(--color-positive)",
-  "var(--color-caution)",
+  "var(--color-yes)",
+  "var(--color-no)",
+  "var(--tier-platinum)",
+  "var(--tier-master)",
   "var(--color-label-alt)",
 ];
 

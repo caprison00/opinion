@@ -1,6 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Change, Locked, Participants } from "@/components/CrowdBits";
+import {
+  Change,
+  Locked,
+  Participants,
+  ProbScale,
+} from "@/components/CrowdBits";
 import { ChevronLeftIcon, LockIcon } from "@/components/icons";
 import PageShell from "@/components/PageShell";
 import TierMark from "@/components/TierMark";
@@ -257,12 +262,12 @@ export default async function QuestionPage({
       />
 
       <section>
-        <h2 className="flex items-baseline gap-2.5 t-heading-2">확률 추이</h2>
-        <div className="mt-3">
+        <h2 className="t-heading-2 lg:t-heading-1">확률 추이</h2>
+        <div className={`${card} mt-3.5 p-4 md:p-5`}>
           {crowd ? (
             <TrendChart points={history} options={q.options} type={q.type} />
           ) : (
-            <p className="rounded-xl bg-bg-alt py-8 text-center">
+            <p className="flex h-40 items-center justify-center rounded-xl bg-[repeating-linear-gradient(135deg,var(--c-fill)_0_10px,transparent_10px_20px)]">
               <Locked />
             </p>
           )}
@@ -292,9 +297,9 @@ export default async function QuestionPage({
         </p>
       )}
 
-      <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-10">
+      <div className="mt-4 grid grid-cols-1 gap-7 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-10">
         {/* 본문: 질문, 맥락, 진영 대결, 추이, 토론 */}
-        <article className="flex min-w-0 flex-col gap-8">
+        <article className="flex min-w-0 flex-col gap-8 lg:gap-9">
           <header>
             {image && (
               <div className="mb-5">
@@ -304,55 +309,70 @@ export default async function QuestionPage({
             <div className="flex items-start justify-between gap-3">
               <div className="flex flex-wrap items-center gap-2 pt-1.5">
                 {issue && (
-                  <span className="rounded-full border border-line bg-accent-soft px-2.5 py-0.5 t-caption-1 !font-bold text-accent-ink">
+                  <span className="rounded-lg bg-yes-soft px-2.5 py-1 t-caption-1 !font-extrabold text-yes-ink">
                     {issue.title}
                   </span>
                 )}
-                <span className="rounded-md bg-fill px-2 py-0.5 t-caption-1 !font-semibold text-label-neutral">
+                <span className="rounded-lg bg-bg-alt px-2.5 py-1 t-caption-1 !font-semibold text-label-neutral">
                   {categoryLabel(q.category)}
                 </span>
-                <span
-                  className={`rounded-md px-2 py-0.5 t-caption-1 !font-semibold ${
-                    accepting
-                      ? "bg-accent-orange text-caution-text"
-                      : "bg-fill text-label-alt"
-                  }`}
-                >
-                  {accepting ? dDay(q.close_at) : statusLabel(q)}
-                </span>
+                {!accepting && (
+                  <span className="rounded-lg bg-bg-alt px-2.5 py-1 t-caption-1 !font-semibold text-label-alt">
+                    {statusLabel(q)}
+                  </span>
+                )}
               </div>
               {q.is_public !== false && (
                 <ShareButton questionId={q.id} title={q.title} />
               )}
             </div>
-            <h1 className="mt-3 t-heading-1 md:t-title-2">{q.title}</h1>
+            <h1 className="mt-3 text-balance t-title-3 lg:t-title-1">{q.title}</h1>
+            <p className="mt-3 flex items-center gap-4 t-label-1 text-label-neutral">
+              {accepting && (
+                <span
+                  className={`num text-[20px] ${
+                    /^D-(day|[0-3])$/.test(dDay(q.close_at))
+                      ? "text-caution"
+                      : "text-label"
+                  }`}
+                >
+                  {dDay(q.close_at)}
+                </span>
+              )}
+              <span className="!font-semibold">
+                <Participants n={board.participants} />
+              </span>
+            </p>
 
-            <dl className="mt-4 grid grid-cols-[auto_1fr] gap-x-5 gap-y-1.5 t-label-1">
-              <dt className="text-label-alt">판정 출처</dt>
+            <dl className={`${card} mt-4 grid grid-cols-[auto_1fr] gap-x-5 gap-y-2 px-4 py-3.5 t-label-1 md:px-5`}>
+              <dt className="!font-semibold text-label-alt">판정 출처</dt>
               <dd className="whitespace-pre-line break-words text-label">
                 {q.resolution_source}
               </dd>
-              <dt className="text-label-alt">예측 마감</dt>
-              <dd className="text-label">{formatDate(q.close_at)}</dd>
-              <dt className="text-label-alt">결과 확정</dt>
+              <dt className="!font-semibold text-label-alt">예측 마감</dt>
+              <dd className="text-label">
+                {formatDate(q.close_at)}
+                {accepting && (
+                  <span className="text-label-alt"> · {dDay(q.close_at)}</span>
+                )}
+              </dd>
+              <dt className="!font-semibold text-label-alt">결과 확정</dt>
               <dd className="text-label">{formatDate(q.resolve_at)} 예정</dd>
             </dl>
           </header>
 
           {(issue?.context_lines.length || q.description) && (
-            <section className="rounded-2xl bg-bg-alt p-5">
+            <section className="rounded-[18px] bg-bg-alt p-5 md:px-6">
               {issue && issue.context_lines.length > 0 && (
                 <>
-                  <h2 className="t-label-1 !font-bold text-label">3줄 맥락</h2>
+                  <h2 className="t-label-1 !font-extrabold text-label">3줄 맥락</h2>
                   <ol className="mt-2 flex flex-col gap-1.5">
                     {issue.context_lines.map((line, i) => (
                       <li
                         key={i}
                         className="flex gap-2 t-body-3 text-label-neutral"
                       >
-                        <span className="!font-extrabold text-accent-ink">
-                          {i + 1}
-                        </span>
+                        <span className="num text-yes-ink">{i + 1}</span>
                         {line}
                       </li>
                     ))}
@@ -392,13 +412,13 @@ export default async function QuestionPage({
         <aside className="flex flex-col gap-4 lg:sticky lg:top-24 lg:self-start">
           {q.status === "resolved" && outcome && (
             <section
-              className={`rounded-2xl p-4 text-center ${
+              className={`rounded-[18px] p-4 text-center ${
                 q.type === "ox" && q.outcome_index === 1
-                  ? "bg-accent-red text-negative-strong"
-                  : "bg-accent-blue text-primary"
+                  ? "bg-no-soft text-no-ink"
+                  : "bg-yes-soft text-yes-ink"
               }`}
             >
-              <p className="t-body-1 !font-bold">결과: {outcome}</p>
+              <p className="t-body-1 !font-extrabold">결과: {outcome}</p>
               {myScore !== undefined && (
                 <p className="mt-0.5 t-label-1">
                   내 점수 {scoreText(myScore)}점
@@ -430,16 +450,16 @@ export default async function QuestionPage({
             </section>
           )}
           {q.status === "void" && (
-            <section className="rounded-2xl bg-fill p-4 text-center t-label-1 text-label-neutral">
+            <section className="rounded-[18px] bg-bg-alt p-4 text-center t-label-1 text-label-neutral">
               이 질문은 무효 처리되어 채점하지 않아요.
             </section>
           )}
 
-          <section className={`${card} p-5`}>
-            <div className="mb-4 flex items-baseline justify-between gap-2">
-              <h2 className="t-body-1 !font-bold">내 예측</h2>
+          <section className={`${card} p-5 md:p-[22px]`}>
+            <div className="mb-4 flex items-center justify-between gap-2">
+              <h2 className="t-body-1 !font-extrabold">내 예측</h2>
               {accepting && maxGain > 0 && (
-                <span className="rounded-full border border-accent bg-accent-soft px-2.5 py-0.5 t-caption-1 !font-bold text-accent-ink">
+                <span className="rounded-full bg-yes-soft px-2.5 py-1 t-caption-1 !font-extrabold text-yes-ink">
                   지금 맞히면 최대 +{maxGain}점
                 </span>
               )}
@@ -457,7 +477,7 @@ export default async function QuestionPage({
                   myProbs={myProbs}
                   canWriteReason={!hasMyComment}
                 />
-                <p className="mt-4 border-t border-line-alt pt-3 t-caption-1 text-label-alt">
+                <p className="mt-4 border-t border-line-alt pt-3 t-caption-1 leading-relaxed text-label-alt">
                   점수는 예측을 유지한 시간만큼 반영돼요. &lsquo;최대&rsquo;는
                   남은 기간을 가장 높은 확률로 맞혔을 때이고, 예측하기 전 기간은
                   그때의 집단 확률로 따로 계산해요.
@@ -481,16 +501,18 @@ export default async function QuestionPage({
 
           {siblings.length > 0 && (
             <section className={`${card} p-5`}>
-              <h2 className="t-body-1 !font-bold">같은 이슈의 다른 질문</h2>
-              <ul className="mt-3 flex flex-col gap-3">
+              <h2 className="t-label-1 !font-extrabold">같은 이슈의 다른 질문</h2>
+              <ul className="mt-3 flex flex-col gap-3.5">
                 {siblings.map((s) => (
                   <li key={s.id}>
                     <Link href={`/questions/${s.id}`} className="group block">
                       <p className="line-clamp-2 t-label-1 text-label group-hover:text-primary">
                         {s.title}
                       </p>
-                      <p className="mt-0.5 flex items-center gap-1.5 t-caption-1 text-label-alt">
-                        {statusLabel(s)} ·{" "}
+                      <p className="mt-1 flex items-center gap-2 t-caption-1 text-label-alt">
+                        <span className="num text-[13px] text-label-neutral">
+                          {isAccepting(s) ? dDay(s.close_at) : statusLabel(s)}
+                        </span>
                         <Participants
                           n={(boards.get(s.id) ?? EMPTY_BOARD).participants}
                         />
@@ -532,11 +554,11 @@ function Stance({
 }) {
   const s = stanceOf(probs, options);
   return big ? (
-    <p className="t-title-1 text-primary">
-      {s.label} <span className="tabular-nums">{s.pct}%</span>
+    <p className="t-heading-1 text-primary">
+      {s.label} <span className="num-l">{s.pct}%</span>
     </p>
   ) : (
-    <span className="whitespace-nowrap rounded-md bg-accent-blue px-1.5 py-0.5 t-caption-1 !font-semibold text-primary">
+    <span className="whitespace-nowrap rounded-md bg-yes-soft px-1.5 py-0.5 t-caption-1 !font-bold text-yes-ink">
       {s.label} {s.pct}%
     </span>
   );
@@ -557,100 +579,133 @@ function BattlePanel({
   const crowd = board.crowd;
   const isOx = q.type === "ox";
 
+  // 대표 근거 한 줄 (티어·대표 뱃지·닉네임 + 본문)
+  const reasonLine = (reason: DiscussionComment | null) =>
+    reason && (
+      <p className="mt-3 line-clamp-2 t-label-2 !font-normal text-label-neutral">
+        <TierMark tier={reason.tier} />{" "}
+        {reason.badge && (
+          <BadgeIcon
+            badgeKey={reason.badge.key}
+            level={reason.badge.level}
+            size={16}
+          />
+        )}{" "}
+        <span className="!font-bold text-label">{reason.nickname}</span>{" "}
+        &ldquo;{reason.body}&rdquo;
+      </p>
+    );
+
   return (
     <section>
-      <div className="flex items-baseline justify-between gap-2">
-        <h2 className="flex items-baseline gap-2.5 t-heading-2">
+      <div className="flex items-center justify-between gap-2">
+        <h2 className="t-heading-2 lg:t-heading-1">
           {accepting ? "진영 대결" : "최종 진영"}
         </h2>
-        <p className="t-label-1 text-label-alt">
+        <p className="t-label-1 !font-semibold text-label-neutral">
           <Participants n={board.participants} />
         </p>
       </div>
 
       {!crowd ? (
-        <div className="mt-3 rounded-2xl bg-bg-alt p-5">
-          <p className="flex items-center gap-2 t-body-2 !font-semibold text-label-neutral">
-            <LockIcon className="h-4 w-4" />
-            {board.participants === 0
-              ? "첫 예측을 남겨 보세요"
-              : "참여하면 보여요"}
+        <div className={`${card} mt-3.5 flex flex-wrap items-center gap-x-6 gap-y-3 p-5 md:p-7`}>
+          <p className="num-xl text-[44px] text-label-alt md:text-[64px]" aria-hidden="true">
+            ??%
           </p>
-          <p className="mt-1 t-caption-1 text-label-alt">
-            다른 사람의 생각에 휩쓸리지 않도록, 내 예측을 먼저 남긴 뒤에
-            확률·변화량·진영별 대표 근거를 공개해요.
-          </p>
+          <div className="min-w-[200px] flex-1">
+            <p className="flex items-center gap-2 t-body-2 !font-extrabold text-label">
+              <LockIcon className="h-4 w-4" />
+              {board.participants === 0
+                ? "첫 예측을 남겨 보세요"
+                : "참여하면 보여요"}
+            </p>
+            <p className="mt-1.5 t-label-2 !font-normal leading-relaxed text-label-neutral">
+              다른 사람의 생각에 휩쓸리지 않도록, 내 예측을 먼저 남긴 뒤에
+              확률·변화량·진영별 대표 근거를 공개해요.
+            </p>
+          </div>
+        </div>
+      ) : isOx ? (
+        // OX: 0(아니오)~100(예) 눈금 + 두 진영
+        <div className={`${card} mt-3.5 flex flex-col gap-5 p-4 md:p-6`}>
+          <div>
+            <div className="flex justify-between t-caption-1 !font-semibold text-label-alt">
+              <span>{q.options[1]}</span>
+              <span>{q.options[0]}</span>
+            </div>
+            <ProbScale
+              value={Math.round((crowd[0] ?? 0) * 100)}
+              className="mt-2 !h-2.5"
+            />
+          </div>
+          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {[1, 0].map((i) => {
+              const pct = Math.round((crowd[i] ?? 0) * 100);
+              const isAnswer = q.status === "resolved" && q.outcome_index === i;
+              const yes = i === 0;
+              return (
+                <li
+                  key={q.options[i]}
+                  className={`rounded-2xl p-4 ${yes ? "bg-yes-soft" : "bg-no-soft"} ${
+                    isAnswer ? "ring-2 ring-inset " + (yes ? "ring-yes" : "ring-no") : ""
+                  }`}
+                >
+                  <div className="flex items-baseline justify-between gap-2">
+                    <span
+                      className={`t-body-2 !font-extrabold ${yes ? "text-yes-ink" : "text-no-ink"}`}
+                    >
+                      {q.options[i]}
+                      {isAnswer && (
+                        <span className="ml-1.5 t-caption-1 !font-bold">정답</span>
+                      )}
+                    </span>
+                    <span className="flex items-baseline gap-2">
+                      <Change value={changeOf(board, i)} />
+                      <span className={`num-l ${yes ? "text-yes-ink" : "text-no-ink"}`}>
+                        {pct}%
+                      </span>
+                    </span>
+                  </div>
+                  {reasonLine(topReasons[i])}
+                </li>
+              );
+            })}
+          </ul>
         </div>
       ) : (
-        <ul
-          className={`mt-3 grid gap-3 ${
-            isOx ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1"
-          }`}
-        >
+        // 객관식: 선택지별 막대
+        <ul className="mt-3.5 flex flex-col gap-2.5">
           {q.options.map((label, i) => {
             const pct = Math.round((crowd[i] ?? 0) * 100);
             const isAnswer = q.status === "resolved" && q.outcome_index === i;
-            const reason = topReasons[i];
-            const tone = isOx ? (i === 0 ? "positive" : "negative") : "primary";
             return (
               <li
                 key={label}
-                className={`rounded-2xl border p-4 ${
-                  isAnswer ? "border-primary" : "border-line"
-                } bg-surface`}
+                className={`${card} p-4 md:px-5 ${isAnswer ? "!border-yes ring-1 ring-inset ring-yes" : ""}`}
               >
-                <div className="flex items-baseline justify-between gap-2">
-                  <span className="t-body-2 !font-bold text-label">
+                <div className="flex items-baseline justify-between gap-3">
+                  <span className="t-body-2 !font-extrabold text-label">
                     {label}
                     {isAnswer && (
-                      <span className="ml-1.5 t-caption-1 text-primary">
+                      <span className="ml-1.5 t-caption-1 !font-bold text-yes-ink">
                         정답
                       </span>
                     )}
                   </span>
                   <span className="flex items-baseline gap-2">
                     <Change value={changeOf(board, i)} />
-                    <span
-                      className={`t-heading-1 tabular-nums ${
-                        tone === "positive"
-                          ? "text-positive"
-                          : tone === "negative"
-                            ? "text-negative"
-                            : "text-primary"
-                      }`}
-                    >
+                    <span className="num text-[26px] leading-none text-yes-ink">
                       {pct}%
                     </span>
                   </span>
                 </div>
-                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-fill-strong">
+                <div className="mt-2.5 h-2.5 overflow-hidden rounded-full bg-fill-strong">
                   <div
-                    className={`h-full rounded-full ${
-                      tone === "positive"
-                        ? "bg-positive"
-                        : tone === "negative"
-                          ? "bg-negative"
-                          : "bg-primary"
-                    }`}
+                    className="h-full rounded-full bg-yes"
                     style={{ width: `${pct}%` }}
                   />
                 </div>
-                {reason && (
-                  <p className="mt-3 line-clamp-2 t-label-2 text-label-neutral">
-                    <TierMark tier={reason.tier} />{" "}
-                    {reason.badge && (
-                      <BadgeIcon
-                        badgeKey={reason.badge.key}
-                        level={reason.badge.level}
-                        size={16}
-                      />
-                    )}{" "}
-                    <span className="!font-semibold text-label">
-                      {reason.nickname}
-                    </span>{" "}
-                    &ldquo;{reason.body}&rdquo;
-                  </p>
-                )}
+                {reasonLine(topReasons[i])}
               </li>
             );
           })}

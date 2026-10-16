@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
-import { button, chip, input } from "@/components/ui";
+import { button, card, chip, input } from "@/components/ui";
 import {
   COMMENT_MAX,
   REACTIONS,
@@ -12,6 +12,7 @@ import {
 import { stanceOf } from "@/lib/questions";
 import type { Tier } from "@/lib/tiers";
 import TierMark from "@/components/TierMark";
+import { LockIcon } from "@/components/icons";
 import BadgeIcon from "@/components/BadgeIcon";
 import type { FeaturedBadge } from "@/lib/badges";
 import {
@@ -93,9 +94,9 @@ export default function Discussion({
 
   return (
     <section>
-      <h2 className="flex items-baseline gap-2.5 t-heading-2">
+      <h2 className="flex items-baseline gap-2 t-heading-2 lg:t-heading-1">
         토론{" "}
-        <span className="t-body-2 text-label-assist">{comments.length}</span>
+        <span className="num text-[0.9em] text-label-alt">{comments.length}</span>
       </h2>
 
       {viewerId ? (
@@ -103,7 +104,7 @@ export default function Discussion({
       ) : (
         <Link
           href="/login"
-          className="mt-3 block rounded-xl bg-bg-alt px-4 py-3 t-label-1 text-label-alt hover:text-label"
+          className="mt-3.5 block rounded-[14px] bg-bg-alt px-4 py-3.5 t-label-1 !font-semibold text-label-neutral hover:text-label"
         >
           로그인하고 토론에 참여하기
         </Link>
@@ -115,7 +116,7 @@ export default function Discussion({
             key={s.value}
             type="button"
             onClick={() => setSort(s.value)}
-            className={`${chip(sort === s.value)} !h-8 !px-3`}
+            className={`${chip(sort === s.value)} !h-9 !px-3.5`}
           >
             {s.label}
           </button>
@@ -126,7 +127,7 @@ export default function Discussion({
             <button
               type="button"
               onClick={() => setSide(null)}
-              className={`${chip(side === null)} !h-8 !px-3`}
+              className={`${chip(side === null)} !h-9 !px-3.5`}
             >
               전체
             </button>
@@ -135,7 +136,7 @@ export default function Discussion({
                 key={o}
                 type="button"
                 onClick={() => setSide(i)}
-                className={`${chip(side === i)} !h-8 !px-3`}
+                className={`${chip(side === i)} !h-9 !px-3.5`}
               >
                 {o} 진영
               </button>
@@ -150,15 +151,15 @@ export default function Discussion({
       )}
 
       {roots.length === 0 ? (
-        <p className="mt-4 rounded-2xl bg-bg-alt py-10 text-center t-label-1 text-label-alt">
+        <p className="mt-4 rounded-[18px] bg-bg-alt py-10 text-center t-label-1 text-label-alt">
           {comments.length === 0
             ? "아직 의견이 없어요. 첫 의견을 남겨 보세요."
             : "이 진영의 의견이 아직 없어요."}
         </p>
       ) : (
-        <ul className="mt-2 divide-y divide-line-alt">
+        <ul className="mt-4 flex flex-col gap-3">
           {roots.map((c) => (
-            <li key={c.id} className="py-4">
+            <li key={c.id} className={`${card} p-4 md:p-5`}>
               <CommentItem
                 c={c}
                 questionId={questionId}
@@ -166,11 +167,12 @@ export default function Discussion({
                 outcomeIndex={outcomeIndex}
                 viewerId={viewerId}
                 canReply={!!viewerId}
+                locked={locked}
               />
               {(replies.get(c.id) ?? []).length > 0 && (
-                <ul className="mt-3 flex flex-col gap-3 border-l-2 border-line-alt pl-4">
+                <ul className="mt-3 flex flex-col gap-2 md:ml-1">
                   {replies.get(c.id)!.map((r) => (
-                    <li key={r.id}>
+                    <li key={r.id} className="rounded-xl bg-bg-alt p-3 md:px-4">
                       <CommentItem
                         c={r}
                         questionId={questionId}
@@ -178,6 +180,8 @@ export default function Discussion({
                         outcomeIndex={outcomeIndex}
                         viewerId={viewerId}
                         canReply={false}
+                        locked={locked}
+                        compact
                       />
                     </li>
                   ))}
@@ -198,6 +202,8 @@ function CommentItem({
   outcomeIndex,
   viewerId,
   canReply,
+  locked = false,
+  compact = false,
 }: {
   c: DiscussionComment;
   questionId: string;
@@ -205,6 +211,8 @@ function CommentItem({
   outcomeIndex: number | null;
   viewerId: string | null;
   canReply: boolean;
+  locked?: boolean; // 보는 사람이 아직 예측 전이면 작성자 진영을 가린다
+  compact?: boolean; // 답글 (회색 상자 안)
 }) {
   const [replying, setReplying] = useState(false);
   const [pending, startTransition] = useTransition();
@@ -224,47 +232,65 @@ function CommentItem({
 
   return (
     <div className={pending ? "opacity-60" : ""}>
-      <p className="flex flex-wrap items-center gap-x-2 gap-y-1 t-caption-1 text-label-alt">
+      {/* 머리줄: 티어·뱃지·닉네임·시간 / 오른쪽 진영·적중 */}
+      <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
         <Link
           href={`/users/${c.userId}`}
-          className="inline-flex items-center gap-1 !font-semibold text-label-neutral hover:underline"
+          className={`inline-flex min-w-0 items-center gap-1.5 !font-extrabold text-label hover:underline ${
+            compact ? "t-label-2" : "t-label-1"
+          }`}
         >
           <TierMark tier={c.tier} />
           {c.badge && (
             <BadgeIcon badgeKey={c.badge.key} level={c.badge.level} size={16} />
           )}
-          {c.nickname}
-          {mine && " (나)"}
+          <span className="truncate">{c.nickname}</span>
+          {mine && <span className="!font-semibold text-label-alt">(나)</span>}
         </Link>
-        {stance && (
-          <span
-            className={`whitespace-nowrap rounded-md px-1.5 py-0.5 !font-bold ${
-              options.length === 2
-                ? stance.index === 0
-                  ? "bg-accent-green text-positive"
-                  : "bg-accent-red text-negative"
-                : "bg-accent-blue text-primary"
-            }`}
-          >
-            {stance.label} {stance.pct}%
-          </span>
-        )}
-        {hit !== null && (
-          <span
-            className={`rounded-md px-1.5 py-0.5 !font-semibold ${
-              hit ? "bg-accent-green text-positive" : "bg-fill text-label-alt"
-            }`}
-          >
-            {hit ? "적중" : "빗나감"}
-          </span>
-        )}
-        <span>{timeAgo(c.createdAt)}</span>
-      </p>
-      <p className="mt-1 whitespace-pre-line break-words t-body-3 text-label">
+        <span className="t-caption-1 text-label-alt">{timeAgo(c.createdAt)}</span>
+        <span className="ml-auto flex items-center gap-1.5">
+          {hit !== null && (
+            <span
+              className={`rounded-md px-2 py-0.5 t-caption-1 !font-bold ${
+                hit ? "bg-yes-soft text-yes-ink" : "bg-fill text-label-alt"
+              }`}
+            >
+              {hit ? "적중" : "빗나감"}
+            </span>
+          )}
+          {stance ? (
+            <span
+              className={`inline-flex h-7 items-center whitespace-nowrap rounded-full px-3 t-label-2 !font-extrabold ${
+                options.length === 2 && stance.index === 1
+                  ? "bg-no text-on-no"
+                  : "bg-yes text-white"
+              }`}
+            >
+              {stance.label} {stance.pct}%
+            </span>
+          ) : (
+            locked && (
+              <span className="inline-flex items-center gap-1 t-caption-1 !font-semibold text-label-alt">
+                <LockIcon className="h-3 w-3" />
+                진영은 예측 후 공개
+              </span>
+            )
+          )}
+        </span>
+      </div>
+      <p
+        className={`mt-2 whitespace-pre-line break-words text-label ${
+          compact ? "t-label-1 !font-normal" : "t-body-3"
+        }`}
+      >
         {c.body}
       </p>
 
-      <div className="mt-2 flex flex-wrap items-center gap-1.5">
+      <div
+        className={`flex flex-wrap items-center gap-1 ${
+          compact ? "mt-1.5" : "mt-3 border-t border-line-alt pt-2"
+        }`}
+      >
         {REACTIONS.map((r) => {
           const active = c.myReaction === r.value;
           return (
@@ -276,14 +302,14 @@ function CommentItem({
                 run(() => react(questionId, c.id, r.value, c.myReaction))
               }
               aria-pressed={active}
-              className={`inline-flex h-7 items-center gap-1 rounded-full border px-2.5 t-caption-1 transition-colors disabled:cursor-default ${
+              className={`inline-flex h-9 items-center gap-1.5 rounded-lg px-2.5 t-label-2 !font-bold transition-colors disabled:cursor-default ${
                 active
-                  ? "border-accent bg-accent-soft !font-semibold text-accent-ink"
-                  : "border-line text-label-alt enabled:hover:bg-fill-alt"
+                  ? "bg-yes-soft text-yes-ink"
+                  : "text-label-neutral enabled:hover:bg-fill"
               }`}
             >
               {r.label}
-              <span className="tabular-nums">{c.reactions[r.value]}</span>
+              <span className="num text-[13px]">{c.reactions[r.value]}</span>
             </button>
           );
         })}
@@ -292,7 +318,7 @@ function CommentItem({
           <button
             type="button"
             onClick={() => setReplying((v) => !v)}
-            className="rounded-md px-2 py-1 t-caption-1 text-label-alt hover:bg-fill"
+            className="inline-flex h-9 items-center rounded-lg px-2.5 t-label-2 !font-bold text-label-neutral hover:bg-fill"
           >
             답글
           </button>
@@ -308,7 +334,7 @@ function CommentItem({
               if (reason !== null)
                 run(() => reportComment(questionId, c.id, reason));
             }}
-            className="rounded-md px-2 py-1 t-caption-1 text-label-alt hover:bg-fill"
+            className="inline-flex h-9 items-center rounded-lg px-2.5 t-caption-1 text-label-alt hover:bg-fill"
           >
             신고
           </button>
@@ -322,7 +348,7 @@ function CommentItem({
                 run(() => deleteComment(questionId, c.id));
               }
             }}
-            className="rounded-md px-2 py-1 t-caption-1 text-label-alt hover:bg-fill"
+            className="inline-flex h-9 items-center rounded-lg px-2.5 t-caption-1 text-label-alt hover:bg-fill"
           >
             삭제
           </button>

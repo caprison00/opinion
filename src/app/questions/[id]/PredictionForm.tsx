@@ -98,23 +98,22 @@ function OxForm({
     return (
       <form action={formAction} className="flex flex-col gap-3">
         <input type="hidden" name="question_id" value={questionId} />
-        <p className="t-label-1 text-label-neutral">
+        <p className="t-body-3 !font-bold text-label">
           어떻게 될 것 같나요? 누르면 바로 저장돼요.
         </p>
-        <div className="grid grid-cols-2 gap-2">
-          {options.map((label, i) => (
+        {/* 눈금과 같은 방향: 왼쪽 아니오 · 오른쪽 예 */}
+        <div className="grid grid-cols-2 gap-2.5">
+          {[1, 0].map((i) => (
             <button
-              key={label}
+              key={options[i]}
               name="choice"
               value={i}
               disabled={pending}
-              className={`h-14 rounded-xl border t-body-1 !font-bold transition-colors disabled:opacity-50 ${
-                i === 0
-                  ? "border-positive/40 bg-accent-green text-positive hover:border-positive"
-                  : "border-negative/40 bg-accent-red text-negative-strong hover:border-negative"
+              className={`h-16 rounded-2xl t-body-1 !font-extrabold transition-[filter] hover:brightness-105 disabled:opacity-50 ${
+                i === 0 ? "bg-yes text-white" : "bg-no text-on-no"
               }`}
             >
-              {label}
+              {options[i]}
             </button>
           ))}
         </div>
@@ -131,33 +130,39 @@ function OxForm({
       <input type="hidden" name="question_id" value={questionId} />
       <input type="hidden" name="choice" value={side} />
       <div
-        className="grid grid-cols-2 gap-2"
+        className="grid grid-cols-2 gap-1 rounded-[14px] bg-bg-alt p-1"
         role="radiogroup"
         aria-label="고른 쪽"
       >
-        {options.map((label, i) => (
+        {[1, 0].map((i) => (
           <button
-            key={label}
+            key={options[i]}
             type="button"
             role="radio"
             aria-checked={side === i}
             onClick={() => setSide(i)}
-            className={`h-11 rounded-xl border t-body-2 !font-semibold transition-colors ${
+            className={`h-11 rounded-[11px] t-body-3 !font-extrabold transition-colors ${
               side === i
-                ? "border-inverse bg-inverse text-on-inverse"
-                : "border-line-neutral text-label-neutral hover:bg-fill-alt"
+                ? i === 0
+                  ? "bg-yes text-white"
+                  : "bg-no text-on-no"
+                : "text-label-neutral hover:text-label"
             }`}
           >
-            {label}
+            {options[i]}
           </button>
         ))}
       </div>
       <div>
         <div className="flex items-end justify-between">
-          <label htmlFor="percent" className="t-label-1 text-label-neutral">
+          <label htmlFor="percent" className="t-label-1 !font-bold text-label-neutral">
             &lsquo;{options[side]}&rsquo;일 확률
           </label>
-          <span className="t-title-1 tabular-nums text-label">{percent}%</span>
+          <span
+            className={`num-l text-[44px] ${side === 0 ? "text-yes-ink" : "text-no-ink"}`}
+          >
+            {percent}%
+          </span>
         </div>
         <input
           id="percent"
@@ -171,6 +176,8 @@ function OxForm({
           style={
             {
               "--value": `${((percent - 51) / 48) * 100}%`,
+              // 아니오 쪽을 고르면 슬라이더도 주황
+              ...(side === 1 ? { "--color-yes": "var(--c-no)" } : {}),
             } as React.CSSProperties
           }
         />
@@ -210,13 +217,13 @@ function ChoiceForm({
     <form action={formAction} className="flex flex-col gap-4">
       <input type="hidden" name="question_id" value={questionId} />
       <fieldset className="flex flex-col gap-2">
-        <legend className="mb-2 t-label-1 text-label-neutral">
+        <legend className="mb-2 t-body-3 !font-bold text-label">
           가장 유력한 답을 골라 주세요
         </legend>
         {options.map((label, i) => (
           <label
             key={label}
-            className="flex cursor-pointer items-center gap-3 rounded-xl border border-line-neutral px-4 py-3 t-body-2 transition-colors hover:bg-fill-alt has-[:checked]:border-primary has-[:checked]:bg-accent-blue"
+            className="flex min-h-12 cursor-pointer items-center gap-3 rounded-[14px] border border-line px-4 py-2.5 t-body-3 transition-colors hover:bg-fill-alt has-[:checked]:border-yes has-[:checked]:bg-yes-soft has-[:checked]:shadow-[inset_0_0_0_1px_var(--c-yes)]"
           >
             <input
               type="radio"
@@ -224,22 +231,22 @@ function ChoiceForm({
               value={i}
               checked={choice === i}
               onChange={() => setChoice(i)}
-              className="h-4 w-4 accent-[var(--color-primary)]"
+              className="h-[18px] w-[18px] accent-[var(--color-yes)]"
             />
-            <span className="!font-semibold">{label}</span>
+            <span className="!font-bold">{label}</span>
           </label>
         ))}
       </fieldset>
 
       <fieldset>
-        <legend className="mb-2 t-label-1 text-label-neutral">
+        <legend className="mb-2 t-body-3 !font-bold text-label">
           얼마나 확신하나요?
         </legend>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 gap-1 rounded-[14px] bg-bg-alt p-1">
           {CONFIDENCE_LEVELS.map((c) => (
             <label
               key={c.value}
-              className="flex cursor-pointer flex-col items-center rounded-xl border border-line-neutral py-2.5 transition-colors hover:bg-fill-alt has-[:checked]:border-inverse has-[:checked]:bg-inverse has-[:checked]:text-on-inverse"
+              className="flex min-h-12 cursor-pointer flex-col items-center justify-center rounded-[11px] py-1.5 text-label-neutral transition-colors hover:text-label has-[:checked]:bg-surface has-[:checked]:text-label has-[:checked]:shadow-xsmall has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-yes"
             >
               <input
                 type="radio"
@@ -249,8 +256,8 @@ function ChoiceForm({
                 onChange={() => setConfidence(c.value)}
                 className="sr-only"
               />
-              <span className="t-body-3 !font-semibold">{c.label}</span>
-              <span className="t-caption-1 opacity-70">
+              <span className="t-label-1 !font-extrabold">{c.label}</span>
+              <span className="num text-[12px] !font-medium opacity-80">
                 {Math.round(c.p * 100)}%
               </span>
             </label>
@@ -276,8 +283,8 @@ function ChoiceForm({
 
 function ReasonInput() {
   return (
-    <label className="flex flex-col gap-2">
-      <span className="t-label-1 text-label-neutral">한 줄 근거 (선택)</span>
+    <label className="flex flex-col gap-2 border-t border-line-alt pt-4">
+      <span className="t-label-1 !font-semibold text-label-neutral">한 줄 근거 (선택)</span>
       <input
         name="reason"
         maxLength={100}
