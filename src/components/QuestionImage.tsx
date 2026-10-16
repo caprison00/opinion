@@ -19,20 +19,13 @@ export function Thumb({
   );
 }
 
-// 질문 상세 상단의 큰 이미지 + 출처
+// 질문 상세 상단의 큰 이미지 (출처는 관리자 기록용으로만 저장하고 화면에는 표시하지 않는다)
 export function HeroImage({ image }: { image: PickedImage }) {
   return (
-    <figure className="overflow-hidden rounded-[14px] bg-fill">
-      <img
-        src={image.url}
-        alt={image.alt}
-        className="aspect-[2/1] w-full object-cover"
-      />
-      {image.credit && (
-        <figcaption className="bg-surface px-3 py-1.5 text-right t-caption-1 text-label-alt">
-          사진: {image.credit}
-        </figcaption>
-      )}
-    </figure>
+    <img
+      src={image.url}
+      alt={image.alt}
+      className="aspect-[2/1] w-full rounded-[14px] bg-fill object-cover"
+    />
   );
 }
