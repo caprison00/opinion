@@ -260,7 +260,7 @@ export default async function Home({
           1024px 이상은 왼쪽 세로 메뉴(CategoryRail) */}
       <nav
         aria-label="분야"
-        className="sticky top-[52px] z-10 -mx-4 bg-bg/95 px-4 py-2 backdrop-blur-md md:top-16 md:-mx-6 md:px-6 lg:hidden"
+        className="sticky top-14 z-10 -mx-4 bg-bg/95 px-4 py-2 backdrop-blur-md md:top-[68px] md:-mx-6 md:px-6 lg:hidden"
       >
         <div className={`scroll-row ${pillBar}`}>
           {tabs.map((tab) => {
@@ -447,7 +447,9 @@ export default async function Home({
                           <span className="text-[10px] font-bold text-label-alt">
                             {d.month}월
                           </span>
-                          <span className="mt-0.5 num text-[17px]">{d.day}</span>
+                          <span className="mt-0.5 num text-[17px]">
+                            {d.day}
+                          </span>
                         </span>
                         <span className="min-w-0">
                           <span className="block line-clamp-2 t-label-1 text-label group-hover:text-primary">
@@ -515,13 +517,19 @@ function CrowdLine({ q, board }: { q: Question; board: Board }) {
   return (
     <div className="flex flex-col gap-1.5">
       <p className="t-caption-1 !font-bold text-white/75">
-        모두의 예감{top ? ` · ${q.type === "ox" ? q.options[0] : `1위 ${top.label}`}` : ` · ${q.type === "ox" ? q.options[0] : "1위"}`}
+        모두의 예감
+        {top
+          ? ` · ${q.type === "ox" ? q.options[0] : `1위 ${top.label}`}`
+          : ` · ${q.type === "ox" ? q.options[0] : "1위"}`}
       </p>
-      <p className="num-l md:num-xl">{top ? `${top.pct}%` : "??%"}</p>
+      <p className="num-l @xl:num-xl">{top ? `${top.pct}%` : "??%"}</p>
       {top ? (
         <>
           {q.type === "ox" && (
-            <ProbScale value={top.pct} className="mt-1 bg-[linear-gradient(90deg,var(--c-no-track),rgb(255_255_255/0.12)_50%,var(--c-yes-track))]" />
+            <ProbScale
+              value={top.pct}
+              className="mt-1 bg-[linear-gradient(90deg,var(--c-no-track),rgb(255_255_255/0.12)_50%,var(--c-yes-track))]"
+            />
           )}
           <span className="[&_*]:!text-hero-accent">
             <Change value={changeOf(board, top.index)} />
@@ -549,21 +557,21 @@ function IssueCard({
   const images = questions.map((q) => pickImage(q, issue));
   const anyImage = images.some(Boolean);
   const context = issue.context_lines.length > 0 && (
-    <ol className="flex flex-col gap-0.5 rounded-xl bg-white/[0.06] px-3 py-2.5 md:bg-transparent md:p-0">
+    <ol className="flex flex-col gap-0.5 rounded-xl bg-white/[0.06] px-3 py-2.5 @xl:bg-transparent @xl:p-0">
       {issue.context_lines.map((line, i) => (
         <li
           key={i}
-          className="flex gap-2 t-caption-1 text-white/80 md:t-label-2 md:!font-normal"
+          className="flex gap-2 t-caption-1 text-white/80 @xl:t-label-2 @xl:!font-normal"
         >
           <span className="num text-hero-accent">{i + 1}</span>
-          <span className="min-w-0 truncate md:whitespace-normal">{line}</span>
+          <span className="min-w-0 truncate @xl:whitespace-normal">{line}</span>
         </li>
       ))}
     </ol>
   );
   // 사진: 휴대폰은 제목 옆 작은 정사각형, PC는 왼쪽 세로 띠
   const imageBox =
-    "h-[72px] w-[72px] rounded-xl md:h-auto md:w-[160px] md:self-stretch md:rounded-none";
+    "h-[72px] w-[72px] rounded-xl @xl:h-auto @xl:w-[160px] @xl:self-stretch @xl:rounded-none";
 
   const slides = questions.map((q, i) => {
     const board = boardOf(q.id);
@@ -572,41 +580,46 @@ function IssueCard({
       <Link
         key={q.id}
         href={`/questions/${q.id}`}
-        className="group flex h-full flex-col gap-3 p-3.5 md:flex-row md:gap-0 md:p-0"
+        className="group flex h-full flex-col gap-3 p-3.5 @xl:flex-row @xl:gap-0 @xl:p-0"
       >
-        <div className="flex gap-3 md:contents">
+        <div className="flex gap-3 @xl:contents">
           {image ? (
             <Thumb image={image} className={imageBox} />
           ) : (
             anyImage && (
-              <div className={`${imageBox} shrink-0 bg-white/[0.08]`} aria-hidden="true" />
+              <div
+                className={`${imageBox} shrink-0 bg-white/[0.08]`}
+                aria-hidden="true"
+              />
             )
           )}
-          <div className="flex min-w-0 flex-1 flex-col gap-1 md:gap-3 md:px-6 md:py-6">
-            <div className="hidden md:block">{context}</div>
+          <div className="flex min-w-0 flex-1 flex-col gap-1 @xl:gap-3 @xl:px-6 @xl:py-6">
+            <div className="hidden @xl:block">{context}</div>
             <p className="flex items-center justify-between gap-2 t-caption-1 !font-bold text-white/75">
               <span>{categoryLabel(q.category)}</span>
-              <span className="num-s text-white md:hidden">{dDay(q.close_at)}</span>
+              <span className="num-s text-white @xl:hidden">
+                {dDay(q.close_at)}
+              </span>
             </p>
-            <h3 className="line-clamp-2 t-body-1 !font-extrabold text-white group-hover:underline md:line-clamp-none md:t-heading-1">
+            <h3 className="line-clamp-2 t-body-1 !font-extrabold text-white group-hover:underline @xl:line-clamp-none @xl:t-heading-1">
               {q.title}
             </h3>
-            <p className="mt-auto hidden items-center gap-3.5 t-label-2 text-white/80 md:flex">
+            <p className="mt-auto hidden items-center gap-3.5 t-label-2 text-white/80 @xl:flex">
               <Participants n={board.participants} />
               <span className="num-s text-white">{dDay(q.close_at)}</span>
             </p>
           </div>
         </div>
-        <div className="md:hidden">{context}</div>
+        <div className="@xl:hidden">{context}</div>
         {/* 오른쪽 큰 확률 상자 (휴대폰은 아래 한 줄) */}
-        <div className="flex items-center justify-between gap-3 md:m-4 md:ml-0 md:w-[200px] md:shrink-0 md:flex-col md:items-stretch md:justify-center md:rounded-[18px] md:bg-white/[0.06] md:p-5">
-          <div className="flex items-center gap-3 md:block">
+        <div className="flex items-center justify-between gap-3 @xl:m-4 @xl:ml-0 @xl:w-[200px] @xl:shrink-0 @xl:flex-col @xl:items-stretch @xl:justify-center @xl:rounded-[18px] @xl:bg-white/[0.06] @xl:p-5">
+          <div className="flex items-center gap-3 @xl:block">
             <CrowdLine q={q} board={board} />
-            <span className="t-caption-1 text-white/75 md:hidden">
+            <span className="t-caption-1 text-white/75 @xl:hidden">
               <Participants n={board.participants} />
             </span>
           </div>
-          <span className="inline-flex h-11 shrink-0 items-center justify-center gap-0.5 rounded-xl bg-yes px-3.5 t-label-1 !font-extrabold text-white md:mt-4 md:w-full">
+          <span className="inline-flex h-11 shrink-0 items-center justify-center gap-0.5 rounded-xl bg-yes px-3.5 t-label-1 !font-extrabold text-white @xl:mt-4 @xl:w-full">
             예측하러 가기
             <ChevronRightIcon className="h-4 w-4" />
           </span>
@@ -616,12 +629,12 @@ function IssueCard({
   });
 
   return (
-    <article className="overflow-hidden rounded-[20px] bg-hero pb-2 text-white md:rounded-3xl md:pb-3">
+    <article className="@container overflow-hidden rounded-[20px] bg-hero pb-2 text-white @xl:rounded-3xl @xl:pb-3">
       <Rotator
         slides={slides}
         label={`${issue.title} 질문`}
         onDark
-        controlsClassName={`justify-center px-4 md:justify-start md:px-5 ${anyImage ? "md:pl-[176px]" : ""}`}
+        controlsClassName={`justify-center px-4 @xl:justify-start @xl:px-5 ${anyImage ? "@xl:pl-[176px]" : ""}`}
       />
     </article>
   );
@@ -742,7 +755,9 @@ function SeasonBox({
             {scoreText(season.total)}
           </p>
           <p className="mt-1.5 flex flex-wrap items-center gap-x-1.5 t-label-2 text-label-neutral">
-            <span className="!font-extrabold text-label">{tierLabel(season.tier)}</span>
+            <span className="!font-extrabold text-label">
+              {tierLabel(season.tier)}
+            </span>
             {season.rank !== null && (
               <span>
                 · {season.rank}위 · 상위{" "}

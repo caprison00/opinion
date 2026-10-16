@@ -70,7 +70,9 @@ export default function QuestionCard({
             </span>
           )}
         </div>
-        <span className={`num-s shrink-0 ${soon ? "text-caution" : "text-label"}`}>
+        <span
+          className={`num-s shrink-0 ${soon ? "text-caution" : "text-label"}`}
+        >
           {left}
         </span>
       </div>
@@ -79,7 +81,9 @@ export default function QuestionCard({
         <h2 className="line-clamp-2 min-w-0 flex-1 t-body-1 !font-extrabold text-label group-hover:text-primary">
           {question.title}
         </h2>
-        {image && <Thumb image={image} className="h-[60px] w-[60px] rounded-xl" />}
+        {image && (
+          <Thumb image={image} className="h-[60px] w-[60px] rounded-xl" />
+        )}
       </div>
 
       <div className="mt-auto flex flex-col gap-2">
