@@ -305,21 +305,6 @@ export default async function Home({
                 </section>
               )}
 
-              {newest.length > 0 && (
-                <section>
-                  <SectionTitle
-                    idx={nextIdx()}
-                    title="새로 공개된 질문"
-                    hint="최근 일주일 동안 새로 열린 질문이에요. 일찍 예측할수록 유리해요."
-                  />
-                  <CardGrid
-                    questions={newest}
-                    boardOf={boardOf}
-                    imageOf={imageOf}
-                  />
-                </section>
-              )}
-
               <section>
                 <SectionTitle
                   idx={nextIdx()}
@@ -374,6 +359,21 @@ export default async function Home({
                   />
                 )}
               </section>
+
+              {newest.length > 0 && (
+                <section>
+                  <SectionTitle
+                    idx={nextIdx()}
+                    title="새로 공개된 질문"
+                    hint="최근 일주일 동안 새로 열린 질문이에요. 일찍 예측할수록 유리해요."
+                  />
+                  <CardGrid
+                    questions={newest}
+                    boardOf={boardOf}
+                    imageOf={imageOf}
+                  />
+                </section>
+              )}
             </>
           )}
         </div>
