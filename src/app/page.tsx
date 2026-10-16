@@ -5,7 +5,6 @@ import { ChevronRightIcon } from "@/components/icons";
 import PageShell from "@/components/PageShell";
 import QuestionCard from "@/components/QuestionCard";
 import Rotator from "@/components/Rotator";
-import SearchBox from "@/components/SearchBox";
 import InfoTip from "@/components/InfoTip";
 import { Thumb } from "@/components/QuestionImage";
 import { card, pillBar, scoreText, textTab } from "@/components/ui";
@@ -229,10 +228,6 @@ export default async function Home({
           </Link>
         </section>
       )}
-
-      <div className="mb-3">
-        <SearchBox />
-      </div>
 
       {/* 상단 탭: 핫이슈 + 9개 분야. 스크롤해도 상단 메뉴 아래에 붙어 있다 */}
       <nav

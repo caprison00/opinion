@@ -5,6 +5,7 @@ import { isTier, topPercent } from "@/lib/tiers";
 import { MobileMenu, UserMenu, type AccountInfo } from "./AccountMenu";
 import Logo from "./Logo";
 import NavLinks, { MobileNavLinks } from "./NavLinks";
+import SearchBox from "./SearchBox";
 import ThemeToggle from "./ThemeToggle";
 import { button, container, scoreText } from "./ui";
 
@@ -71,8 +72,11 @@ export default async function Header() {
           <NavLinks />
         </div>
 
-        {/* PC: 화면 모드 + 닉네임 메뉴 (또는 로그인) */}
+        {/* PC: 작은 검색창 + 화면 모드 + 닉네임 메뉴 (또는 로그인) */}
         <div className="hidden items-center gap-1.5 md:flex">
+          <div className="mr-1.5">
+            <SearchBox compact />
+          </div>
           <ThemeToggle />
           {me ? (
             <UserMenu me={me} isAdmin={isAdmin} />

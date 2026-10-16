@@ -4,16 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SearchIcon } from "./icons";
 
-export const NAV_ITEMS = [
-  { href: "/ranking", label: "랭킹" },
-  { href: "/search", label: "검색" },
-];
+// 검색은 PC에서는 상단 검색창, 모바일에서는 검색 아이콘
+export const NAV_ITEMS = [{ href: "/ranking", label: "랭킹" }];
 
 export function isActivePath(pathname: string, href: string) {
   return href === "/" ? pathname === "/" : pathname.startsWith(href);
 }
 
-// PC 상단 메뉴: 랭킹 · 검색 (내 메뉴는 오른쪽 닉네임 메뉴로)
+// PC 상단 메뉴: 랭킹 (내 메뉴는 오른쪽 닉네임 메뉴로)
 export default function NavLinks() {
   const pathname = usePathname();
 
