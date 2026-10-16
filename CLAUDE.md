@@ -29,8 +29,8 @@
 - 이용약관·개인정보처리방침 버전 관리 (`/admin/legal`, `/terms`, `/privacy`), 푸터(이용약관·개인정보처리방침·라이선스 링크). 사용 자료 출처(CC BY 4.0 등)는 `/licenses`에 모은다
 - 관리자 방문 통계 (`/admin/stats`, 쿠키 없는 일별 순 방문자)
 - 로고(확률 도넛 ㅇ 워드마크), 파비콘·홈 화면 아이콘
-- 디자인: **2026-10 전면 리뉴얼 — C안(확률 눈금) 확정, 작업 중 (Claude Cowork 담당)**. 예=파랑 / 아니오=주황, 항상 "예/아니오" 글자를 함께 표시. Cowork가 토큰 작업을 끝내면 이 줄을 "C안(확률 눈금): 차가운 흰 바탕 + 남색 글자 + 파랑 강조, 예=파랑 / 아니오=주황, 숫자 Space Grotesk"로 교체한다. 이전 A안·B안은 폐기했고 따르지 않는다(`design-a`·`design-b` 브랜치는 기록용 보관). 새 디자인의 색·글자·모양은 `src/app/globals.css`(라이트·다크 토큰)와 `src/components/ui.ts`에 모은다. 리뉴얼이 확정되면 이 줄을 새 디자인 설명으로 바꾼다.
-- 다른 회사의 로고·전용 서체(Toss Product Sans 등)·이름은 쓰지 않는다. 서체는 Pretendard. 예외: 공유 버튼의 SNS 아이콘(simple-icons, CC0)은 기획자 요청으로 쓴다.
+- 디자인: **C안(확률 눈금)** (2026-10 전면 리뉴얼, Claude Cowork 담당): 차가운 흰 바탕 + 남색 글자 + 파랑 강조, 예=파랑 / 아니오=주황(항상 "예/아니오" 글자를 함께 표시), 숫자 Space Grotesk(OFL, `src/app/fonts`에 직접 둠). 기준 문서는 `design/STYLEGUIDE.md`, 색·글자·모양은 `src/app/globals.css`(라이트·다크 토큰)와 `src/components/ui.ts`. 이전 A안·B안은 폐기(`design-a`·`design-b` 브랜치는 기록용 보관).
+- 다른 회사의 로고·전용 서체(Toss Product Sans 등)·이름은 쓰지 않는다. 서체는 Pretendard(본문) + Space Grotesk(숫자). 예외: 공유 버튼의 SNS 아이콘(simple-icons, CC0)은 기획자 요청으로 쓴다.
 - 카드·박스의 한쪽(위·왼쪽 등)에만 색을 넣는 강조 테두리는 쓰지 않는다 (기획자 요청).
 
 ## 작업자 정보
