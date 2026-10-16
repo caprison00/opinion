@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { SNS_PATHS } from "./snsIcons";
 
-// 질문 공유: 아이콘 버튼을 누르면 공유 대상 메뉴가 펼쳐진다. 공유 문구에는 집단 확률이나 내 예측을 넣지 않는다 (여론 공개 규칙).
+// 질문 공유: 휴대폰은 아이콘 버튼을 누르면 기기 공유 창, PC는 공유 대상 메뉴가 펼쳐진다. 공유 문구에는 집단 확률이나 내 예측을 넣지 않는다 (여론 공개 규칙).
 // - 인스타그램·틱톡: 웹 공유 주소가 없어서, 휴대폰은 공유 창 / PC는 링크 복사 후 안내
 // - 카카오톡: 카카오 앱 키가 있으면 카카오 공유, 없으면 휴대폰 공유 창 / PC는 링크 복사
 // - X·스레드·링크드인·텔레그램: 각 서비스의 공유 창
@@ -171,7 +171,10 @@ export default function ShareButton({
     <div ref={box} className="relative">
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={async () => {
+          // 휴대폰: 기기 공유 창을 바로 연다 / PC(또는 공유 창이 없는 기기): 메뉴
+          if (open || !(await nativeShare())) setOpen((v) => !v);
+        }}
         aria-label="공유"
         title="공유"
         aria-haspopup="menu"
