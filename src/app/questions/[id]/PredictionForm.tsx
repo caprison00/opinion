@@ -155,7 +155,10 @@ function OxForm({
       </div>
       <div>
         <div className="flex items-end justify-between">
-          <label htmlFor="percent" className="t-label-1 !font-bold text-label-neutral">
+          <label
+            htmlFor="percent"
+            className="t-label-1 !font-bold text-label-neutral"
+          >
             &lsquo;{options[side]}&rsquo;일 확률
           </label>
           <span
@@ -284,7 +287,9 @@ function ChoiceForm({
 function ReasonInput() {
   return (
     <label className="flex flex-col gap-2 border-t border-line-alt pt-4">
-      <span className="t-label-1 !font-semibold text-label-neutral">한 줄 근거 (선택)</span>
+      <span className="t-label-1 !font-semibold text-label-neutral">
+        한 줄 근거 (선택)
+      </span>
       <input
         name="reason"
         maxLength={100}

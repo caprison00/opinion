@@ -96,7 +96,9 @@ export default function Discussion({
     <section>
       <h2 className="flex items-baseline gap-2 t-heading-2 lg:t-heading-1">
         토론{" "}
-        <span className="num text-[0.9em] text-label-alt">{comments.length}</span>
+        <span className="num text-[0.9em] text-label-alt">
+          {comments.length}
+        </span>
       </h2>
 
       {viewerId ? (
@@ -247,7 +249,9 @@ function CommentItem({
           <span className="truncate">{c.nickname}</span>
           {mine && <span className="!font-semibold text-label-alt">(나)</span>}
         </Link>
-        <span className="t-caption-1 text-label-alt">{timeAgo(c.createdAt)}</span>
+        <span className="t-caption-1 text-label-alt">
+          {timeAgo(c.createdAt)}
+        </span>
         <span className="ml-auto flex items-center gap-1.5">
           {hit !== null && (
             <span
