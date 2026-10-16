@@ -18,6 +18,12 @@ export default function Footer() {
           >
             개인정보처리방침
           </Link>
+          <Link
+            href="/licenses"
+            className="text-label-neutral hover:text-label"
+          >
+            라이선스
+          </Link>
         </nav>
         <p className="mt-4 t-caption-1 text-label-alt">
           예감은 돈이나 재화를 걸지 않는 예측 서비스예요. 점수는 표시용이며 어떤
@@ -25,17 +31,6 @@ export default function Footer() {
         </p>
         <p className="mt-4 t-caption-1 text-label-assist">
           © {year} 예감. All rights reserved.
-        </p>
-        <p className="mt-1 t-caption-1 text-label-assist">
-          타이포그래피 단계는 Wanted Design System(© Wanted Lab)을 참고했어요 ·{" "}
-          <a
-            href="https://creativecommons.org/licenses/by/4.0/deed.ko"
-            target="_blank"
-            rel="noreferrer"
-            className="underline hover:text-label-alt"
-          >
-            CC BY 4.0
-          </a>
         </p>
       </div>
     </footer>
