@@ -17,7 +17,6 @@ import {
   statusLabel,
   type Question,
 } from "@/lib/questions";
-import DeleteAccount from "./DeleteAccount";
 
 export const metadata = { title: "내 예측" };
 
@@ -118,12 +117,6 @@ export default async function MyPredictionsPage({
           </Link>
           <h1 className="t-heading-1 md:t-title-3">내 예측</h1>
         </div>
-        <Link
-          href="/onboarding"
-          className="t-label-1 text-label-alt hover:text-label"
-        >
-          닉네임 변경
-        </Link>
       </div>
 
       <section className="mt-5 grid grid-cols-2 gap-3 md:gap-4">
@@ -250,9 +243,6 @@ export default async function MyPredictionsPage({
           </ul>
         )}
       </div>
-      <section className="mt-16 border-t border-line pt-6">
-        <DeleteAccount />
-      </section>
     </PageShell>
   );
 }

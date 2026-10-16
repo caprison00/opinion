@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { button, input } from "@/components/ui";
-import { deleteAccount, type DeleteState } from "./actions";
+import { deleteAccount, type DeleteState } from "@/app/me/actions";
 
 export default function DeleteAccount() {
   const [open, setOpen] = useState(false);
@@ -15,7 +15,7 @@ export default function DeleteAccount() {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="t-label-1 text-label-alt underline underline-offset-2 hover:text-negative-strong"
+        className="t-caption-1 text-label-assist underline underline-offset-2 hover:text-negative-strong"
       >
         회원 탈퇴
       </button>

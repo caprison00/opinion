@@ -5,6 +5,8 @@ import TierMark from "@/components/TierMark";
 import BadgeIcon from "@/components/BadgeIcon";
 import type { UserBadge } from "@/lib/badges";
 import BadgeShelf from "./BadgeShelf";
+import NicknameEdit from "./NicknameEdit";
+import { ChevronRightIcon } from "@/components/icons";
 import { card, scoreColor, scoreText } from "@/components/ui";
 import { createClient } from "@/lib/supabase/server";
 import { categoryLabel, isCategory } from "@/lib/questions";
@@ -64,6 +66,7 @@ export default async function ProfilePage({
         .eq("user_id", id),
     ]);
   const owned = (badgeData ?? []) as UserBadge[];
+  const earned = owned.filter((b) => b.level > 0);
   const showBadges = prefs?.show_badges ?? true;
   const featuredKey = (prefs?.featured_badge as string | null) ?? null;
   const featuredBadge = owned.find(
@@ -84,7 +87,7 @@ export default async function ProfilePage({
 
   return (
     <PageShell narrow>
-      <section className="flex items-center gap-4">
+      <section className="flex items-start gap-4">
         <div
           className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full t-title-3"
           style={{
@@ -98,7 +101,7 @@ export default async function ProfilePage({
         >
           {s.nickname.slice(0, 1)}
         </div>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <TierMark tier={tier} size="md" />
             {featuredBadge && (
@@ -113,6 +116,7 @@ export default async function ProfilePage({
           <h1 className="mt-1 truncate t-heading-1 md:t-title-3">
             {s.nickname}
           </h1>
+          {isMe && <NicknameEdit nickname={s.nickname} />}
         </div>
       </section>
 
@@ -144,20 +148,54 @@ export default async function ProfilePage({
       </p>
 
       <section className="mt-8">
-        <h2 className="t-heading-2">
-          뱃지{" "}
-          {(isMe || showBadges) && (
-            <span className="t-body-2 text-label-assist">
-              {owned.filter((b) => b.level > 0).length}/12
-            </span>
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="t-heading-2">
+            뱃지{" "}
+            {(isMe || showBadges) && (
+              <span className="t-body-2 text-label-assist">
+                {earned.length}/12
+              </span>
+            )}
+          </h2>
+          {isMe && (
+            <Link
+              href="/me/badges"
+              className="flex items-center t-label-1 !font-semibold text-label-alt hover:text-label"
+            >
+              내 뱃지 보기
+              <ChevronRightIcon className="h-4 w-4" />
+            </Link>
           )}
-        </h2>
-        <BadgeShelf
-          owned={owned}
-          isMe={isMe}
-          showBadges={showBadges}
-          featured={featuredKey}
-        />
+        </div>
+        {isMe ? (
+          // 내 프로필에서는 받은 뱃지만 짧게, 진열장·설정은 내 뱃지 화면에서
+          <Link
+            href="/me/badges"
+            className={`${card} mt-3 flex min-h-20 flex-wrap items-center gap-2 px-5 py-4 hover:shadow-medium`}
+          >
+            {earned.length ? (
+              earned.map((b) => (
+                <BadgeIcon
+                  key={b.badge_key}
+                  badgeKey={b.badge_key}
+                  level={b.level}
+                  size={40}
+                />
+              ))
+            ) : (
+              <span className="t-label-1 text-label-alt">
+                아직 받은 뱃지가 없어요. 어떤 뱃지가 있는지 보러 가기
+              </span>
+            )}
+          </Link>
+        ) : (
+          <BadgeShelf
+            owned={owned}
+            isMe={false}
+            showBadges={showBadges}
+            featured={featuredKey}
+          />
+        )}
       </section>
 
       <section className="mt-8">

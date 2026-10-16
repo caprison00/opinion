@@ -1,17 +1,15 @@
 import BadgeIcon from "@/components/BadgeIcon";
-import { button, card } from "@/components/ui";
+import { card } from "@/components/ui";
 import {
   BADGES,
-  badgeTitle,
   FAMILY_LABEL,
   nextGoal,
   type BadgeFamily,
   type UserBadge,
 } from "@/lib/badges";
-import { setFeaturedBadge, setShowBadges } from "./actions";
 
 // 프로필의 뱃지 진열장
-// - 본인: 12종 전부 (못 받은 뱃지는 흐리게 + 다음 단계까지 남은 양), 대표 뱃지·공개 설정
+// - 본인(내 뱃지 화면): 12종 전부 (못 받은 뱃지는 흐리게 + 다음 단계까지 남은 양)
 // - 다른 사람: 공개로 둔 경우 받은 뱃지만
 export default function BadgeShelf({
   owned,
@@ -25,7 +23,6 @@ export default function BadgeShelf({
   featured: string | null;
 }) {
   const byKey = new Map(owned.map((b) => [b.badge_key, b]));
-  const earned = owned.filter((b) => b.level > 0);
 
   if (!isMe && !showBadges) {
     return (
@@ -49,47 +46,6 @@ export default function BadgeShelf({
 
   return (
     <div className="mt-3 flex flex-col gap-4">
-      {isMe && (
-        <div
-          className={`${card} flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between`}
-        >
-          <form
-            action={setFeaturedBadge}
-            className="flex flex-wrap items-center gap-2"
-          >
-            <label htmlFor="featured" className="t-label-1 !font-semibold">
-              닉네임 옆 대표 뱃지
-            </label>
-            <select
-              id="featured"
-              name="badge"
-              defaultValue={featured ?? ""}
-              className="h-9 rounded-lg border border-line-neutral bg-surface px-2 t-label-1"
-            >
-              <option value="">없음</option>
-              {earned.map((b) => (
-                <option key={b.badge_key} value={b.badge_key}>
-                  {badgeTitle(b.badge_key, b.level)}
-                </option>
-              ))}
-            </select>
-            <button className={button.smallSecondary}>저장</button>
-          </form>
-          <form action={setShowBadges} className="flex items-center gap-2">
-            <label className="flex items-center gap-2 t-label-1">
-              <input
-                type="checkbox"
-                name="show"
-                defaultChecked={showBadges}
-                className="h-4 w-4 accent-[var(--color-brand)]"
-              />
-              다른 사람에게 뱃지 공개
-            </label>
-            <button className={button.smallSecondary}>저장</button>
-          </form>
-        </div>
-      )}
-
       {families.map(({ f, items }) => (
         <section key={f}>
           <h3 className="mb-2 t-label-1 !font-bold text-label-neutral">

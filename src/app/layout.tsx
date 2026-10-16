@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import BottomNav from "@/components/BottomNav";
 import VisitTracker from "@/components/VisitTracker";
 import { IS_PRODUCTION, SITE_URL } from "@/lib/site";
 import "./globals.css";
@@ -50,7 +49,6 @@ export default function RootLayout({
           </div>
         )}
         {children}
-        <BottomNav />
         <VisitTracker />
       </body>
     </html>

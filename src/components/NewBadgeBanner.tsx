@@ -44,10 +44,10 @@ export default async function NewBadgeBanner() {
       </p>
       <div className="flex gap-2">
         <Link
-          href={`/users/${user.id}`}
+          href="/me/badges"
           className="rounded-lg px-3 py-1.5 t-label-2 !font-semibold text-accent-ink hover:bg-accent/20"
         >
-          진열장 보기
+          내 뱃지 보기
         </Link>
         <form action={markBadgesSeen}>
           <button className="rounded-lg bg-brand px-3 py-1.5 t-label-2 !font-semibold text-white hover:bg-brand-strong">

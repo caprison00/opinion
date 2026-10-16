@@ -5,7 +5,7 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-line bg-bg-alt pb-24 md:pb-0">
+    <footer className="border-t border-line bg-bg-alt">
       <div className={`${container} py-8 md:py-10`}>
         <nav className="flex flex-wrap items-center gap-x-4 gap-y-2 t-label-1">
           <Link href="/terms" className="text-label-neutral hover:text-label">

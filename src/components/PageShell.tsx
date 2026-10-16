@@ -3,7 +3,7 @@ import Header from "./Header";
 import NewBadgeBanner from "./NewBadgeBanner";
 import { container } from "./ui";
 
-// 모든 일반 화면의 공통 틀: 상단 메뉴 + 본문 (모바일은 하단 탭 높이만큼 여백)
+// 모든 일반 화면의 공통 틀: 상단 메뉴 + 본문
 export default function PageShell({
   children,
   narrow = false,
