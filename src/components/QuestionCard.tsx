@@ -7,7 +7,7 @@ import {
   timeLeft,
   type Question,
 } from "@/lib/questions";
-import { Change, Locked } from "./CrowdBits";
+import { Change, Locked, Participants } from "./CrowdBits";
 import { card } from "./ui";
 import type { PickedImage } from "@/lib/images";
 import { Thumb } from "./QuestionImage";
@@ -92,8 +92,9 @@ export default function QuestionCard({
             style={{ width: `${shown?.pct ?? 0}%` }}
           />
         </div>
-        <p className="mt-3 t-caption-1 text-label-alt">
-          마감 {formatDate(question.close_at)} · {board.participants}명 예측
+        <p className="mt-3 flex items-center gap-1.5 t-caption-1 text-label-alt">
+          마감 {formatDate(question.close_at)} ·{" "}
+          <Participants n={board.participants} />
         </p>
       </div>
     </Link>

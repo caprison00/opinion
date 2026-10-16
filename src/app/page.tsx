@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { Change, Locked, OxBar } from "@/components/CrowdBits";
+import { Change, Locked, OxBar, Participants } from "@/components/CrowdBits";
 import EmptyState from "@/components/EmptyState";
-import { ChevronRightIcon, UserIcon } from "@/components/icons";
+import { ChevronRightIcon } from "@/components/icons";
 import PageShell from "@/components/PageShell";
 import QuestionCard from "@/components/QuestionCard";
 import Rotator from "@/components/Rotator";
@@ -537,13 +537,7 @@ function IssueCard({
             <CrowdLine q={q} board={board} />
           </div>
           <p className="mt-3 flex flex-wrap gap-x-3 t-caption-1 text-label-alt">
-            <span
-              className="inline-flex items-center gap-1"
-              aria-label={`${board.participants}명 예측`}
-            >
-              <UserIcon className="h-3.5 w-3.5" />
-              {board.participants}
-            </span>
+            <Participants n={board.participants} />
             <span>{dDay(q.close_at)}</span>
           </p>
         </div>
@@ -587,8 +581,9 @@ function MovingRow({
       >
         {image && <Thumb image={image} className="h-11 w-11 rounded-lg" />}
         <div className="min-w-0 flex-1">
-          <p className="t-caption-1 text-label-alt">
-            {categoryLabel(q.category)} · {board.participants}명 예측
+          <p className="flex items-center gap-1.5 t-caption-1 text-label-alt">
+            {categoryLabel(q.category)} ·{" "}
+            <Participants n={board.participants} />
           </p>
           <p className="mt-0.5 line-clamp-1 t-body-2 !font-semibold text-label group-hover:text-primary">
             {q.title}

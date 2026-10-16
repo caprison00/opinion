@@ -1,4 +1,17 @@
-import { LockIcon } from "./icons";
+import { LockIcon, UserIcon } from "./icons";
+
+// 참여자 수: 사람 아이콘 + 숫자 (읽을 때는 "N명 예측")
+export function Participants({ n }: { n: number }) {
+  return (
+    <span
+      className="inline-flex items-center gap-1 tabular-nums"
+      aria-label={`${n}명 예측`}
+    >
+      <UserIcon className="h-3.5 w-3.5" />
+      {n}
+    </span>
+  );
+}
 
 // 24시간 변화량 (%p). 볼 수 없으면 아무것도 그리지 않는다 (여론 공개 규칙).
 export function Change({
