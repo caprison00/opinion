@@ -13,7 +13,9 @@ import {
   type Question,
 } from "@/lib/questions";
 import { refreshAllBadges } from "./actions";
+import type { ImageFields } from "@/lib/images";
 import QuestionIssueForm from "./QuestionIssueForm";
+import QuestionImageForm from "./QuestionImageForm";
 import PrivateActions from "./PrivateActions";
 import DeleteIssueButton from "./DeleteIssueButton";
 import IssueForm from "./IssueForm";
@@ -360,6 +362,10 @@ export default async function AdminPage({
                       issues={issues}
                     />
                   )}
+                  <QuestionImageForm
+                    id={q.id}
+                    value={q as Question & ImageFields}
+                  />
                   <QuestionActions
                     id={q.id}
                     type={q.type}

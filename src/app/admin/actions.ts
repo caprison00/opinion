@@ -434,3 +434,26 @@ export async function refreshAllBadges() {
   await supabase.rpc("refresh_all_badges");
   revalidatePath("/", "layout");
 }
+
+// 사진만 바꾸기: 이미 공개된 질문에도 사진을 넣거나 바꾸거나 뺄 수 있다 (다른 내용은 그대로).
+export async function setQuestionImage(
+  _prev: AdminActionState,
+  formData: FormData,
+): Promise<AdminActionState> {
+  const { supabase, user, isAdmin } = await getViewer();
+  if (!user) redirect("/login");
+  if (!isAdmin) return { error: "관리자만 할 수 있어요." };
+  const id = String(formData.get("id") ?? "");
+  const image = parseImage(formData);
+  if ("error" in image) return image;
+  const { data, error } = await supabase
+    .from("questions")
+    .update(image)
+    .eq("id", id)
+    .select("id");
+  if (error) return { error: `저장에 실패했어요: ${error.message}` };
+  if (!data?.length)
+    return { error: "질문을 찾지 못했어요. 새로고침해 주세요." };
+  revalidateQuestion(id);
+  return { ok: true };
+}
