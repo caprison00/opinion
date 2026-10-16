@@ -1,9 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SNS_PATHS } from "./snsIcons";
 
-// 질문 공유 아이콘 줄. 공유 문구에는 집단 확률이나 내 예측을 넣지 않는다 (여론 공개 규칙).
+// 질문 공유: 아이콘 버튼을 누르면 공유 대상 메뉴가 펼쳐진다. 공유 문구에는 집단 확률이나 내 예측을 넣지 않는다 (여론 공개 규칙).
 // - 인스타그램·틱톡: 웹 공유 주소가 없어서, 휴대폰은 공유 창 / PC는 링크 복사 후 안내
 // - 카카오톡: 카카오 앱 키가 있으면 카카오 공유, 없으면 휴대폰 공유 창 / PC는 링크 복사
 // - X·스레드·링크드인·텔레그램: 각 서비스의 공유 창
@@ -69,6 +69,23 @@ export default function ShareButton({
 }) {
   const [notice, setNotice] = useState("");
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const [open, setOpen] = useState(false);
+  const box = useRef<HTMLDivElement>(null);
+
+  // 메뉴 밖을 누르거나 Esc를 누르면 닫는다
+  useEffect(() => {
+    if (!open) return;
+    const onDown = (e: PointerEvent) => {
+      if (!box.current?.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    document.addEventListener("pointerdown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
 
   const url = () => `${window.location.origin}/questions/${questionId}`;
   const text = `${title} — 당신의 예감은?`;
@@ -106,6 +123,7 @@ export default function ShareButton({
   }
 
   async function onShare(t: Target) {
+    setOpen(false);
     switch (t.key) {
       case "instagram":
       case "tiktok":
@@ -150,45 +168,86 @@ export default function ShareButton({
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <ul className="flex flex-wrap items-center gap-2" aria-label="공유하기">
-        {TARGETS.map((t) => (
-          <li key={t.key}>
+    <div ref={box} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-label="공유"
+        title="공유"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        className="flex h-9 w-9 items-center justify-center rounded-full border border-line-neutral bg-surface text-label-neutral transition-colors hover:bg-fill hover:text-label"
+      >
+        <ShareIcon />
+      </button>
+
+      {open && (
+        <div
+          role="menu"
+          aria-label="공유하기"
+          className="absolute right-0 top-11 z-20 w-56 rounded-[14px] border border-line bg-surface p-1.5 shadow-medium"
+        >
+          {TARGETS.map((t) => (
             <button
+              key={t.key}
               type="button"
+              role="menuitem"
               onClick={() => onShare(t)}
-              title={t.label === "링크 복사" ? t.label : `${t.label}에 공유`}
-              aria-label={
-                t.label === "링크 복사" ? t.label : `${t.label}에 공유`
-              }
-              className={`flex h-9 w-9 items-center justify-center rounded-full transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand ${
-                t.bg === "#000" ? "ring-1 ring-inset ring-white/25" : ""
-              }`}
-              style={{ background: t.bg, color: t.fg }}
+              className="flex w-full items-center gap-3 rounded-lg px-2.5 py-2 text-left t-label-1 !font-semibold text-label hover:bg-fill"
             >
-              {t.key === "link" ? (
-                <LinkIcon />
-              ) : (
-                <svg
-                  viewBox="0 0 24 24"
-                  className="h-[18px] w-[18px]"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path d={SNS_PATHS[t.key]} />
-                </svg>
-              )}
+              <span
+                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
+                  t.bg === "#000" ? "ring-1 ring-inset ring-white/25" : ""
+                }`}
+                style={{ background: t.bg, color: t.fg }}
+                aria-hidden="true"
+              >
+                {t.key === "link" ? (
+                  <LinkIcon />
+                ) : (
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="h-4 w-4"
+                    fill="currentColor"
+                  >
+                    <path d={SNS_PATHS[t.key]} />
+                  </svg>
+                )}
+              </span>
+              {t.label}
             </button>
-          </li>
-        ))}
-      </ul>
+          ))}
+        </div>
+      )}
+
       <p
         aria-live="polite"
-        className="min-h-[1.25rem] t-caption-1 text-positive"
+        className={`absolute right-0 top-11 z-10 w-64 rounded-lg bg-brand px-3 py-2 t-caption-1 text-white shadow-medium transition-opacity ${
+          notice && !open ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
       >
         {notice}
       </p>
     </div>
+  );
+}
+
+function ShareIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-[18px] w-[18px]"
+      aria-hidden="true"
+    >
+      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+      <path d="m16 6-4-4-4 4" />
+      <path d="M12 2v13" />
+    </svg>
   );
 }
 
@@ -201,7 +260,7 @@ function LinkIcon() {
       strokeWidth={2}
       strokeLinecap="round"
       strokeLinejoin="round"
-      className="h-[18px] w-[18px]"
+      className="h-4 w-4"
       aria-hidden="true"
     >
       <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />

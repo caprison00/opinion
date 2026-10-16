@@ -303,8 +303,8 @@ export default async function QuestionPage({
                 <HeroImage image={image} />
               </div>
             )}
-            <div>
-              <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex flex-wrap items-center gap-2 pt-1.5">
                 {issue && (
                   <span className="rounded-full border border-line bg-accent-soft px-2.5 py-0.5 t-caption-1 !font-bold text-accent-ink">
                     {issue.title}
@@ -323,6 +323,9 @@ export default async function QuestionPage({
                   {accepting ? timeLeft(q.close_at) : statusLabel(q)}
                 </span>
               </div>
+              {q.is_public !== false && (
+                <ShareButton questionId={q.id} title={q.title} />
+              )}
             </div>
             <h1 className="mt-3 t-heading-1 md:t-title-2">{q.title}</h1>
 
@@ -336,11 +339,6 @@ export default async function QuestionPage({
               <dt className="text-label-alt">결과 확정</dt>
               <dd className="text-label">{formatDate(q.resolve_at)} 예정</dd>
             </dl>
-            {q.is_public !== false && (
-              <div className="mt-5">
-                <ShareButton questionId={q.id} title={q.title} />
-              </div>
-            )}
           </header>
 
           {(issue?.context_lines.length || q.description) && (
