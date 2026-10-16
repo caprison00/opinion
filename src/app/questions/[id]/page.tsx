@@ -326,7 +326,9 @@ export default async function QuestionPage({
                 <ShareButton questionId={q.id} title={q.title} />
               )}
             </div>
-            <h1 className="mt-3 text-balance t-title-3 lg:t-title-1">{q.title}</h1>
+            <h1 className="mt-3 text-balance t-title-3 lg:t-title-1">
+              {q.title}
+            </h1>
             <p className="mt-3 flex items-center gap-4 t-label-1 text-label-neutral">
               {accepting && (
                 <span
@@ -344,7 +346,9 @@ export default async function QuestionPage({
               </span>
             </p>
 
-            <dl className={`${card} mt-4 grid grid-cols-[auto_1fr] gap-x-5 gap-y-2 px-4 py-3.5 t-label-1 md:px-5`}>
+            <dl
+              className={`${card} mt-4 grid grid-cols-[auto_1fr] gap-x-5 gap-y-2 px-4 py-3.5 t-label-1 md:px-5`}
+            >
               <dt className="!font-semibold text-label-alt">판정 출처</dt>
               <dd className="whitespace-pre-line break-words text-label">
                 {q.resolution_source}
@@ -365,7 +369,9 @@ export default async function QuestionPage({
             <section className="rounded-[18px] bg-bg-alt p-5 md:px-6">
               {issue && issue.context_lines.length > 0 && (
                 <>
-                  <h2 className="t-label-1 !font-extrabold text-label">3줄 맥락</h2>
+                  <h2 className="t-label-1 !font-extrabold text-label">
+                    3줄 맥락
+                  </h2>
                   <ol className="mt-2 flex flex-col gap-1.5">
                     {issue.context_lines.map((line, i) => (
                       <li
@@ -501,7 +507,9 @@ export default async function QuestionPage({
 
           {siblings.length > 0 && (
             <section className={`${card} p-5`}>
-              <h2 className="t-label-1 !font-extrabold">같은 이슈의 다른 질문</h2>
+              <h2 className="t-label-1 !font-extrabold">
+                같은 이슈의 다른 질문
+              </h2>
               <ul className="mt-3 flex flex-col gap-3.5">
                 {siblings.map((s) => (
                   <li key={s.id}>
@@ -591,8 +599,8 @@ function BattlePanel({
             size={16}
           />
         )}{" "}
-        <span className="!font-bold text-label">{reason.nickname}</span>{" "}
-        &ldquo;{reason.body}&rdquo;
+        <span className="!font-bold text-label">{reason.nickname}</span> &ldquo;
+        {reason.body}&rdquo;
       </p>
     );
 
@@ -608,8 +616,13 @@ function BattlePanel({
       </div>
 
       {!crowd ? (
-        <div className={`${card} mt-3.5 flex flex-wrap items-center gap-x-6 gap-y-3 p-5 md:p-7`}>
-          <p className="num-xl text-[44px] text-label-alt md:text-[64px]" aria-hidden="true">
+        <div
+          className={`${card} mt-3.5 flex flex-wrap items-center gap-x-6 gap-y-3 p-5 md:p-7`}
+        >
+          <p
+            className="num-xl text-[44px] text-label-alt md:text-[64px]"
+            aria-hidden="true"
+          >
             ??%
           </p>
           <div className="min-w-[200px] flex-1">
@@ -647,7 +660,9 @@ function BattlePanel({
                 <li
                   key={q.options[i]}
                   className={`rounded-2xl p-4 ${yes ? "bg-yes-soft" : "bg-no-soft"} ${
-                    isAnswer ? "ring-2 ring-inset " + (yes ? "ring-yes" : "ring-no") : ""
+                    isAnswer
+                      ? "ring-2 ring-inset " + (yes ? "ring-yes" : "ring-no")
+                      : ""
                   }`}
                 >
                   <div className="flex items-baseline justify-between gap-2">
@@ -656,12 +671,16 @@ function BattlePanel({
                     >
                       {q.options[i]}
                       {isAnswer && (
-                        <span className="ml-1.5 t-caption-1 !font-bold">정답</span>
+                        <span className="ml-1.5 t-caption-1 !font-bold">
+                          정답
+                        </span>
                       )}
                     </span>
                     <span className="flex items-baseline gap-2">
                       <Change value={changeOf(board, i)} />
-                      <span className={`num-l ${yes ? "text-yes-ink" : "text-no-ink"}`}>
+                      <span
+                        className={`num-l ${yes ? "text-yes-ink" : "text-no-ink"}`}
+                      >
                         {pct}%
                       </span>
                     </span>
