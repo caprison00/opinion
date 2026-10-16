@@ -175,11 +175,12 @@ export default async function Home({
     ? open.filter((q) => q.category === category)
     : [];
   const closingSoon = open.slice(0, 6);
-  // 최근 7일 안에 공개된 질문, 새것부터
+  // 최근 7일 안에 공개된 질문 중 가장 최근 6개를, 먼저 공개한 순서대로
   const newest = open
     .filter((q) => new Date(q.open_at).getTime() > Date.now() - 7 * DAY)
     .sort((a, b) => b.open_at.localeCompare(a.open_at))
-    .slice(0, 6);
+    .slice(0, 6)
+    .reverse();
 
   const seasonScores = (seasonData ?? []) as { score: number }[];
   const myRank = user
@@ -365,7 +366,7 @@ export default async function Home({
                   <SectionTitle
                     idx={nextIdx()}
                     title="새로 공개된 질문"
-                    hint="최근 일주일 동안 새로 열린 질문이에요. 일찍 예측할수록 유리해요."
+                    hint="최근 일주일 동안 새로 열린 질문이에요. 공개된 순서대로 보여요."
                   />
                   <CardGrid
                     questions={newest}
