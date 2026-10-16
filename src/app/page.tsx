@@ -288,21 +288,17 @@ export default async function Home({
             </section>
           ) : (
             <>
-              {hotIssues.length > 0 && (
-                <section>
-                  <SectionTitle idx={nextIdx()} title="오늘의 핫이슈" />
-                  <div className="flex flex-col gap-4">
-                    {hotIssues.map((h) => (
-                      <IssueCard
-                        key={h.issue.id}
-                        issue={h.issue}
-                        questions={h.questions}
-                        boardOf={boardOf}
-                      />
-                    ))}
-                  </div>
+              {/* 이슈 묶음마다 이슈 이름을 칸 제목으로 */}
+              {hotIssues.map((h) => (
+                <section key={h.issue.id}>
+                  <SectionTitle idx={nextIdx()} title={h.issue.title} />
+                  <IssueCard
+                    issue={h.issue}
+                    questions={h.questions}
+                    boardOf={boardOf}
+                  />
                 </section>
-              )}
+              ))}
 
               <section>
                 <SectionTitle
@@ -551,18 +547,13 @@ function IssueCard({
         />
       )}
       <div className="min-w-0 flex-1 p-5 md:p-6">
-        <p className="flex flex-wrap items-center gap-2 t-caption-1">
-          <span className="rounded-full border border-line bg-accent-soft px-2.5 py-0.5 !font-bold text-accent-ink">
-            {issue.title}
-          </span>
-          {questions.length > 1 && (
-            <span className="!font-semibold text-label-alt">
-              질문 {questions.length}개
-            </span>
-          )}
-        </p>
+        {questions.length > 1 && (
+          <p className="mb-3 t-caption-1 !font-semibold text-label-alt">
+            이 이슈의 질문 {questions.length}개
+          </p>
+        )}
         {issue.context_lines.length > 0 && (
-          <ol className="mt-3 flex flex-col gap-1">
+          <ol className="mb-4 flex flex-col gap-1">
             {issue.context_lines.map((line, i) => (
               <li key={i} className="flex gap-2 t-body-3 text-label-neutral">
                 <span className="!font-extrabold text-accent-ink">{i + 1}</span>
@@ -571,9 +562,7 @@ function IssueCard({
             ))}
           </ol>
         )}
-        <div className="mt-4">
-          <Rotator slides={slides} label={`${issue.title} 질문`} />
-        </div>
+        <Rotator slides={slides} label={`${issue.title} 질문`} />
       </div>
     </article>
   );
