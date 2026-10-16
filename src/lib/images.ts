@@ -1,7 +1,7 @@
 // 질문·이슈 묶음 이미지 (선택). 질문에 없으면 이슈 묶음의 이미지를 쓴다.
 export type ImageFields = {
   image_url?: string | null;
-  image_credit?: string | null; // 출처 (필수로 받는다)
+  image_credit?: string | null; // 예전에 받던 출처 (지금은 받지도 표시하지도 않는다)
   image_alt?: string | null; // 화면 낭독기용 짧은 설명
 };
 
