@@ -121,7 +121,9 @@ export default async function ProfilePage({
       </section>
 
       <section className="mt-6 rounded-3xl bg-hero p-5 text-white md:p-6">
-        <p className="t-label-2 !font-bold text-hero-accent">{seasonLabel(s.season)} 시즌</p>
+        <p className="t-label-2 !font-bold text-hero-accent">
+          {seasonLabel(s.season)} 시즌
+        </p>
         <div className="mt-1 flex flex-wrap items-end justify-between gap-2">
           <p className="num-l text-[40px]">
             {scoreText(s.season_total)}

@@ -125,9 +125,7 @@ export default async function MyPredictionsPage({
           <p className="t-label-2 !font-bold text-hero-accent">
             {seasonLabel(season)} 시즌 점수
           </p>
-          <p className="mt-2 num-l text-[36px]">
-            {scoreText(seasonTotal)}
-          </p>
+          <p className="mt-2 num-l text-[36px]">{scoreText(seasonTotal)}</p>
           <p className="mt-0.5 t-caption-1 text-white/75">
             이번 달 판정 {seasonScores.length}건
           </p>

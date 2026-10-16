@@ -303,7 +303,9 @@ function RankRow({
         >
           <TierMark tier={tier} />
           {badge && <BadgeIcon badgeKey={badge.key} level={badge.level} />}
-          <span className="truncate t-body-3 !font-extrabold">{r.nickname}</span>
+          <span className="truncate t-body-3 !font-extrabold">
+            {r.nickname}
+          </span>
           {isMe && (
             <span className="shrink-0 t-label-2 text-primary">(나)</span>
           )}
@@ -315,11 +317,11 @@ function RankRow({
             : ` · 평균 ${scoreText(Math.round(Number(r.avg_score)))}점`}
         </p>
       </div>
-      <span
-        className={`num shrink-0 text-[22px] ${scoreColor(value)}`}
-      >
+      <span className={`num shrink-0 text-[22px] ${scoreColor(value)}`}>
         {scoreText(value)}
-        {mode === "accuracy" && <span className="font-sans t-caption-1"> 평균</span>}
+        {mode === "accuracy" && (
+          <span className="font-sans t-caption-1"> 평균</span>
+        )}
       </span>
     </li>
   );
