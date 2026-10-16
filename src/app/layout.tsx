@@ -1,7 +1,19 @@
 import type { Metadata, Viewport } from "next";
+import localFont from "next/font/local";
 import VisitTracker from "@/components/VisitTracker";
 import { IS_PRODUCTION, SITE_URL } from "@/lib/site";
 import "./globals.css";
+
+// 숫자 전용 서체 (확률·D-N·점수). Space Grotesk, SIL OFL 1.1 (src/app/fonts/SpaceGrotesk-OFL.txt).
+// 라틴 글자 조각만 저장소에 두고 우리 사이트에서 직접 내보낸다 (두 굵기 합쳐 약 26KB, 외부 요청 없음).
+const spaceGrotesk = localFont({
+  src: [
+    { path: "./fonts/SpaceGrotesk-500.woff2", weight: "500", style: "normal" },
+    { path: "./fonts/SpaceGrotesk-700.woff2", weight: "700", style: "normal" },
+  ],
+  display: "swap",
+  variable: "--font-space-grotesk",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -19,7 +31,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f7f6f2",
+  themeColor: "#f5f6f8",
   viewportFit: "cover",
 };
 
@@ -29,7 +41,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" data-theme="light" suppressHydrationWarning>
+    <html
+      lang="ko"
+      data-theme="light"
+      className={spaceGrotesk.variable}
+      suppressHydrationWarning
+    >
       <head>
         {/* 화면이 그려지기 전에 저장된 테마를 적용해 깜빡임을 막는다. 기본은 라이트. */}
         <script

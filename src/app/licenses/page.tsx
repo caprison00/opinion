@@ -20,6 +20,13 @@ const ITEMS = [
     href: "https://github.com/orioncactus/pretendard",
   },
   {
+    name: "Space Grotesk",
+    by: "© The Space Grotesk Project Authors (Florian Karsten)",
+    use: "확률·D-N·점수 같은 숫자 서체로 써요.",
+    license: "SIL Open Font License 1.1",
+    href: "https://github.com/floriankarsten/space-grotesk",
+  },
+  {
     name: "Lucide",
     by: "© Lucide Contributors",
     use: "화면의 기본 아이콘 모양을 참고했어요.",

@@ -22,7 +22,7 @@ export default function SearchBox({
           maxLength={50}
           aria-label="검색어"
           placeholder="질문, 이슈, 닉네임, 댓글 검색"
-          className="h-10 w-60 rounded-full border border-line-neutral bg-surface pl-10 pr-4 t-label-1 text-label outline-none transition-[width,border-color] placeholder:text-label-assist focus:w-72 focus:border-brand focus:ring-2 focus:ring-brand/20 lg:w-72 lg:focus:w-80"
+          className="h-10 w-60 rounded-xl border border-line bg-surface pl-10 pr-4 t-label-1 text-label outline-none transition-[width,border-color] placeholder:text-label-assist focus:w-72 focus:border-brand focus:ring-2 focus:ring-brand/20 lg:w-72 lg:focus:w-80"
         />
       </form>
     );
@@ -41,9 +41,9 @@ export default function SearchBox({
         autoFocus={autoFocus}
         aria-label="검색어"
         placeholder="질문, 이슈, 닉네임, 댓글 검색"
-        className="h-12 w-full rounded-full border border-line-neutral bg-surface pl-11 pr-24 t-body-2 text-label shadow-small outline-none transition-colors placeholder:text-label-assist focus:border-brand focus:ring-2 focus:ring-brand/20"
+        className="h-12 w-full rounded-xl border border-line bg-surface pl-11 pr-24 t-body-2 text-label outline-none transition-colors placeholder:text-label-assist focus:border-brand focus:ring-2 focus:ring-brand/20"
       />
-      <button className="absolute right-1.5 top-1/2 h-9 -translate-y-1/2 rounded-full bg-brand px-4 t-label-1 !font-bold text-white transition-colors hover:bg-brand-strong">
+      <button className="absolute right-1.5 top-1/2 h-9 -translate-y-1/2 rounded-[10px] bg-brand px-4 t-label-1 !font-bold text-white transition-colors hover:bg-brand-strong">
         검색
       </button>
     </form>

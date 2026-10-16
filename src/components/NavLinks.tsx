@@ -42,14 +42,14 @@ export function MobileNavLinks() {
     <nav className="flex items-center md:hidden">
       <Link
         href="/ranking"
-        className={`rounded-lg px-2.5 py-1.5 t-label-1 !font-bold hover:bg-fill ${on("/ranking")}`}
+        className={`flex h-11 items-center rounded-xl px-2.5 t-label-1 !font-bold hover:bg-fill ${on("/ranking")}`}
       >
         랭킹
       </Link>
       <Link
         href="/search"
         aria-label="검색"
-        className={`flex h-9 w-9 items-center justify-center rounded-full hover:bg-fill ${on("/search")}`}
+        className={`flex h-11 w-11 items-center justify-center rounded-xl hover:bg-fill ${on("/search")}`}
       >
         <SearchIcon className="h-5 w-5" />
       </Link>

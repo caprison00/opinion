@@ -1,65 +1,81 @@
 @import "tailwindcss";
 
 /*
-  디자인 B안: 따뜻한 종이색 바탕 + 남색 글자·버튼 + 호박색 강조, 예=초록 / 아니오=빨강.
-  (이전 A안은 GitHub의 design-a 브랜치에 그대로 남아 있다.) 타이포 단계 구조는 Wanted Design System(CC BY 4.0) 기반.
+  디자인 C안 (확률 눈금, 2026-10 리뉴얼): 차가운 흰 바탕 + 남색 글자 + 파랑 강조, 예=파랑 / 아니오=주황.
+  기준 문서: design/STYLEGUIDE.md. 토큰 이름은 그대로 두고 값만 바꿨다 (yes·no·danger·hero-accent는 새 이름).
+  타이포 단계 구조는 Wanted Design System(CC BY 4.0) 기반. 이전 A·B안은 design-a·design-b 브랜치(기록용).
   라이트·다크 테마 값. <html data-theme="light|dark">로 바뀐다 (기본: 라이트)
 */
 :root,
 [data-theme="light"] {
   color-scheme: light;
-  /* 글자·링크·작은 강조에 쓰는 파랑 (종이색 바탕 대비 4.5:1 이상) */
-  --c-primary: #2a64a3;
-  --c-primary-strong: #245a93;
-  --c-primary-heavy: #1e4e80;
-  --c-primary-deep: #16233a;
-  /* 버튼·배지 채움색: 남색 (흰 글씨 대비 14:1) */
-  --c-brand: #16233a;
-  --c-brand-strong: #22324f;
-  --c-brand-heavy: #0d1626;
-  /* 호박색 강조 (형광펜, 번호, 시즌 버튼) */
-  --c-accent: #f2a81d;
-  --c-accent-ink: #8a5c00;
-  --c-accent-soft: #fdf3da;
-  /* 강조 블록(시즌·배너) */
-  --c-navy: #16233a;
+  /* 링크·강조 글자 (흰 바탕 대비 7:1 이상) */
+  --c-primary: #1f3fcc;
+  --c-primary-strong: #1a35ad;
+  --c-primary-heavy: #152b8c;
+  --c-primary-deep: #0f1222;
+  /* 버튼 채움: 남색에 가까운 먹색 (흰 글씨 대비 17:1) */
+  --c-brand: #0f1222;
+  --c-brand-strong: #22273d;
+  --c-brand-heavy: #000000;
+  /* 강조 = 예 파랑 (이전 호박색 자리) */
+  --c-accent: #2f5bff;
+  --c-accent-ink: #1f3fcc;
+  --c-accent-soft: #e6ecff;
+  /* 강조 면(핫이슈·시즌 상자)과 그 위의 밝은 파랑 */
+  --c-navy: #0f1222;
+  --c-hero-accent: #8ea6ff;
   /* 로고 도넛 */
-  --c-logo: #f2a81d;
+  --c-logo: #2f5bff;
 
-  --c-label: #16233a;
-  --c-label-neutral: #46536b;
-  --c-label-alt: #6b7487;
-  --c-label-assist: #a3aab6;
-  --c-label-disable: #c9cdd4;
+  /* 예 = 파랑 / 아니오 = 주황 (항상 글자와 함께) */
+  --c-yes: #2f5bff;
+  --c-yes-ink: #1f3fcc;
+  --c-yes-soft: #e6ecff;
+  --c-yes-track: #d6e0ff;
+  --c-no: #ff7a3d;
+  --c-on-no: #1b0d05;
+  --c-no-ink: #b4471a;
+  --c-no-soft: #fff1e8;
+  --c-no-track: #ffd9c7;
 
-  --c-bg: #f7f6f2;
-  --c-bg-alt: #efeee8;
+  --c-label: #0f1222;
+  --c-label-neutral: #4a4f63;
+  --c-label-alt: #676c7e;
+  --c-label-assist: #9aa0b0;
+  --c-label-disable: #c5c9d3;
+
+  --c-bg: #f5f6f8;
+  --c-bg-alt: #f0f1f4;
   --c-surface: #ffffff;
   --c-dialog: #ffffff;
-  --c-inverse: #16233a;
+  --c-inverse: #0f1222;
   --c-on-inverse: #ffffff;
 
-  --c-line: #ddd9cd;
-  --c-line-neutral: #cbc6b7;
-  --c-line-alt: #ebe8e0;
+  --c-line: #e3e5ea;
+  --c-line-neutral: #d3d6de;
+  --c-line-alt: #eef0f3;
 
-  --c-fill: rgb(22 35 58 / 0.05);
-  --c-fill-alt: rgb(22 35 58 / 0.03);
-  --c-fill-strong: rgb(22 35 58 / 0.09);
+  --c-fill: rgb(15 18 34 / 0.05);
+  --c-fill-alt: rgb(15 18 34 / 0.03);
+  --c-fill-strong: rgb(15 18 34 / 0.09);
 
-  /* 예(초록) / 아니오(빨강) */
-  --c-positive: #1d7a4f;
-  --c-caution: #f2a81d;
-  --c-caution-text: #8a5c00;
-  --c-negative: #c0453a;
-  --c-negative-strong: #a8362c;
+  /* positive = 예·▲, negative = 아니오·▼ (글자용 진한 값) */
+  --c-positive: #1f3fcc;
+  --c-caution: #d1461a;
+  --c-caution-text: #b4471a;
+  --c-negative: #b4471a;
+  --c-negative-strong: #9a3b14;
+  /* 위험 동작(삭제·탈퇴) 전용 빨강 */
+  --c-danger: #c0392b;
 
-  --c-accent-blue: #e7eff8;
-  --c-accent-red: #f8e7e4;
-  --c-accent-green: #e3f1e9;
-  --c-accent-orange: #fdf3da;
+  /* 연한 면: blue·green = 예 쪽, red·orange = 아니오·주의 쪽 */
+  --c-accent-blue: #e6ecff;
+  --c-accent-red: #fff1e8;
+  --c-accent-green: #e6ecff;
+  --c-accent-orange: #fff1e8;
 
-  --c-shadow: 22 35 58;
+  --c-shadow: 15 18 34;
   /* 티어 마크 색 */
   --tier-master: #7c3aed;
   --tier-diamond: #0369a1;
@@ -71,50 +87,62 @@
 
 [data-theme="dark"] {
   color-scheme: dark;
-  --c-primary: #6ea8dd;
-  --c-primary-strong: #86b7e3;
-  --c-primary-heavy: #a6cbec;
-  --c-primary-deep: #0d1320;
-  --c-brand: #3a5585;
-  --c-brand-strong: #456296;
-  --c-brand-heavy: #5470a3;
-  --c-accent: #f5b83d;
-  --c-accent-ink: #f5b83d;
-  --c-accent-soft: #2c2716;
-  --c-navy: #0d1320;
-  --c-logo: #f5b83d;
+  --c-primary: #a3b5ff;
+  --c-primary-strong: #bfcdff;
+  --c-primary-heavy: #d6e0ff;
+  --c-primary-deep: #0b0d17;
+  --c-brand: #2a3050;
+  --c-brand-strong: #343b60;
+  --c-brand-heavy: #3e4670;
+  --c-accent: #4566ff;
+  --c-accent-ink: #a3b5ff;
+  --c-accent-soft: rgb(69 102 255 / 0.18);
+  --c-navy: #1e2340;
+  --c-hero-accent: #8ea6ff;
+  --c-logo: #5b7cff;
 
-  --c-label: #eef1f6;
-  --c-label-neutral: #b3bdcf;
-  --c-label-alt: #8593a9;
-  --c-label-assist: #5c6a80;
-  --c-label-disable: #3c475a;
+  --c-yes: #4566ff;
+  --c-yes-ink: #a3b5ff;
+  --c-yes-soft: rgb(69 102 255 / 0.18);
+  --c-yes-track: rgb(69 102 255 / 0.45);
+  --c-no: #ff8a52;
+  --c-on-no: #1b0d05;
+  --c-no-ink: #ffb08a;
+  --c-no-soft: rgb(255 138 82 / 0.16);
+  --c-no-track: rgb(255 138 82 / 0.45);
 
-  --c-bg: #10151f;
-  --c-bg-alt: #1a2130;
-  --c-surface: #1a2130;
-  --c-dialog: #232c3f;
-  --c-inverse: #eef1f6;
-  --c-on-inverse: #10151f;
+  --c-label: #eef0f6;
+  --c-label-neutral: #b6bbcc;
+  --c-label-alt: #8b91a6;
+  --c-label-assist: #5f6579;
+  --c-label-disable: #3a4058;
 
-  --c-line: #2e3950;
-  --c-line-neutral: #3d4a63;
-  --c-line-alt: #232c3f;
+  --c-bg: #0b0d17;
+  --c-bg-alt: #1d2133;
+  --c-surface: #151827;
+  --c-dialog: #1d2133;
+  --c-inverse: #eef0f6;
+  --c-on-inverse: #0b0d17;
+
+  --c-line: #262b40;
+  --c-line-neutral: #343a52;
+  --c-line-alt: #1d2133;
 
   --c-fill: rgb(255 255 255 / 0.06);
   --c-fill-alt: rgb(255 255 255 / 0.04);
   --c-fill-strong: rgb(255 255 255 / 0.12);
 
-  --c-positive: #3cb179;
-  --c-caution: #f5b83d;
-  --c-caution-text: #f5b83d;
-  --c-negative: #d96a5e;
-  --c-negative-strong: #e58a80;
+  --c-positive: #a3b5ff;
+  --c-caution: #ff9a6b;
+  --c-caution-text: #ff9a6b;
+  --c-negative: #ffb08a;
+  --c-negative-strong: #ffc2a3;
+  --c-danger: #e5584a;
 
-  --c-accent-blue: rgb(110 168 221 / 0.16);
-  --c-accent-red: rgb(217 106 94 / 0.16);
-  --c-accent-green: rgb(60 177 121 / 0.16);
-  --c-accent-orange: rgb(245 184 61 / 0.14);
+  --c-accent-blue: rgb(69 102 255 / 0.18);
+  --c-accent-red: rgb(255 138 82 / 0.16);
+  --c-accent-green: rgb(69 102 255 / 0.18);
+  --c-accent-orange: rgb(255 138 82 / 0.16);
 
   --c-shadow: 0 0 0;
   --tier-master: #b794ff;
@@ -133,6 +161,10 @@
   --font-sans:
     "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont,
     "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  /* 숫자 전용: Space Grotesk (OFL, layout.tsx에서 next/font로 올림) */
+  --font-num:
+    var(--font-space-grotesk), "Pretendard Variable", "Pretendard",
+    -apple-system, sans-serif;
 
   --color-primary: var(--c-primary);
   --color-primary-strong: var(--c-primary-strong);
@@ -179,6 +211,18 @@
   --color-accent-green: var(--c-accent-green);
   --color-accent-orange: var(--c-accent-orange);
 
+  --color-hero-accent: var(--c-hero-accent);
+  --color-yes: var(--c-yes);
+  --color-yes-ink: var(--c-yes-ink);
+  --color-yes-soft: var(--c-yes-soft);
+  --color-yes-track: var(--c-yes-track);
+  --color-no: var(--c-no);
+  --color-on-no: var(--c-on-no);
+  --color-no-ink: var(--c-no-ink);
+  --color-no-soft: var(--c-no-soft);
+  --color-no-track: var(--c-no-track);
+  --color-danger: var(--c-danger);
+
   --shadow-xsmall: 0 1px 2px rgb(var(--c-shadow) / 0.06);
   /* 카드 그림자 (B안) */
   --shadow-small:
@@ -194,20 +238,20 @@
 
 /* 타이포그래피 (Wanted 단계 구조, 자간·행간은 레퍼런스처럼 촘촘하게) */
 @utility t-display-2 {
-  font-size: 44px;
-  line-height: 1.3;
+  font-size: 40px;
+  line-height: 1.25;
   letter-spacing: -0.03em;
   font-weight: 800;
 }
 @utility t-title-1 {
-  font-size: 28px;
-  line-height: 1.36;
+  font-size: 32px;
+  line-height: 1.32;
   letter-spacing: -0.025em;
   font-weight: 800;
 }
 @utility t-title-2 {
-  font-size: 26px;
-  line-height: 1.36;
+  font-size: 28px;
+  line-height: 1.34;
   letter-spacing: -0.025em;
   font-weight: 800;
 }
@@ -225,7 +269,7 @@
 }
 @utility t-heading-2 {
   font-size: 19px;
-  line-height: 1.45;
+  line-height: 1.42;
   letter-spacing: -0.015em;
   font-weight: 800;
 }
@@ -243,7 +287,7 @@
 }
 @utility t-body-3 {
   font-size: 15px;
-  line-height: 1.45;
+  line-height: 1.6;
   letter-spacing: -0.005em;
   font-weight: 400;
 }
@@ -285,7 +329,7 @@ input[type="range"].probability-slider {
   border-radius: 9999px;
   background: linear-gradient(
     to right,
-    var(--color-primary) var(--value),
+    var(--color-yes) var(--value),
     var(--color-fill-strong) var(--value)
   );
   cursor: pointer;
@@ -308,27 +352,63 @@ input[type="range"].probability-slider::-moz-range-thumb {
   box-shadow: var(--shadow-medium);
 }
 input[type="range"].probability-slider:focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--color-yes);
   outline-offset: 6px;
 }
 
-/* 강조 박스(시즌·배너): 남색 블록 (B안) */
+/* 강조 면(핫이슈·시즌 상자): 먹색 남색 블록 (C안) */
 @utility bg-hero {
   background-color: var(--c-navy);
 }
 
-/* 형광펜 밑줄 강조 (B안) */
+/* 형광펜 밑줄 강조 (C안: 연한 파랑) */
 @utility hl {
-  background: linear-gradient(transparent 62%, var(--c-accent) 62%);
+  background: linear-gradient(transparent 60%, var(--c-yes-track) 60%);
   padding: 0 2px;
 }
 
-/* 섹션 번호 "01" (B안) */
+/* 섹션 번호 "01" (지금은 쓰지 않음, 기록용) */
 @utility sec-idx {
   font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.08em;
   color: var(--c-accent-ink);
+}
+
+/* 숫자 단계 (C안): 확률·D-N·점수·순위·참여자 수에만 */
+@utility num {
+  font-family: var(--font-num);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+@utility num-xl {
+  font-family: var(--font-num);
+  font-weight: 700;
+  font-size: 64px;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+@utility num-l {
+  font-family: var(--font-num);
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+@utility num-m {
+  font-family: var(--font-num);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+@utility num-s {
+  font-family: var(--font-num);
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
 }
 
 /* 가로로 넘기는 탭 줄: 스크롤바 숨김 */

@@ -17,11 +17,16 @@ export default function CategoryRail({
   active: Category | null; // null = 핫이슈
   counts: Record<Category, number>;
 }) {
+  // 위 메뉴: 현재 화면은 진한 채움 / 분야: 현재 분야는 연한 파랑
+  const mainRow = (on: boolean) =>
+    `flex h-11 items-center gap-3 rounded-xl px-3 t-body-3 !font-bold transition-colors ${
+      on ? "bg-brand text-white" : "text-label-neutral hover:bg-fill"
+    }`;
   const row = (on: boolean) =>
-    `flex items-center gap-2.5 rounded-lg px-3 py-2 t-label-1 !font-semibold transition-colors ${
+    `flex h-10 items-center gap-2.5 rounded-[10px] px-3 t-label-1 transition-colors ${
       on
-        ? "bg-surface text-label shadow-small"
-        : "text-label-neutral hover:bg-fill"
+        ? "bg-yes-soft !font-extrabold text-yes-ink"
+        : "!font-semibold text-label hover:bg-fill"
     }`;
 
   return (
@@ -33,9 +38,9 @@ export default function CategoryRail({
             <Link
               href={href}
               aria-current={href === "/" ? "page" : undefined}
-              className={row(href === "/")}
+              className={mainRow(href === "/")}
             >
-              <Icon className="h-[18px] w-[18px]" />
+              <Icon className="h-5 w-5" />
               {label}
             </Link>
           </li>
@@ -65,7 +70,7 @@ export default function CategoryRail({
               >
                 <span className="min-w-0 flex-1 truncate">{c.label}</span>
                 <span
-                  className="t-caption-1 tabular-nums text-label-alt"
+                  className="num text-[13px] !font-medium text-label-alt"
                   aria-label={`진행 중 ${counts[c.value]}개`}
                 >
                   {counts[c.value]}

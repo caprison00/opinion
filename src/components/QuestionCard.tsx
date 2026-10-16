@@ -7,7 +7,13 @@ import {
   dDay,
   type Question,
 } from "@/lib/questions";
-import { Change, Locked, Participants } from "./CrowdBits";
+import {
+  Change,
+  Locked,
+  LockedScale,
+  Participants,
+  ProbScale,
+} from "./CrowdBits";
 import { card } from "./ui";
 import type { PickedImage } from "@/lib/images";
 import { Thumb } from "./QuestionImage";
@@ -38,62 +44,87 @@ export default function QuestionCard({
     question.status === "open" &&
     Date.now() - new Date(question.open_at).getTime() < 48 * 3_600_000;
 
+  const isOx = question.type === "ox";
+  const left = dDay(question.close_at);
+  // 마감 3일 이하(D-day 포함)는 주의 색
+  const soon = left === "D-day" || /^D-[0-3]$/.test(left);
+
   return (
     <Link
       href={`/questions/${question.id}`}
-      className={`${card} group flex flex-col p-5 transition duration-150 hover:-translate-y-0.5 hover:shadow-medium`}
+      className={`${card} group flex flex-col gap-3.5 p-5 transition duration-150 hover:shadow-small`}
     >
       <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-1.5">
-          <span className="rounded-md bg-fill px-2 py-0.5 t-caption-1 !font-semibold text-label-neutral">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="rounded-md bg-bg-alt px-2 py-0.5 t-caption-1 !font-semibold text-label-neutral">
             {categoryLabel(question.category)}
           </span>
           {isNew && (
-            <span className="rounded-full bg-accent px-2.5 py-0.5 t-caption-1 !font-bold text-[#16233a]">
+            <span className="rounded-md bg-yes px-2 py-0.5 t-caption-1 !font-bold text-white">
               새 질문
             </span>
           )}
           {question.type === "choice" && (
-            <span className="rounded-full border border-line bg-accent-soft px-2.5 py-0.5 t-caption-1 !font-bold text-accent-ink">
+            <span className="rounded-md bg-yes-soft px-2 py-0.5 t-caption-1 !font-bold text-yes-ink">
               객관식 {question.options.length}
             </span>
           )}
         </div>
-        <span className="t-caption-1 !font-semibold text-caution-text">
-          {dDay(question.close_at)}
+        <span className={`num-s shrink-0 ${soon ? "text-caution" : "text-label"}`}>
+          {left}
         </span>
       </div>
 
-      <div className="mt-3 flex items-start gap-3">
-        <h2 className="line-clamp-2 min-w-0 flex-1 t-body-1 !font-bold text-label">
+      <div className="flex items-start gap-3">
+        <h2 className="line-clamp-2 min-w-0 flex-1 t-body-1 !font-extrabold text-label group-hover:text-primary">
           {question.title}
         </h2>
-        {image && <Thumb image={image} className="h-16 w-16 rounded-xl" />}
+        {image && <Thumb image={image} className="h-[60px] w-[60px] rounded-xl" />}
       </div>
 
-      <div className="mt-auto pt-5">
-        <div className="flex items-end justify-between gap-2">
-          <span className="t-caption-1 text-label-alt">집단 확률</span>
-          {shown ? (
-            <span className="flex min-w-0 items-baseline gap-1.5">
-              <Change value={changeOf(board, shown.index)} />
-              <span className="min-w-0 truncate t-heading-2 text-label">
-                <span className="t-label-1 !font-semibold">{shown.label} </span>
-                <span className="tabular-nums">{shown.pct}%</span>
+      <div className="mt-auto flex flex-col gap-2">
+        {shown ? (
+          <>
+            <div className="flex items-baseline justify-between gap-2 t-label-2 !font-bold">
+              {isOx ? (
+                <span className="text-no-ink">
+                  {question.options[1]} {100 - shown.pct}%
+                </span>
+              ) : (
+                <span className="min-w-0 truncate text-label-neutral">
+                  1위 {shown.label}
+                </span>
+              )}
+              <span className="flex shrink-0 items-baseline gap-1.5">
+                <Change value={changeOf(board, shown.index)} />
+                <span className={isOx ? "text-yes-ink" : "text-primary"}>
+                  {isOx && `${question.options[0]} `}
+                  <span className="num-m">{shown.pct}%</span>
+                </span>
               </span>
-            </span>
-          ) : (
-            <Locked />
-          )}
-        </div>
-        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-fill-strong">
-          <div
-            className="h-full rounded-full bg-primary"
-            style={{ width: `${shown?.pct ?? 0}%` }}
-          />
-        </div>
-        <p className="mt-3 flex items-center gap-1.5 t-caption-1 text-label-alt">
-          마감 {formatDate(question.close_at)} ·{" "}
+            </div>
+            {isOx ? (
+              <ProbScale value={shown.pct} />
+            ) : (
+              <div className="h-2 overflow-hidden rounded-full bg-fill-strong">
+                <div
+                  className="h-full rounded-full bg-yes"
+                  style={{ width: `${shown.pct}%` }}
+                />
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            <div className="flex items-center justify-between gap-2 t-label-2 text-label-neutral">
+              <span>모두의 예감</span>
+              <Locked />
+            </div>
+            <LockedScale />
+          </>
+        )}
+        <p className="flex items-center justify-between gap-2 t-caption-1 text-label-alt">
+          <span>마감 {formatDate(question.close_at)}</span>
           <Participants n={board.participants} />
         </p>
       </div>

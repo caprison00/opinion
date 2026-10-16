@@ -13,11 +13,18 @@ export default function Rotator({
   slides,
   label,
   controlsClassName = "mt-4",
+  onDark = false,
 }: {
   slides: React.ReactNode[];
   label: string;
   controlsClassName?: string; // 넘기기 버튼 줄의 여백
+  onDark?: boolean; // 어두운 강조 면(핫이슈 카드) 위에 놓일 때
 }) {
+  const arrow = `flex h-9 w-9 items-center justify-center rounded-[10px] transition-colors ${
+    onDark
+      ? "text-white/75 hover:bg-white/10 hover:text-white"
+      : "text-label-alt hover:bg-fill hover:text-label"
+  }`;
   const n = slides.length;
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -71,7 +78,7 @@ export default function Rotator({
             type="button"
             onClick={() => go(index - 1)}
             aria-label="이전 질문"
-            className="flex h-7 w-7 items-center justify-center rounded-full text-label-alt hover:bg-fill hover:text-label"
+            className={arrow}
           >
             <ChevronLeftIcon className="h-4 w-4" />
           </button>
@@ -84,7 +91,11 @@ export default function Rotator({
                 aria-label={`${i + 1}번째 질문 보기`}
                 aria-current={i === index}
                 className={`h-1.5 rounded-full transition-all ${
-                  i === index ? "w-5 bg-accent" : "w-1.5 bg-fill-strong"
+                  i === index
+                    ? "w-5 bg-yes"
+                    : onDark
+                      ? "w-1.5 bg-white/35"
+                      : "w-1.5 bg-fill-strong"
                 }`}
               />
             ))}
@@ -93,7 +104,7 @@ export default function Rotator({
             type="button"
             onClick={() => go(index + 1)}
             aria-label="다음 질문"
-            className="flex h-7 w-7 items-center justify-center rounded-full text-label-alt hover:bg-fill hover:text-label"
+            className={arrow}
           >
             <ChevronRightIcon className="h-4 w-4" />
           </button>

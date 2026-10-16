@@ -46,7 +46,7 @@ export default function ThemeToggle() {
       onClick={toggle}
       aria-label={label}
       title={label}
-      className="flex h-9 w-9 items-center justify-center rounded-full text-label-alt transition-colors hover:bg-fill hover:text-label"
+      className="flex h-10 w-10 items-center justify-center rounded-xl text-label-neutral transition-colors hover:bg-fill hover:text-label"
     >
       {theme === "light" ? (
         <MoonIcon className="h-5 w-5" />

@@ -1,5 +1,10 @@
 import Link from "next/link";
-import { Change, Locked, OxBar, Participants } from "@/components/CrowdBits";
+import {
+  Change,
+  Locked,
+  Participants,
+  ProbScale,
+} from "@/components/CrowdBits";
 import CategoryRail from "@/components/CategoryRail";
 import EmptyState from "@/components/EmptyState";
 import { ChevronRightIcon } from "@/components/icons";
@@ -39,6 +44,18 @@ import {
 } from "@/lib/tiers";
 
 const DAY = 86_400_000;
+
+// 한국 시간 기준 월·일 (판정 일정 달력 칩)
+function kstMonthDay(iso: string) {
+  const [month, day] = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Seoul",
+    month: "numeric",
+    day: "numeric",
+  })
+    .format(new Date(iso))
+    .split("/");
+  return { month, day };
+}
 
 // 한국 시간 오늘 0시
 function kstMidnight() {
@@ -232,7 +249,7 @@ export default async function Home({
           </div>
           <Link
             href="/login"
-            className="inline-flex h-11 shrink-0 items-center self-start rounded-full bg-brand px-6 t-label-1 !font-bold text-white transition-colors hover:bg-brand-strong md:self-auto"
+            className="inline-flex h-12 shrink-0 items-center self-start rounded-xl bg-brand px-6 t-label-1 !font-bold text-white transition-colors hover:bg-brand-strong md:self-auto"
           >
             로그인하고 시작하기
           </Link>
@@ -381,7 +398,7 @@ export default async function Home({
           </div>
 
           <section className={`${card} p-5`}>
-            <h2 className="t-body-1 !font-bold">트렌딩 TOP 5</h2>
+            <h2 className="t-label-1 !font-extrabold">트렌딩 TOP 5</h2>
             {trending.length === 0 ? (
               <p className="mt-3 t-label-1 text-label-alt">
                 진행 중인 질문이 없어요.
@@ -394,7 +411,7 @@ export default async function Home({
                       href={`/questions/${q.id}`}
                       className="group flex gap-3"
                     >
-                      <span className="w-4 shrink-0 t-body-2 !font-bold tabular-nums text-primary">
+                      <span className="w-5 shrink-0 num-s text-primary">
                         {i + 1}
                       </span>
                       <span className="line-clamp-2 t-label-1 text-label group-hover:text-primary">
@@ -408,25 +425,42 @@ export default async function Home({
           </section>
 
           <section className={`${card} p-5`}>
-            <h2 className="t-body-1 !font-bold">판정 예정</h2>
+            <h2 className="t-label-1 !font-extrabold">판정 예정</h2>
             {upcoming.length === 0 ? (
               <p className="mt-3 t-label-1 text-label-alt">
                 판정을 기다리는 질문이 없어요.
               </p>
             ) : (
-              <ul className="mt-3 flex flex-col gap-3">
-                {upcoming.map((q) => (
-                  <li key={q.id}>
-                    <Link href={`/questions/${q.id}`} className="group block">
-                      <p className="t-caption-1 text-label-alt">
-                        {formatDate(q.resolve_at)}
-                      </p>
-                      <p className="line-clamp-1 t-label-1 text-label group-hover:text-primary">
-                        {q.title}
-                      </p>
-                    </Link>
-                  </li>
-                ))}
+              <ul className="mt-3.5 flex flex-col gap-3.5">
+                {upcoming.map((q) => {
+                  const d = kstMonthDay(q.resolve_at);
+                  return (
+                    <li key={q.id}>
+                      <Link
+                        href={`/questions/${q.id}`}
+                        className="group grid grid-cols-[44px_minmax(0,1fr)] items-center gap-3"
+                      >
+                        <span
+                          className="flex h-11 flex-col items-center justify-center rounded-xl bg-bg-alt leading-none"
+                          aria-hidden="true"
+                        >
+                          <span className="text-[10px] font-bold text-label-alt">
+                            {d.month}월
+                          </span>
+                          <span className="mt-0.5 num text-[17px]">{d.day}</span>
+                        </span>
+                        <span className="min-w-0">
+                          <span className="block line-clamp-2 t-label-1 text-label group-hover:text-primary">
+                            {q.title}
+                          </span>
+                          <span className="block t-caption-1 text-label-alt">
+                            {formatDate(q.resolve_at)}
+                          </span>
+                        </span>
+                      </Link>
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </section>
@@ -439,7 +473,7 @@ export default async function Home({
 // 섹션 제목: 굵은 제목 + 설명은 ⓘ 툴팁
 function SectionTitle({ title, hint }: { title: string; hint?: string }) {
   return (
-    <h2 className="relative mb-4 flex items-center gap-1 t-heading-2">
+    <h2 className="relative mb-3.5 flex items-center gap-1 t-heading-2 lg:t-heading-1">
       {title}
       {hint && <InfoTip text={hint} />}
     </h2>
@@ -469,26 +503,36 @@ function CardGrid({
   );
 }
 
-// 집단 확률 한 줄 요약: OX는 진영 막대, 객관식은 1위 선택지
+// 핫이슈 카드 오른쪽 큰 확률 상자: 예측 전 "??%" + 참여하면 보여요, 예측 후 확률·24시간 변화량
+// OX는 '예'의 확률, 객관식은 1위 선택지 (여론 공개 규칙: crowd가 null이면 숫자를 그리지 않는다)
 function CrowdLine({ q, board }: { q: Question; board: Board }) {
-  if (!board.crowd) return <Locked />;
-  if (q.type === "ox") {
-    return (
-      <div className="flex flex-col gap-1">
-        <OxBar yes={Math.round(board.crowd[0] * 100)} options={q.options} />
-        <Change value={changeOf(board, 0)} className="self-end" />
-      </div>
-    );
-  }
-  const top = stanceOf(board.crowd, q.options);
+  const crowd = board.crowd;
+  const top = crowd
+    ? q.type === "ox"
+      ? { index: 0, label: q.options[0], pct: Math.round(crowd[0] * 100) }
+      : stanceOf(crowd, q.options)
+    : null;
   return (
-    <p className="flex items-baseline gap-2 t-label-1">
-      <span className="text-label-alt">1위</span>
-      <span className="!font-bold text-primary">
-        {top.label} {top.pct}%
-      </span>
-      <Change value={changeOf(board, top.index)} />
-    </p>
+    <div className="flex flex-col gap-1.5">
+      <p className="t-caption-1 !font-bold text-white/75">
+        모두의 예감{top ? ` · ${q.type === "ox" ? q.options[0] : `1위 ${top.label}`}` : ` · ${q.type === "ox" ? q.options[0] : "1위"}`}
+      </p>
+      <p className="num-l md:num-xl">{top ? `${top.pct}%` : "??%"}</p>
+      {top ? (
+        <>
+          {q.type === "ox" && (
+            <ProbScale value={top.pct} className="mt-1 bg-[linear-gradient(90deg,var(--c-no-track),rgb(255_255_255/0.12)_50%,var(--c-yes-track))]" />
+          )}
+          <span className="[&_*]:!text-hero-accent">
+            <Change value={changeOf(board, top.index)} />
+          </span>
+        </>
+      ) : (
+        <span className="[&>span]:!text-white/80">
+          <Locked />
+        </span>
+      )}
+    </div>
   );
 }
 
@@ -505,17 +549,21 @@ function IssueCard({
   const images = questions.map((q) => pickImage(q, issue));
   const anyImage = images.some(Boolean);
   const context = issue.context_lines.length > 0 && (
-    <ol className="mb-4 flex flex-col gap-1">
+    <ol className="flex flex-col gap-0.5 rounded-xl bg-white/[0.06] px-3 py-2.5 md:bg-transparent md:p-0">
       {issue.context_lines.map((line, i) => (
-        <li key={i} className="flex gap-2 t-body-3 text-label-neutral">
-          <span className="!font-extrabold text-accent-ink">{i + 1}</span>
-          {line}
+        <li
+          key={i}
+          className="flex gap-2 t-caption-1 text-white/80 md:t-label-2 md:!font-normal"
+        >
+          <span className="num text-hero-accent">{i + 1}</span>
+          <span className="min-w-0 truncate md:whitespace-normal">{line}</span>
         </li>
       ))}
     </ol>
   );
+  // 사진: 휴대폰은 제목 옆 작은 정사각형, PC는 왼쪽 세로 띠
   const imageBox =
-    "aspect-[2/1] w-full md:aspect-auto md:h-auto md:w-[220px] md:self-stretch";
+    "h-[72px] w-[72px] rounded-xl md:h-auto md:w-[160px] md:self-stretch md:rounded-none";
 
   const slides = questions.map((q, i) => {
     const board = boardOf(q.id);
@@ -524,45 +572,57 @@ function IssueCard({
       <Link
         key={q.id}
         href={`/questions/${q.id}`}
-        className="group flex h-full flex-col md:flex-row"
+        className="group flex h-full flex-col gap-3 p-3.5 md:flex-row md:gap-0 md:p-0"
       >
-        {image ? (
-          <Thumb image={image} className={imageBox} />
-        ) : (
-          anyImage && (
-            <div className={`${imageBox} bg-fill`} aria-hidden="true" />
-          )
-        )}
-        <div className="min-w-0 flex-1 px-5 pt-5 md:px-6 md:pt-6">
-          {context}
-          <p className="t-caption-1 !font-semibold text-label-alt">
-            {categoryLabel(q.category)}
-          </p>
-          <h3 className="mt-1 t-heading-2 text-label group-hover:text-primary">
-            {q.title}
-          </h3>
-          <div className="mt-4">
-            <CrowdLine q={q} board={board} />
+        <div className="flex gap-3 md:contents">
+          {image ? (
+            <Thumb image={image} className={imageBox} />
+          ) : (
+            anyImage && (
+              <div className={`${imageBox} shrink-0 bg-white/[0.08]`} aria-hidden="true" />
+            )
+          )}
+          <div className="flex min-w-0 flex-1 flex-col gap-1 md:gap-3 md:px-6 md:py-6">
+            <div className="hidden md:block">{context}</div>
+            <p className="flex items-center justify-between gap-2 t-caption-1 !font-bold text-white/75">
+              <span>{categoryLabel(q.category)}</span>
+              <span className="num-s text-white md:hidden">{dDay(q.close_at)}</span>
+            </p>
+            <h3 className="line-clamp-2 t-body-1 !font-extrabold text-white group-hover:underline md:line-clamp-none md:t-heading-1">
+              {q.title}
+            </h3>
+            <p className="mt-auto hidden items-center gap-3.5 t-label-2 text-white/80 md:flex">
+              <Participants n={board.participants} />
+              <span className="num-s text-white">{dDay(q.close_at)}</span>
+            </p>
           </div>
-          <p className="mt-3 flex flex-wrap gap-x-3 t-caption-1 text-label-alt">
-            <Participants n={board.participants} />
-            <span>{dDay(q.close_at)}</span>
-          </p>
+        </div>
+        <div className="md:hidden">{context}</div>
+        {/* 오른쪽 큰 확률 상자 (휴대폰은 아래 한 줄) */}
+        <div className="flex items-center justify-between gap-3 md:m-4 md:ml-0 md:w-[200px] md:shrink-0 md:flex-col md:items-stretch md:justify-center md:rounded-[18px] md:bg-white/[0.06] md:p-5">
+          <div className="flex items-center gap-3 md:block">
+            <CrowdLine q={q} board={board} />
+            <span className="t-caption-1 text-white/75 md:hidden">
+              <Participants n={board.participants} />
+            </span>
+          </div>
+          <span className="inline-flex h-11 shrink-0 items-center justify-center gap-0.5 rounded-xl bg-yes px-3.5 t-label-1 !font-extrabold text-white md:mt-4 md:w-full">
+            예측하러 가기
+            <ChevronRightIcon className="h-4 w-4" />
+          </span>
         </div>
       </Link>
     );
   });
 
   return (
-    <article
-      className={`${card} overflow-hidden pb-4 transition duration-150 hover:shadow-medium md:pb-5`}
-    >
+    <article className="overflow-hidden rounded-[20px] bg-hero pb-2 text-white md:rounded-3xl md:pb-3">
       <Rotator
         slides={slides}
         label={`${issue.title} 질문`}
-        controlsClassName={`mt-3 px-4 md:px-5 ${anyImage ? "md:pl-[236px]" : ""}`}
+        onDark
+        controlsClassName={`justify-center px-4 md:justify-start md:px-5 ${anyImage ? "md:pl-[176px]" : ""}`}
       />
-      {questions.length < 2 && <div className="h-1" />}
     </article>
   );
 }
@@ -585,28 +645,28 @@ function MovingRow({
     <li>
       <Link
         href={`/questions/${q.id}`}
-        className="group flex items-center justify-between gap-3 px-5 py-4"
+        className="group flex items-center justify-between gap-3.5 px-4 py-3 md:px-5 md:py-4"
       >
-        {image && <Thumb image={image} className="h-11 w-11 rounded-lg" />}
+        {image && <Thumb image={image} className="h-11 w-11 rounded-[10px]" />}
         <div className="min-w-0 flex-1">
-          <p className="flex items-center gap-1.5 t-caption-1 text-label-alt">
+          <p className="flex items-center gap-1.5 t-caption-1 !font-semibold text-label-alt">
             {categoryLabel(q.category)} ·{" "}
             <Participants n={board.participants} />
           </p>
-          <p className="mt-0.5 line-clamp-1 t-body-2 !font-semibold text-label group-hover:text-primary">
+          <p className="mt-0.5 line-clamp-2 t-body-3 !font-bold text-label group-hover:text-primary md:line-clamp-1 md:t-body-2 md:!font-bold">
             {q.title}
           </p>
         </div>
         {top ? (
           <div className="shrink-0 text-right">
-            <p className="t-body-2 !font-bold text-primary">
-              {top.label} {top.pct}%
+            <p className="t-label-1 !font-extrabold text-label">
+              {top.label} <span className="num">{top.pct}%</span>
             </p>
             <Change value={changeOf(board, top.index)} />
           </div>
         ) : (
           // 예측하지 않은 질문은 숫자·방향 없이 표시만 한다 (여론 공개 규칙)
-          <span className="shrink-0 rounded-md bg-accent-orange px-2 py-1 t-caption-1 !font-semibold text-caution-text">
+          <span className="shrink-0 rounded-lg bg-no-soft px-2.5 py-1 t-caption-1 !font-extrabold text-no-ink">
             여론 변동 큼
           </span>
         )}
@@ -618,20 +678,26 @@ function MovingRow({
 function ResolvedCard({ q, board }: { q: Question; board: Board }) {
   const answer = outcomeLabel(q);
   const rate = board.hitRate === null ? null : Math.round(board.hitRate * 100);
+  // OX '아니오' 결과는 주황, 그 밖(예·객관식 정답)은 파랑
+  const isNo = q.type === "ox" && q.outcome_index === 1;
   return (
     <li>
       <Link
         href={`/questions/${q.id}`}
-        className={`${card} group flex h-full flex-col p-4`}
+        className={`${card} group flex h-full flex-col gap-3.5 p-4 md:p-5`}
       >
-        <p className="line-clamp-2 t-body-3 !font-semibold text-label group-hover:text-primary">
+        <p className="line-clamp-2 t-body-3 !font-bold text-label group-hover:text-primary">
           {q.title}
         </p>
-        <p className="mt-auto flex items-center justify-between gap-2 pt-3">
-          <span className="rounded-full border border-accent bg-accent-soft px-2.5 py-0.5 t-caption-1 !font-bold text-accent-ink">
+        <p className="mt-auto flex items-center justify-between gap-2">
+          <span
+            className={`rounded-lg px-2.5 py-1 t-label-2 !font-extrabold ${
+              isNo ? "bg-no-soft text-no-ink" : "bg-yes-soft text-yes-ink"
+            }`}
+          >
             결과 {answer}
           </span>
-          <span className="t-caption-1 text-label-neutral">
+          <span className="t-label-2 text-label-neutral">
             {board.participants === 0 || rate === null
               ? "예측한 사람이 없었어요"
               : rate < 50
@@ -642,6 +708,14 @@ function ResolvedCard({ q, board }: { q: Question; board: Board }) {
       </Link>
     </li>
   );
+}
+
+// 이번 시즌(달) 남은 날: D-N (한국 시간 기준 말일까지)
+function seasonLeft() {
+  const [y, m] = currentSeason().split("-").map(Number);
+  const end = new Date(`${y}-${String(m).padStart(2, "0")}-01T00:00:00+09:00`);
+  end.setUTCMonth(end.getUTCMonth() + 1);
+  return dDay(end.toISOString());
 }
 
 function SeasonBox({
@@ -657,40 +731,39 @@ function SeasonBox({
 }) {
   const month = Number(currentSeason().slice(5));
   return (
-    <section className="rounded-2xl bg-hero p-5 text-white">
-      <p className="t-label-2 !font-bold tracking-wide text-accent">
-        {month}월 시즌
-      </p>
+    <section className={`${card} p-5`}>
+      <div className="flex items-center justify-between gap-2">
+        <p className="t-label-1 !font-extrabold">{month}월 시즌</p>
+        <span className="num-s text-label-neutral">{seasonLeft()}</span>
+      </div>
       {season ? (
         <>
-          <div className="mt-2 flex items-center gap-2">
-            <span className="rounded-md bg-white/20 px-2 py-0.5 t-label-2 !font-bold">
-              ◆ {tierLabel(season.tier)}
-            </span>
+          <p className="mt-3 num-l text-[40px] md:text-[44px]">
+            {scoreText(season.total)}
+          </p>
+          <p className="mt-1.5 flex flex-wrap items-center gap-x-1.5 t-label-2 text-label-neutral">
+            <span className="!font-extrabold text-label">{tierLabel(season.tier)}</span>
             {season.rank !== null && (
-              <span className="t-label-1 !font-semibold">
-                {season.rank}위 · 상위{" "}
+              <span>
+                · {season.rank}위 · 상위{" "}
                 {topPercent(season.rank, season.eligible)}%
               </span>
             )}
-          </div>
-          <p className="mt-2 t-title-3 tabular-nums">
-            {scoreText(season.total)}점
           </p>
-          <p className="mt-0.5 t-caption-1 text-white/75">
+          <p className="mt-1 t-caption-1 text-label-alt">
             이번 달 판정된 예측 {season.count}건
             {season.count < SEASON_MIN &&
               ` · ${SEASON_MIN}건부터 랭킹·티어에 올라요`}
           </p>
         </>
       ) : (
-        <p className="mt-1 t-body-2 !font-semibold">
+        <p className="mt-2 t-body-2 !font-semibold">
           로그인하고 랭킹에 도전해 보세요
         </p>
       )}
       <Link
         href={season ? "/ranking" : "/login"}
-        className="mt-4 flex h-10 items-center justify-center gap-1 rounded-xl bg-accent t-label-1 !font-bold text-[#1a1405] transition hover:brightness-105"
+        className="mt-4 flex h-11 items-center justify-center gap-1 rounded-xl bg-brand t-label-1 !font-bold text-white transition-colors hover:bg-brand-strong"
       >
         {season ? "랭킹 보기" : "로그인하기"}
         <ChevronRightIcon className="h-4 w-4" />

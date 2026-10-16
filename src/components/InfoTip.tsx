@@ -39,7 +39,7 @@ export default function InfoTip({ text }: { text: string }) {
         aria-label="설명 보기"
         aria-describedby={shown ? id : undefined}
         aria-expanded={shown}
-        className="flex h-6 w-6 items-center justify-center rounded-full text-label-assist transition-colors hover:text-label-neutral"
+        className="flex h-6 w-6 items-center justify-center rounded-full text-label-alt transition-colors hover:text-label"
       >
         <InfoIcon className="h-4 w-4" />
       </button>
@@ -47,7 +47,7 @@ export default function InfoTip({ text }: { text: string }) {
         <span
           id={id}
           role="tooltip"
-          className="absolute left-0 top-full z-20 mt-1 w-max max-w-[min(320px,100%)] rounded-lg bg-brand px-3 py-2 t-caption-1 !font-medium leading-snug text-white shadow-medium"
+          className="absolute left-0 top-full z-20 mt-1 w-max max-w-[min(320px,100%)] rounded-[10px] bg-brand px-3 py-2 t-caption-1 !font-medium leading-snug text-white shadow-medium"
         >
           {text}
         </span>
