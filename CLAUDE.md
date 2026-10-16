@@ -19,6 +19,8 @@
 - **DB 변경(SQL)**: 새 마이그레이션은 개발용 Supabase에서 먼저 실행 → 확인 후 실서버 Supabase에서 실행. 개발용 프로젝트를 처음 만들 때는 `supabase/dev-setup/all_0001-0023.sql`(0001~0023 합본)을 한 번 실행한다.
 - **구분**: `src/lib/site.ts` — Vercel의 `VERCEL_ENV === "production"`이면 실서버. 개발 서버는 화면 맨 위 보라색 "개발 서버" 띠, 검색엔진 노출 차단(robots·noindex). `NEXT_PUBLIC_SITE_URL`로 주소를 바꿀 수 있다.
 - **환경 변수**(Vercel): Production = 실서버 Supabase URL·anon key, Preview = 개발용 Supabase URL·anon key. 환경 변수를 바꾸면 그 환경을 다시 배포해야 적용된다(NEXT_PUBLIC_ 값은 빌드 때 들어감).
+- **디자인 작업 (2026-10~)**: 디자인은 Claude Cowork가 맡는다. 기획자 PC의 GitHub Desktop 클론에서 `design` 브랜치에 커밋 → Push origin. Claude Code는 기획자가 요청하면 `design`을 `develop`에 합쳐(merge) 빌드·검사 후 개발 서버에 올리고, 기획자가 컨펌하면 `main`(실서버)에 반영한다. 기능·DB 작업은 Claude Code가 `develop`에서 하고, 그 뒤 `develop`을 `design`에도 합쳐 둔다(두 쪽이 어긋나지 않게).
+  - Cowork 디자인 작업 규칙: 아래 '유지하는 기존 기능'의 디자인 규칙(디자인 B안 토큰, Pretendard, 다른 회사 로고·서체 금지, 한쪽 강조 테두리 금지)과 '절대 규칙'의 금지 문구를 지킨다. 화면 모양(`src/app/globals.css`, `src/components/*`, 각 화면의 className·문구) 위주로 고치고, 데이터를 가져오는 코드·`src/lib/*`·`supabase/*`·여론 공개 규칙(예측 전 가림)은 건드리지 않는다.
 - 서버 지역: `vercel.json`의 `regions: ["icn1"]`(서울). Supabase가 서울이라 같은 지역에 둔다 (미국에 두면 데이터 요청마다 약 0.2초씩 늦어짐). 로그인 확인 `getViewer`는 React `cache`로 한 화면 요청 안에서 한 번만 한다.
 - 개발 서버는 Vercel 배포 보호(Vercel 로그인한 사람만 접속)가 켜져 있다. 구글 로그인은 두 Supabase 프로젝트 모두 같은 구글 OAuth 클라이언트를 쓴다.
 
