@@ -23,25 +23,23 @@ function parseKst(value: FormDataEntryValue | null) {
 
 type ImageInput = {
   image_url: string | null;
-  image_credit: string | null;
   image_alt: string | null;
 };
 
-// 이미지(선택): 우리 사진 저장소에 올린 주소만 받고, 사진이 있으면 출처는 필수
+// 이미지(선택): 우리 사진 저장소에 올린 주소만 받는다.
+// 사진 출처는 받지 않는다(기획자 결정). DB의 image_credit 칸은 예전 값 그대로 두고 쓰지 않는다.
 function parseImage(formData: FormData): ImageInput | { error: string } {
   const url = String(formData.get("image_url") ?? "").trim();
-  if (!url) return { image_url: null, image_credit: null, image_alt: null };
+  if (!url) return { image_url: null, image_alt: null };
   const base = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/question-images/`;
   if (!url.startsWith(base) || !/^[\w-]+\.webp$/.test(url.slice(base.length))) {
     return { error: "사진을 다시 올려 주세요." };
   }
-  const credit = String(formData.get("image_credit") ?? "").trim();
   const alt = String(formData.get("image_alt") ?? "").trim();
-  if (!credit) return { error: "사진 출처를 써 주세요." };
-  if (credit.length > 80 || alt.length > 100) {
-    return { error: "사진 출처는 80자, 설명은 100자 이내로 써 주세요." };
+  if (alt.length > 100) {
+    return { error: "사진 설명은 100자 이내로 써 주세요." };
   }
-  return { image_url: url, image_credit: credit, image_alt: alt || null };
+  return { image_url: url, image_alt: alt || null };
 }
 
 type QuestionInput = ImageInput & {

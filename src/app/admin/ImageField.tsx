@@ -29,7 +29,7 @@ async function shrink(file: File): Promise<Blob> {
   );
 }
 
-// 질문·이슈 묶음 폼의 이미지(선택) 칸: 사진 + 출처(필수) + 짧은 설명
+// 질문·이슈 묶음 폼의 이미지(선택) 칸: 사진 + 짧은 설명(화면 낭독용)
 export default function ImageField({
   value,
   hint,
@@ -130,20 +130,7 @@ export default function ImageField({
       {error && <p className="t-caption-1 text-negative-strong">{error}</p>}
 
       {url && (
-        <div className="mt-1 grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <label className="flex flex-col gap-1.5">
-            <span className="t-label-2 !font-semibold text-label-neutral">
-              사진 출처 *
-            </span>
-            <input
-              name="image_credit"
-              required
-              maxLength={80}
-              defaultValue={value?.image_credit ?? ""}
-              placeholder="예: Unsplash / 홍길동, 직접 제작"
-              className={input}
-            />
-          </label>
+        <div className="mt-1">
           <label className="flex flex-col gap-1.5">
             <span className="t-label-2 !font-semibold text-label-neutral">
               사진 설명 (화면 낭독용)
