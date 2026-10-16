@@ -53,6 +53,19 @@ export default function ImageField({
     return () => form?.removeEventListener("reset", onReset);
   }, [value?.image_url]);
 
+  // 사진을 올리는 중에는 폼을 저장하지 못하게 막는다 (사진 없이 저장되는 것 방지)
+  useEffect(() => {
+    if (!busy) return;
+    const form = ref.current?.closest("form");
+    const block = (e: Event) => {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      setError("사진을 올리는 중이에요. 다 올라간 뒤 저장해 주세요.");
+    };
+    form?.addEventListener("submit", block, true);
+    return () => form?.removeEventListener("submit", block, true);
+  }, [busy]);
+
   async function onPick(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     e.target.value = "";
@@ -101,6 +114,11 @@ export default function ImageField({
                 className="sr-only"
               />
             </label>
+            {busy && (
+              <span className="self-center t-label-2 text-label-alt">
+                올리는 중…
+              </span>
+            )}
             <button
               type="button"
               onClick={() => setUrl("")}
