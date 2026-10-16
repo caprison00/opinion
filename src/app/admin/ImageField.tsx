@@ -53,6 +53,11 @@ export default function ImageField({
     return () => form?.removeEventListener("reset", onReset);
   }, [value?.image_url]);
 
+  // 저장 뒤 서버에서 새 값이 오면 그 사진으로 맞춘다 (저장하면 폼이 초기화되며 예전 값으로 돌아가는 것 방지)
+  useEffect(() => {
+    setUrl(value?.image_url ?? "");
+  }, [value?.image_url]);
+
   // 사진을 올리는 중에는 폼을 저장하지 못하게 막는다 (사진 없이 저장되는 것 방지)
   useEffect(() => {
     if (!busy) return;

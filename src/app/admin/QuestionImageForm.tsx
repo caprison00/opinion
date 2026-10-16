@@ -30,8 +30,17 @@ export default function QuestionImageForm({
 
   return (
     <details className="group mt-2">
-      <summary className="inline-flex cursor-pointer list-none items-center t-label-2 !font-semibold text-label-neutral hover:text-label">
-        {value.image_url ? "사진 바꾸기" : "사진 추가"}
+      <summary className="inline-flex cursor-pointer list-none items-center gap-2 t-label-2 !font-semibold text-label-neutral hover:text-label">
+        {value.image_url && (
+          // 지금 등록된 사진 (펼치지 않아도 등록 여부를 알 수 있게)
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={value.image_url}
+            alt="등록된 사진"
+            className="h-9 w-16 rounded-md bg-fill object-cover"
+          />
+        )}
+        {value.image_url ? "사진 바꾸기" : "사진 없음 · 사진 추가"}
         <span className="ml-1 transition-transform group-open:rotate-90">
           ›
         </span>
