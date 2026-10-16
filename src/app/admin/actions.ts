@@ -321,13 +321,25 @@ function parseIssue(formData: FormData):
 }
 
 // 질문을 이슈 묶음에 넣거나 뺀다
-export async function setQuestionIssue(formData: FormData) {
+export async function setQuestionIssue(
+  _prev: AdminActionState,
+  formData: FormData,
+): Promise<AdminActionState> {
   const { supabase, user, isAdmin } = await getViewer();
-  if (!user || !isAdmin) return;
+  if (!user) redirect("/login");
+  if (!isAdmin) return { error: "관리자만 할 수 있어요." };
   const id = String(formData.get("id") ?? "");
   const issueId = String(formData.get("issue_id") ?? "") || null;
-  await supabase.from("questions").update({ issue_id: issueId }).eq("id", id);
+  const { data, error } = await supabase
+    .from("questions")
+    .update({ issue_id: issueId })
+    .eq("id", id)
+    .select("id");
+  if (error) return { error: `저장에 실패했어요: ${error.message}` };
+  if (!data?.length)
+    return { error: "질문을 찾지 못했어요. 새로고침해 주세요." };
   revalidateQuestion(id);
+  return { ok: true };
 }
 
 // 마감 처리: 마감 시각 전이라도 예측을 더 받지 않는다.

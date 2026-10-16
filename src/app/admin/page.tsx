@@ -12,7 +12,8 @@ import {
   statusLabel,
   type Question,
 } from "@/lib/questions";
-import { refreshAllBadges, setQuestionIssue } from "./actions";
+import { refreshAllBadges } from "./actions";
+import QuestionIssueForm from "./QuestionIssueForm";
 import PrivateActions from "./PrivateActions";
 import DeleteIssueButton from "./DeleteIssueButton";
 import IssueForm from "./IssueForm";
@@ -353,28 +354,11 @@ export default async function AdminPage({
                     </p>
                   </Link>
                   {issues.length > 0 && (
-                    <form
-                      action={setQuestionIssue}
-                      className="mt-2 flex items-center gap-2"
-                    >
-                      <input type="hidden" name="id" value={q.id} />
-                      <select
-                        name="issue_id"
-                        defaultValue={q.issue_id ?? ""}
-                        aria-label="이슈 묶음"
-                        className={`${input} !w-auto min-w-0 !py-1.5 t-label-2`}
-                      >
-                        <option value="">이슈 없음</option>
-                        {issues.map((i) => (
-                          <option key={i.id} value={i.id}>
-                            {i.title}
-                          </option>
-                        ))}
-                      </select>
-                      <button className={`${button.smallSecondary} shrink-0`}>
-                        이슈 저장
-                      </button>
-                    </form>
+                    <QuestionIssueForm
+                      id={q.id}
+                      issueId={q.issue_id}
+                      issues={issues}
+                    />
                   )}
                   <QuestionActions
                     id={q.id}
