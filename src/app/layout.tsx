@@ -1,10 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import BottomNav from "@/components/BottomNav";
 import VisitTracker from "@/components/VisitTracker";
+import { IS_PRODUCTION, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: { default: "예감", template: "%s · 예감" },
+  // 개발 서버는 검색엔진에 노출하지 않는다
+  ...(IS_PRODUCTION ? {} : { robots: { index: false, follow: false } }),
   description:
     "돈을 걸지 않고 미래 사건을 확률로 예측하면, 적중 점수와 랭킹이 쌓이는 집단 예측 서비스",
   openGraph: {
@@ -40,6 +44,11 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-dvh bg-bg font-sans text-label">
+        {!IS_PRODUCTION && (
+          <div className="bg-[#7c3aed] px-4 py-1 text-center text-[12px] font-bold text-white">
+            개발 서버 · 실제 서비스(yegam.art)와 데이터가 달라요
+          </div>
+        )}
         {children}
         <BottomNav />
         <VisitTracker />
