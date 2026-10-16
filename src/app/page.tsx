@@ -27,7 +27,6 @@ import {
   isCategory,
   outcomeLabel,
   stanceOf,
-  timeLeft,
   type Question,
 } from "@/lib/questions";
 import {

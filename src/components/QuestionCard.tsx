@@ -4,7 +4,7 @@ import {
   categoryLabel,
   formatDate,
   stanceOf,
-  timeLeft,
+  dDay,
   type Question,
 } from "@/lib/questions";
 import { Change, Locked, Participants } from "./CrowdBits";
@@ -60,7 +60,7 @@ export default function QuestionCard({
           )}
         </div>
         <span className="t-caption-1 !font-semibold text-caution-text">
-          {timeLeft(question.close_at)}
+          {dDay(question.close_at)}
         </span>
       </div>
 
