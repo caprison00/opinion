@@ -4,6 +4,7 @@ import EmptyState from "@/components/EmptyState";
 import { ChevronRightIcon } from "@/components/icons";
 import PageShell from "@/components/PageShell";
 import QuestionCard from "@/components/QuestionCard";
+import Rotator from "@/components/Rotator";
 import SearchBox from "@/components/SearchBox";
 import { Thumb } from "@/components/QuestionImage";
 import { card, pillBar, scoreText, textTab } from "@/components/ui";
@@ -158,12 +159,11 @@ export default async function Home({
         qs.reduce((a, q) => a + f(boardOf(q.id)), 0);
       return {
         issue,
-        lead: qs[0],
-        more: qs.length - 1,
+        questions: qs,
         participants: sum((b) => b.participants),
-        reactions: sum((b) => b.reactions),
       };
     })
+    .filter((h) => h.questions.length > 0)
     .sort((a, b) => b.participants - a.participants)
     .slice(0, 3);
 
@@ -296,10 +296,8 @@ export default async function Home({
                       <IssueCard
                         key={h.issue.id}
                         issue={h.issue}
-                        lead={h.lead}
-                        board={boardOf(h.lead.id)}
-                        more={h.more}
-                        reactions={h.reactions}
+                        questions={h.questions}
+                        boardOf={boardOf}
                       />
                     ))}
                   </div>
@@ -510,23 +508,41 @@ function CrowdLine({ q, board }: { q: Question; board: Board }) {
 
 function IssueCard({
   issue,
-  lead,
-  board,
-  more,
-  reactions,
+  questions,
+  boardOf,
 }: {
   issue: Issue;
-  lead: Question;
-  board: Board;
-  more: number;
-  reactions: number;
+  questions: Question[];
+  boardOf: (id: string) => Board;
 }) {
   // 이슈 묶음 카드는 이슈 이미지가 먼저, 없으면 대표 질문의 이미지
-  const image = pickImage(issue, lead);
+  const image = pickImage(issue, questions[0]);
+  // 묶인 질문들을 한 장씩 돌려 보여준다
+  const slides = questions.map((q) => {
+    const board = boardOf(q.id);
+    return (
+      <Link key={q.id} href={`/questions/${q.id}`} className="group block">
+        <p className="t-caption-1 !font-semibold text-label-alt">
+          {categoryLabel(q.category)}
+        </p>
+        <h3 className="mt-1 t-heading-2 text-label group-hover:text-primary">
+          {q.title}
+        </h3>
+        <div className="mt-4">
+          <CrowdLine q={q} board={board} />
+        </div>
+        <p className="mt-3 flex flex-wrap gap-x-3 t-caption-1 text-label-alt">
+          <span>{board.participants}명 예측</span>
+          <span>리액션 {board.reactions}</span>
+          <span>{timeLeft(q.close_at)}</span>
+        </p>
+      </Link>
+    );
+  });
+
   return (
-    <Link
-      href={`/questions/${lead.id}`}
-      className={`${card} group flex flex-col overflow-hidden transition duration-150 hover:shadow-medium md:flex-row`}
+    <article
+      className={`${card} flex flex-col overflow-hidden transition duration-150 hover:shadow-medium md:flex-row`}
     >
       {image && (
         <Thumb
@@ -535,37 +551,31 @@ function IssueCard({
         />
       )}
       <div className="min-w-0 flex-1 p-5 md:p-6">
-        <p className="flex items-center gap-2 t-caption-1 !font-semibold text-primary">
+        <p className="flex flex-wrap items-center gap-2 t-caption-1">
           <span className="rounded-full border border-line bg-accent-soft px-2.5 py-0.5 !font-bold text-accent-ink">
             {issue.title}
           </span>
-          <span className="text-label-alt">{categoryLabel(lead.category)}</span>
+          {questions.length > 1 && (
+            <span className="!font-semibold text-label-alt">
+              질문 {questions.length}개
+            </span>
+          )}
         </p>
-        <h3 className="mt-3 t-heading-2 text-label group-hover:text-primary">
-          {lead.title}
-        </h3>
         {issue.context_lines.length > 0 && (
-          <ul className="mt-3 flex flex-col gap-1 border-l-2 border-line pl-3">
+          <ol className="mt-3 flex flex-col gap-1">
             {issue.context_lines.map((line, i) => (
-              <li key={i} className="t-body-3 text-label-neutral">
+              <li key={i} className="flex gap-2 t-body-3 text-label-neutral">
+                <span className="!font-extrabold text-accent-ink">{i + 1}</span>
                 {line}
               </li>
             ))}
-          </ul>
+          </ol>
         )}
         <div className="mt-4">
-          <CrowdLine q={lead} board={board} />
+          <Rotator slides={slides} label={`${issue.title} 질문`} />
         </div>
-        <p className="mt-3 flex flex-wrap gap-x-3 t-caption-1 text-label-alt">
-          <span>{board.participants}명 예측</span>
-          <span>리액션 {reactions}</span>
-          <span>{timeLeft(lead.close_at)}</span>
-          {more > 0 && (
-            <span className="text-primary">같은 이슈 질문 {more}개 더</span>
-          )}
-        </p>
       </div>
-    </Link>
+    </article>
   );
 }
 
