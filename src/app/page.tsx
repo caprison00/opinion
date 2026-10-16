@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Change, Locked, OxBar, Participants } from "@/components/CrowdBits";
+import CategoryRail from "@/components/CategoryRail";
 import EmptyState from "@/components/EmptyState";
 import { ChevronRightIcon } from "@/components/icons";
 import PageShell from "@/components/PageShell";
@@ -24,6 +25,7 @@ import {
   dDay,
   formatDate,
   isCategory,
+  type Category,
   outcomeLabel,
   stanceOf,
   type Question,
@@ -169,6 +171,13 @@ export default async function Home({
     .slice(0, 3);
 
   const tabs = [{ value: null, label: "핫이슈" }, ...CATEGORIES];
+  // 분야별 진행 중 공개 질문 수 (PC 왼쪽 메뉴)
+  const counts = Object.fromEntries(
+    CATEGORIES.map((c) => [
+      c.value,
+      open.filter((q) => q.category === c.value).length,
+    ]),
+  ) as Record<Category, number>;
   const currentLabel = category
     ? CATEGORIES.find((c) => c.value === category)?.label
     : null;
@@ -205,7 +214,7 @@ export default async function Home({
     : null;
 
   return (
-    <PageShell>
+    <PageShell wide>
       {deleted && !user && (
         <p className="mb-6 rounded-xl bg-bg-alt px-4 py-3 t-label-1 text-label-neutral">
           탈퇴가 완료됐어요. 그동안 이용해 주셔서 감사합니다.
@@ -230,10 +239,11 @@ export default async function Home({
         </section>
       )}
 
-      {/* 상단 탭: 핫이슈 + 9개 분야. 스크롤해도 상단 메뉴 아래에 붙어 있다 */}
+      {/* 1024px 미만: 가로 분야 탭(핫이슈 + 9개 분야). 스크롤해도 상단 메뉴 아래에 붙어 있다.
+          1024px 이상은 왼쪽 세로 메뉴(CategoryRail) */}
       <nav
         aria-label="분야"
-        className="sticky top-[52px] z-10 -mx-4 bg-bg/95 px-4 py-2 backdrop-blur-md md:top-16 md:-mx-6 md:px-6"
+        className="sticky top-[52px] z-10 -mx-4 bg-bg/95 px-4 py-2 backdrop-blur-md md:top-16 md:-mx-6 md:px-6 lg:hidden"
       >
         <div className={`scroll-row ${pillBar}`}>
           {tabs.map((tab) => {
@@ -252,7 +262,10 @@ export default async function Home({
         </div>
       </nav>
 
-      <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-10">
+      <div className="mt-6 grid grid-cols-1 gap-8 lg:mt-0 lg:grid-cols-[220px_minmax(0,1fr)_300px] lg:gap-8">
+        <div className="hidden lg:sticky lg:top-24 lg:block lg:self-start">
+          <CategoryRail active={category} counts={counts} />
+        </div>
         <div className="flex min-w-0 flex-col gap-10">
           {/* 좁은 화면: 내 시즌 티어·랭킹 바로가기를 맨 위에 */}
           {season && (
@@ -320,7 +333,7 @@ export default async function Home({
                       yesterday.length ? "어제 판정된 질문" : "최근 판정된 질문"
                     }
                   />
-                  <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
                     {resolvedList.map((q) => (
                       <ResolvedCard key={q.id} q={q} board={boardOf(q.id)} />
                     ))}
@@ -362,7 +375,7 @@ export default async function Home({
         </div>
 
         {/* 사이드바: PC는 오른쪽, 좁은 화면은 본문 아래 */}
-        <aside className="flex flex-col gap-4 lg:sticky lg:top-36 lg:self-start">
+        <aside className="flex flex-col gap-4 lg:sticky lg:top-24 lg:self-start">
           <div className="hidden lg:block">
             <SeasonBox season={season} />
           </div>
@@ -443,7 +456,7 @@ function CardGrid({
   imageOf: (q: Question) => PickedImage | null;
 }) {
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
       {questions.map((q) => (
         <QuestionCard
           key={q.id}

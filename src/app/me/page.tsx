@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Participants } from "@/components/CrowdBits";
 import EmptyState from "@/components/EmptyState";
 import { ChevronRightIcon } from "@/components/icons";
 import PageShell from "@/components/PageShell";
@@ -12,6 +13,7 @@ import { getBoards } from "@/lib/board";
 import { badgeDef, getFeaturedBadges, questionBadgeKeys } from "@/lib/badges";
 import BadgeIcon from "@/components/BadgeIcon";
 import {
+  dDay,
   formatDate,
   stanceOf,
   statusLabel,
@@ -90,16 +92,15 @@ export default async function MyPredictionsPage({
       b.questions.resolve_at.localeCompare(a.questions.resolve_at),
     );
   const list = tab === "done" ? done : active;
-  // 판정된 질문의 적중 비율 (소수파 적중·족집게 조건 표시용)
-  const boards =
+  // 진행 중: 참여자 수 / 판정 완료: 적중 비율 (소수파 적중·족집게 조건 표시용)
+  const boards = await getBoards(
+    supabase,
     tab === "done"
-      ? await getBoards(
-          supabase,
-          done
-            .filter((p) => p.questions.status === "resolved")
-            .map((p) => p.questions.id),
-        )
-      : new Map();
+      ? done
+          .filter((p) => p.questions.status === "resolved")
+          .map((p) => p.questions.id)
+      : active.map((p) => p.questions.id),
+  );
 
   return (
     <PageShell narrow>
@@ -194,6 +195,14 @@ export default async function MyPredictionsPage({
                           })()}
                         </span>
                       </p>
+                      {tab === "active" && (
+                        <p className="mt-1 flex items-center gap-2 t-caption-1 text-label-alt">
+                          <Participants
+                            n={boards.get(q.id)?.participants ?? 0}
+                          />
+                          <span>{dDay(q.close_at)}</span>
+                        </p>
+                      )}
                       {tab === "done" &&
                         q.status === "resolved" &&
                         (() => {

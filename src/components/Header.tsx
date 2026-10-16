@@ -58,14 +58,14 @@ async function getAccount(
   };
 }
 
-export default async function Header() {
+export default async function Header({ wide = false }: { wide?: boolean }) {
   const { supabase, user, isAdmin } = await getViewer();
   const me = user ? await getAccount(supabase, user.id) : null;
 
   return (
     <header className="sticky top-0 z-20 border-b border-line bg-bg/90 backdrop-blur-md">
       <div
-        className={`${container} flex h-[52px] items-center justify-between md:h-16`}
+        className={`${container} flex h-[52px] items-center justify-between md:h-16 ${wide ? "lg:max-w-[1280px]" : ""}`}
       >
         <div className="flex items-center gap-6">
           <Logo />

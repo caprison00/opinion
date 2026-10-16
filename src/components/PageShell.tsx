@@ -7,16 +7,18 @@ import { container } from "./ui";
 export default function PageShell({
   children,
   narrow = false,
+  wide = false,
 }: {
   children: React.ReactNode;
   narrow?: boolean;
+  wide?: boolean; // 홈 3단(왼쪽 메뉴 · 가운데 · 오른쪽 사이드바): 최대 1280px
 }) {
   return (
     <div className="flex min-h-dvh flex-col">
-      <Header />
+      <Header wide={wide} />
       <main
         className={`${container} flex-1 pb-16 pt-5 md:pb-20 md:pt-10 ${
-          narrow ? "md:max-w-[720px]" : ""
+          narrow ? "md:max-w-[720px]" : wide ? "lg:max-w-[1280px]" : ""
         }`}
       >
         <NewBadgeBanner />
