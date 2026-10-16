@@ -511,59 +511,69 @@ function IssueCard({
   questions: Question[];
   boardOf: (id: string) => Board;
 }) {
-  // 이슈 묶음 카드는 이슈 이미지가 먼저, 없으면 대표 질문의 이미지
-  const image = pickImage(issue, questions[0]);
-  // 묶인 질문들을 한 장씩 돌려 보여준다
-  const slides = questions.map((q) => {
+  // 롤링할 때 질문마다 자기 사진(없으면 이슈 묶음 사진)이 함께 바뀐다
+  const images = questions.map((q) => pickImage(q, issue));
+  const anyImage = images.some(Boolean);
+  const context = issue.context_lines.length > 0 && (
+    <ol className="mb-4 flex flex-col gap-1">
+      {issue.context_lines.map((line, i) => (
+        <li key={i} className="flex gap-2 t-body-3 text-label-neutral">
+          <span className="!font-extrabold text-accent-ink">{i + 1}</span>
+          {line}
+        </li>
+      ))}
+    </ol>
+  );
+  const imageBox =
+    "aspect-[2/1] w-full md:aspect-auto md:h-auto md:w-[220px] md:self-stretch";
+
+  const slides = questions.map((q, i) => {
     const board = boardOf(q.id);
+    const image = images[i];
     return (
-      <Link key={q.id} href={`/questions/${q.id}`} className="group block">
-        <p className="t-caption-1 !font-semibold text-label-alt">
-          {categoryLabel(q.category)}
-        </p>
-        <h3 className="mt-1 t-heading-2 text-label group-hover:text-primary">
-          {q.title}
-        </h3>
-        <div className="mt-4">
-          <CrowdLine q={q} board={board} />
+      <Link
+        key={q.id}
+        href={`/questions/${q.id}`}
+        className="group flex h-full flex-col md:flex-row"
+      >
+        {image ? (
+          <Thumb image={image} className={imageBox} />
+        ) : (
+          anyImage && (
+            <div className={`${imageBox} bg-fill`} aria-hidden="true" />
+          )
+        )}
+        <div className="min-w-0 flex-1 px-5 pt-5 md:px-6 md:pt-6">
+          {context}
+          <p className="t-caption-1 !font-semibold text-label-alt">
+            {categoryLabel(q.category)}
+          </p>
+          <h3 className="mt-1 t-heading-2 text-label group-hover:text-primary">
+            {q.title}
+          </h3>
+          <div className="mt-4">
+            <CrowdLine q={q} board={board} />
+          </div>
+          <p className="mt-3 flex flex-wrap gap-x-3 t-caption-1 text-label-alt">
+            <span>{board.participants}명 예측</span>
+            <span>리액션 {board.reactions}</span>
+            <span>{timeLeft(q.close_at)}</span>
+          </p>
         </div>
-        <p className="mt-3 flex flex-wrap gap-x-3 t-caption-1 text-label-alt">
-          <span>{board.participants}명 예측</span>
-          <span>리액션 {board.reactions}</span>
-          <span>{timeLeft(q.close_at)}</span>
-        </p>
       </Link>
     );
   });
 
   return (
     <article
-      className={`${card} flex flex-col overflow-hidden transition duration-150 hover:shadow-medium md:flex-row`}
+      className={`${card} overflow-hidden pb-4 transition duration-150 hover:shadow-medium md:pb-5`}
     >
-      {image && (
-        <Thumb
-          image={image}
-          className="aspect-[2/1] w-full md:aspect-auto md:w-[220px] md:self-stretch"
-        />
-      )}
-      <div className="min-w-0 flex-1 p-5 md:p-6">
-        {questions.length > 1 && (
-          <p className="mb-3 t-caption-1 !font-semibold text-label-alt">
-            이 이슈의 질문 {questions.length}개
-          </p>
-        )}
-        {issue.context_lines.length > 0 && (
-          <ol className="mb-4 flex flex-col gap-1">
-            {issue.context_lines.map((line, i) => (
-              <li key={i} className="flex gap-2 t-body-3 text-label-neutral">
-                <span className="!font-extrabold text-accent-ink">{i + 1}</span>
-                {line}
-              </li>
-            ))}
-          </ol>
-        )}
-        <Rotator slides={slides} label={`${issue.title} 질문`} />
-      </div>
+      <Rotator
+        slides={slides}
+        label={`${issue.title} 질문`}
+        controlsClassName={`mt-3 px-4 md:px-5 ${anyImage ? "md:pl-[236px]" : ""}`}
+      />
+      {questions.length < 2 && <div className="h-1" />}
     </article>
   );
 }

@@ -12,9 +12,11 @@ const INTERVAL = 5000;
 export default function Rotator({
   slides,
   label,
+  controlsClassName = "mt-4",
 }: {
   slides: React.ReactNode[];
   label: string;
+  controlsClassName?: string; // 넘기기 버튼 줄의 여백
 }) {
   const n = slides.length;
   const [index, setIndex] = useState(0);
@@ -62,7 +64,7 @@ export default function Rotator({
       </div>
 
       {n > 1 && (
-        <div className="mt-4 flex items-center gap-2">
+        <div className={`flex items-center gap-2 ${controlsClassName}`}>
           <button
             type="button"
             onClick={() => go(index - 1)}
