@@ -13,7 +13,6 @@ import {
   LogOutIcon,
   MenuIcon,
   ShieldIcon,
-  UserIcon,
   XIcon,
 } from "./icons";
 import { Wordmark } from "./Logo";
@@ -42,7 +41,6 @@ type Item = {
 function accountItems(me: AccountInfo | null, isAdmin: boolean): Item[] {
   const items: Item[] = me
     ? [
-        { href: `/users/${me.id}`, label: "내 프로필", icon: UserIcon },
         {
           href: "/me/badges",
           label: "내 뱃지",
@@ -152,8 +150,15 @@ export function UserMenu({
           role="menu"
           className="absolute right-0 top-11 z-30 w-64 rounded-[14px] border border-line bg-surface p-1.5 shadow-medium"
         >
-          <div className="border-b border-line-alt px-3 pb-2.5 pt-2">
-            <Who me={me} />
+          <div className="border-b border-line-alt pb-1.5">
+            <Link
+              href={`/users/${me.id}`}
+              role="menuitem"
+              aria-label="내 프로필"
+              className="block rounded-lg px-3 pb-2.5 pt-2 hover:bg-fill"
+            >
+              <Who me={me} />
+            </Link>
           </div>
           <div className="py-1">
             {items.map((it) => (
