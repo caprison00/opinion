@@ -20,7 +20,7 @@
 - **구분**: `src/lib/site.ts` — Vercel의 `VERCEL_ENV === "production"`이면 실서버. 개발 서버는 화면 맨 위 보라색 "개발 서버" 띠, 검색엔진 노출 차단(robots·noindex). `NEXT_PUBLIC_SITE_URL`로 주소를 바꿀 수 있다.
 - **환경 변수**(Vercel): Production = 실서버 Supabase URL·anon key, Preview = 개발용 Supabase URL·anon key. 환경 변수를 바꾸면 그 환경을 다시 배포해야 적용된다(NEXT_PUBLIC_ 값은 빌드 때 들어감).
 - **디자인 작업 (2026-10~)**: 디자인은 Claude Cowork가 맡는다. 기획자 PC의 GitHub Desktop 클론에서 `design` 브랜치에 커밋 → Push origin. Claude Code는 기획자가 요청하면 `design`을 `develop`에 합쳐(merge) 빌드·검사 후 개발 서버에 올리고, 기획자가 컨펌하면 `main`(실서버)에 반영한다. 기능·DB 작업은 Claude Code가 `develop`에서 하고, 그 뒤 `develop`을 `design`에도 합쳐 둔다(두 쪽이 어긋나지 않게).
-  - Cowork 디자인 작업 규칙: 아래 '유지하는 기존 기능'의 디자인 규칙(디자인 B안 토큰, Pretendard, 다른 회사 로고·서체 금지, 한쪽 강조 테두리 금지)과 '절대 규칙'의 금지 문구를 지킨다. 화면 모양(`src/app/globals.css`, `src/components/*`, 각 화면의 className·문구) 위주로 고치고, 데이터를 가져오는 코드·`src/lib/*`·`supabase/*`·여론 공개 규칙(예측 전 가림)은 건드리지 않는다.
+  - Cowork 디자인 작업 규칙: 새 디자인(이전 A·B안은 폐기). 다른 회사 로고·전용 서체·이름 금지, 한쪽 강조 테두리 금지(기획자 요청), '절대 규칙'의 금지 문구, 여론 공개 규칙의 가림 표시를 지킨다. 화면 모양(`src/app/globals.css`, `src/components/*`, 각 화면의 className·문구) 위주로 고치고, 데이터를 가져오는 코드·`src/lib/*`·`supabase/*`·여론 공개 규칙(예측 전 가림)은 건드리지 않는다.
 - 서버 지역: `vercel.json`의 `regions: ["icn1"]`(서울). Supabase가 서울이라 같은 지역에 둔다 (미국에 두면 데이터 요청마다 약 0.2초씩 늦어짐). 로그인 확인 `getViewer`는 React `cache`로 한 화면 요청 안에서 한 번만 한다.
 - 개발 서버는 Vercel 배포 보호(Vercel 로그인한 사람만 접속)가 켜져 있다. 구글 로그인은 두 Supabase 프로젝트 모두 같은 구글 OAuth 클라이언트를 쓴다.
 
@@ -29,8 +29,7 @@
 - 이용약관·개인정보처리방침 버전 관리 (`/admin/legal`, `/terms`, `/privacy`), 푸터(이용약관·개인정보처리방침·라이선스 링크). 사용 자료 출처(CC BY 4.0 등)는 `/licenses`에 모은다
 - 관리자 방문 통계 (`/admin/stats`, 쿠키 없는 일별 순 방문자)
 - 로고(확률 도넛 ㅇ 워드마크), 파비콘·홈 화면 아이콘
-- 디자인 토큰(`src/app/globals.css`): **디자인 B안** — 따뜻한 종이색 바탕(#f7f6f2) + 남색 글자·버튼(#16233a) + 호박색 강조(#f2a81d, 형광펜 밑줄·시즌 버튼, 칸 제목에 01/02 번호는 쓰지 않음), 예=초록 / 아니오=빨강, 14px 카드 + 부드러운 그림자, 알약형 탭. 타이포 단계 구조는 Wanted Design System(CC BY 4.0). **라이트 모드 기본**, 다크 모드는 상단 버튼으로 선택
-- 이전 디자인 A안(토스증권 공개 웹 레퍼런스 기반)은 GitHub `design-a` 브랜치에 보관. 되돌릴 때 그 브랜치의 globals.css·ui.ts 등을 참고한다.
+- 디자인: **2026-10 전면 리뉴얼 진행 중 (Claude Cowork 담당)**. 이전 A안·B안은 폐기했고 따르지 않는다(`design-a`·`design-b` 브랜치는 기록용 보관). 새 디자인의 색·글자·모양은 `src/app/globals.css`(라이트·다크 토큰)와 `src/components/ui.ts`에 모은다. 리뉴얼이 확정되면 이 줄을 새 디자인 설명으로 바꾼다.
 - 다른 회사의 로고·전용 서체(Toss Product Sans 등)·이름은 쓰지 않는다. 서체는 Pretendard. 예외: 공유 버튼의 SNS 아이콘(simple-icons, CC0)은 기획자 요청으로 쓴다.
 - 카드·박스의 한쪽(위·왼쪽 등)에만 색을 넣는 강조 테두리는 쓰지 않는다 (기획자 요청).
 
