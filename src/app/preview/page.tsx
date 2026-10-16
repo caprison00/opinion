@@ -233,7 +233,7 @@ export default function PreviewHome() {
                     </>
                   ) : (
                     <span className="lock">
-                      <Lock /> 예측하면 보여요
+                      <Lock /> 참여하면 보여요
                     </span>
                   )}
                   <p className="meta" style={{ margin: "10px 0 0" }}>

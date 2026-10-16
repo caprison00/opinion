@@ -577,7 +577,7 @@ function BattlePanel({
             <LockIcon className="h-4 w-4" />
             {board.participants === 0
               ? "첫 예측을 남겨 보세요"
-              : "예측하면 보여요"}
+              : "참여하면 보여요"}
           </p>
           <p className="mt-1 t-caption-1 text-label-alt">
             다른 사람의 생각에 휩쓸리지 않도록, 내 예측을 먼저 남긴 뒤에

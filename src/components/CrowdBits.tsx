@@ -30,7 +30,7 @@ export function Change({
   );
 }
 
-export function Locked({ text = "예측하면 보여요" }: { text?: string }) {
+export function Locked({ text = "참여하면 보여요" }: { text?: string }) {
   return (
     <span className="inline-flex items-center gap-1 t-label-2 text-label-alt">
       <LockIcon className="h-3.5 w-3.5" />

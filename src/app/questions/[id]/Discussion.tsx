@@ -146,7 +146,7 @@ export default function Discussion({
       </div>
       {locked && comments.length > 0 && (
         <p className="mt-2 t-caption-1 text-label-alt">
-          작성자가 어느 쪽을 예측했는지는 내가 예측하면 보여요.
+          작성자가 어느 쪽을 예측했는지는 내가 참여하면 보여요.
         </p>
       )}
 
