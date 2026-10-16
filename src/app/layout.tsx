@@ -37,9 +37,12 @@ export default function RootLayout({
             __html: `try{if(localStorage.getItem("theme")==="dark"){document.documentElement.dataset.theme="dark"}}catch(e){}`,
           }}
         />
+        {/* Pretendard 가변 글꼴을 글자 조각으로 나눈 판: 화면에 쓰인 글자 조각만 받는다.
+            (예전 일본어 포함 고정 굵기판은 굵기 하나에 약 2MB × 5가지라 첫 화면이 매우 느렸다) */}
+        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="" />
         <link
           rel="stylesheet"
-          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-jp.min.css"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
         />
       </head>
       <body className="min-h-dvh bg-bg font-sans text-label">

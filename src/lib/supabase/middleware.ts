@@ -1,6 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+const PROFILE_COOKIE = "yg_profile";
+
 // 매 요청마다 로그인 세션을 갱신하고, 닉네임이 없으면 닉네임 설정 화면으로 보낸다.
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -42,7 +44,12 @@ export async function updateSession(request: NextRequest) {
     path === "/terms" ||
     path === "/privacy";
 
-  if (user && !isPublic) {
+  // 닉네임이 있는 것을 한 번 확인하면 쿠키에 기억해서, 화면을 옮길 때마다 DB에 묻지 않는다.
+  if (
+    user &&
+    !isPublic &&
+    request.cookies.get(PROFILE_COOKIE)?.value !== user.id
+  ) {
     const { data: profile } = await supabase
       .from("profiles")
       .select("nickname")
@@ -55,6 +62,13 @@ export async function updateSession(request: NextRequest) {
       url.search = "";
       return redirectWithCookies(url, response);
     }
+    response.cookies.set(PROFILE_COOKIE, user.id, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30,
+    });
   }
 
   return response;

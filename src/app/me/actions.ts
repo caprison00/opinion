@@ -1,5 +1,6 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
@@ -26,5 +27,7 @@ export async function deleteAccount(
   }
 
   await supabase.auth.signOut();
+  // 닉네임 확인 기억(middleware)도 지운다
+  (await cookies()).delete("yg_profile");
   redirect("/?deleted=1");
 }

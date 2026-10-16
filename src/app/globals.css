@@ -131,7 +131,7 @@
 */
 @theme inline {
   --font-sans:
-    "Pretendard JP", "Pretendard", -apple-system, BlinkMacSystemFont,
+    "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont,
     "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
 
   --color-primary: var(--c-primary);
