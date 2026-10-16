@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { COMMENTS, FEATURED } from "../data";
 import { PillTabs, PredictPanel, Reactions, TrendCard } from "../Interactive";
+import { UserIcon } from "@/components/icons";
 
 export default function PreviewQuestion() {
   const f = FEATURED;
@@ -31,8 +32,18 @@ export default function PreviewQuestion() {
           </h1>
           <p className="meta" style={{ margin: 0 }}>
             예측 마감 10월 31일 (토) 21:00 · 결과 확정 11월 9일 (월) 예정 ·{" "}
-            <span className="num">{f.participants.toLocaleString()}</span>명
-            예측
+            <span
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 4,
+                verticalAlign: "middle",
+              }}
+              aria-label={`${f.participants}명 예측`}
+            >
+              <UserIcon className="h-3.5 w-3.5" />
+              <span className="num">{f.participants.toLocaleString()}</span>
+            </span>
           </p>
 
           {/* 3줄 맥락 */}

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CARDS, FEATURED, MOVING, RESOLVED, TRENDING, UPCOMING } from "./data";
 import { Lock, PillTabs, QuickVote } from "./Interactive";
+import { UserIcon } from "@/components/icons";
 
 const TABS = [
   "핫이슈",
@@ -68,8 +69,19 @@ export default function PreviewHome() {
                 </Link>
               </h3>
               <p className="meta" style={{ margin: 0 }}>
-                <span className="num">{f.participants.toLocaleString()}</span>명
-                예측 · 리액션 <span className="num">{f.reactions}</span>
+                <span
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 4,
+                    verticalAlign: "middle",
+                  }}
+                  aria-label={`${f.participants}명 예측`}
+                >
+                  <UserIcon className="h-3.5 w-3.5" />
+                  <span className="num">{f.participants.toLocaleString()}</span>
+                </span>{" "}
+                · 리액션 <span className="num">{f.reactions}</span>
               </p>
               <QuickVote yes={f.yes} delta={f.delta} />
               <div className="keyfactors">
@@ -236,8 +248,18 @@ export default function PreviewHome() {
                       <Lock /> 참여하면 보여요
                     </span>
                   )}
-                  <p className="meta" style={{ margin: "10px 0 0" }}>
-                    <span className="num">{c.n}</span>명 예측
+                  <p
+                    className="meta"
+                    style={{
+                      margin: "10px 0 0",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 4,
+                    }}
+                    aria-label={`${c.n}명 예측`}
+                  >
+                    <UserIcon className="h-3.5 w-3.5" />
+                    <span className="num">{c.n}</span>
                   </p>
                 </Link>
               ))}

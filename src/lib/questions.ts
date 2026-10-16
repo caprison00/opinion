@@ -155,17 +155,6 @@ export function formatDate(iso: string) {
   return dateFormatter.format(new Date(iso));
 }
 
-// 마감까지 남은 시간을 "3일 남음" 처럼 짧게 보여준다.
-export function timeLeft(iso: string) {
-  const ms = new Date(iso).getTime() - Date.now();
-  if (ms <= 0) return "마감";
-  const minutes = Math.floor(ms / 60_000);
-  if (minutes < 60) return `${minutes}분 남음`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}시간 남음`;
-  return `${Math.floor(hours / 24)}일 남음`;
-}
-
 // 마감까지 남은 날: "D-75", 하루 안이면 "D-day", 지났으면 "마감"
 export function dDay(iso: string) {
   const ms = new Date(iso).getTime() - Date.now();

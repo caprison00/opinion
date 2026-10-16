@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Change, Locked } from "@/components/CrowdBits";
+import { Change, Locked, Participants } from "@/components/CrowdBits";
 import { ChevronLeftIcon, LockIcon } from "@/components/icons";
 import PageShell from "@/components/PageShell";
 import TierMark from "@/components/TierMark";
@@ -28,7 +28,7 @@ import {
   outcomeLabel,
   stanceOf,
   statusLabel,
-  timeLeft,
+  dDay,
   type Question,
 } from "@/lib/questions";
 import Discussion, { type DiscussionComment } from "./Discussion";
@@ -320,7 +320,7 @@ export default async function QuestionPage({
                       : "bg-fill text-label-alt"
                   }`}
                 >
-                  {accepting ? timeLeft(q.close_at) : statusLabel(q)}
+                  {accepting ? dDay(q.close_at) : statusLabel(q)}
                 </span>
               </div>
               {q.is_public !== false && (
@@ -491,9 +491,11 @@ export default async function QuestionPage({
                       <p className="line-clamp-2 t-label-1 text-label group-hover:text-primary">
                         {s.title}
                       </p>
-                      <p className="mt-0.5 t-caption-1 text-label-alt">
+                      <p className="mt-0.5 flex items-center gap-1.5 t-caption-1 text-label-alt">
                         {statusLabel(s)} ·{" "}
-                        {(boards.get(s.id) ?? EMPTY_BOARD).participants}명 예측
+                        <Participants
+                          n={(boards.get(s.id) ?? EMPTY_BOARD).participants}
+                        />
                       </p>
                     </Link>
                   </li>
@@ -555,10 +557,6 @@ function BattlePanel({
   topReasons: (DiscussionComment | null)[];
 }) {
   const crowd = board.crowd;
-  const count =
-    board.participants === 0
-      ? "아직 예측 없음"
-      : `${board.participants}명 예측`;
   const isOx = q.type === "ox";
 
   return (
@@ -568,7 +566,9 @@ function BattlePanel({
           <span className="sec-idx">01</span>
           {accepting ? "진영 대결" : "최종 진영"}
         </h2>
-        <p className="t-label-1 text-label-alt">{count}</p>
+        <p className="t-label-1 text-label-alt">
+          <Participants n={board.participants} />
+        </p>
       </div>
 
       {!crowd ? (

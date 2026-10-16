@@ -5,7 +5,7 @@ export const FEATURED = {
   category: "게임·e스포츠",
   title: "2026 롤드컵 우승팀이 LCK 팀일까?",
   highlight: "LCK 팀일까?",
-  closeIn: "16일 남음",
+  closeIn: "D-16",
   participants: 1284,
   reactions: 342,
   yes: 63,
@@ -59,7 +59,7 @@ export const CARDS = [
     top: "T1",
     pct: 45,
     delta: 15,
-    closeIn: "5일 남음",
+    closeIn: "D-5",
     n: 812,
   },
   {
@@ -69,7 +69,7 @@ export const CARDS = [
     top: "예",
     pct: 38,
     delta: -4,
-    closeIn: "39일 남음",
+    closeIn: "D-39",
     n: 233,
   },
   {
@@ -79,7 +79,7 @@ export const CARDS = [
     top: "",
     pct: 0,
     delta: 0,
-    closeIn: "69일 남음",
+    closeIn: "D-69",
     n: 590,
   },
   {
@@ -89,7 +89,7 @@ export const CARDS = [
     top: "예",
     pct: 57,
     delta: 3,
-    closeIn: "12일 남음",
+    closeIn: "D-12",
     n: 147,
   },
 ];
