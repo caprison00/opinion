@@ -33,6 +33,11 @@ export default function QuestionCard({
       : stanceOf(crowd, question.options)
     : null;
 
+  // 공개된 지 48시간이 안 된 질문
+  const isNew =
+    question.status === "open" &&
+    Date.now() - new Date(question.open_at).getTime() < 48 * 3_600_000;
+
   return (
     <Link
       href={`/questions/${question.id}`}
@@ -43,6 +48,11 @@ export default function QuestionCard({
           <span className="rounded-md bg-fill px-2 py-0.5 t-caption-1 !font-semibold text-label-neutral">
             {categoryLabel(question.category)}
           </span>
+          {isNew && (
+            <span className="rounded-full bg-accent px-2.5 py-0.5 t-caption-1 !font-bold text-[#16233a]">
+              새 질문
+            </span>
+          )}
           {question.type === "choice" && (
             <span className="rounded-full border border-line bg-accent-soft px-2.5 py-0.5 t-caption-1 !font-bold text-accent-ink">
               객관식 {question.options.length}
