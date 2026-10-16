@@ -132,14 +132,15 @@ export default async function Home({
   const issueIds = [
     ...new Set(open.map((q) => q.issue_id).filter((x): x is string => !!x)),
   ];
-  const { data: issueData } = issueIds.length
-    ? await supabase.from("issues").select("*").in("id", issueIds)
-    : { data: [] };
-
-  const boards = await getBoards(supabase, [
-    ...open.map((q) => q.id),
-    ...resolvedList.map((q) => q.id),
-    ...upcoming.map((q) => q.id),
+  const [{ data: issueData }, boards] = await Promise.all([
+    issueIds.length
+      ? supabase.from("issues").select("*").in("id", issueIds)
+      : Promise.resolve({ data: [] }),
+    getBoards(supabase, [
+      ...open.map((q) => q.id),
+      ...resolvedList.map((q) => q.id),
+      ...upcoming.map((q) => q.id),
+    ]),
   ]);
   const boardOf = (id: string) => boards.get(id) ?? EMPTY_BOARD;
   const issueById = new Map(

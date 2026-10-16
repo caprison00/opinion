@@ -19,6 +19,7 @@
 - **DB 변경(SQL)**: 새 마이그레이션은 개발용 Supabase에서 먼저 실행 → 확인 후 실서버 Supabase에서 실행. 개발용 프로젝트를 처음 만들 때는 `supabase/dev-setup/all_0001-0023.sql`(0001~0023 합본)을 한 번 실행한다.
 - **구분**: `src/lib/site.ts` — Vercel의 `VERCEL_ENV === "production"`이면 실서버. 개발 서버는 화면 맨 위 보라색 "개발 서버" 띠, 검색엔진 노출 차단(robots·noindex). `NEXT_PUBLIC_SITE_URL`로 주소를 바꿀 수 있다.
 - **환경 변수**(Vercel): Production = 실서버 Supabase URL·anon key, Preview = 개발용 Supabase URL·anon key. 환경 변수를 바꾸면 그 환경을 다시 배포해야 적용된다(NEXT_PUBLIC_ 값은 빌드 때 들어감).
+- 서버 지역: `vercel.json`의 `regions: ["icn1"]`(서울). Supabase가 서울이라 같은 지역에 둔다 (미국에 두면 데이터 요청마다 약 0.2초씩 늦어짐). 로그인 확인 `getViewer`는 React `cache`로 한 화면 요청 안에서 한 번만 한다.
 - 개발 서버는 Vercel 배포 보호(Vercel 로그인한 사람만 접속)가 켜져 있다. 구글 로그인은 두 Supabase 프로젝트 모두 같은 구글 OAuth 클라이언트를 쓴다.
 
 ### 유지하는 기존 기능 (v2 작업 중 지우지 않는다)

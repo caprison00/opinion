@@ -1,15 +1,12 @@
 import Link from "next/link";
 import { markBadgesSeen } from "@/app/users/[id]/actions";
 import { badgeTitle } from "@/lib/badges";
-import { createClient } from "@/lib/supabase/server";
+import { getViewer } from "@/lib/auth";
 import BadgeIcon from "./BadgeIcon";
 
 // 새로 받은(또는 단계가 오른) 뱃지가 있으면 화면 맨 위에 한 번 알려준다. "확인"을 누르면 사라진다.
 export default async function NewBadgeBanner() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { supabase, user } = await getViewer();
   if (!user) return null;
 
   const { data } = await supabase
