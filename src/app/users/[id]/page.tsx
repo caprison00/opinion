@@ -89,7 +89,7 @@ export default async function ProfilePage({
     <PageShell narrow>
       <section className="flex items-start gap-4">
         <div
-          className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full t-title-3"
+          className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[18px] t-title-3"
           style={{
             color: tier === "newbie" ? undefined : `var(--tier-${tier})`,
             backgroundColor:
@@ -120,11 +120,12 @@ export default async function ProfilePage({
         </div>
       </section>
 
-      <section className="mt-6 rounded-2xl bg-hero p-5 text-white md:p-6">
-        <p className="t-label-2 text-white/75">{seasonLabel(s.season)} 시즌</p>
+      <section className="mt-6 rounded-3xl bg-hero p-5 text-white md:p-6">
+        <p className="t-label-2 !font-bold text-hero-accent">{seasonLabel(s.season)} 시즌</p>
         <div className="mt-1 flex flex-wrap items-end justify-between gap-2">
-          <p className="t-title-2 tabular-nums">
-            {scoreText(s.season_total)}점
+          <p className="num-l text-[40px]">
+            {scoreText(s.season_total)}
+            <span className="ml-1 font-sans t-body-2 !font-bold">점</span>
           </p>
           <p className="pb-1 t-label-1 text-white/85">
             {s.season_rank
@@ -171,7 +172,7 @@ export default async function ProfilePage({
           // 내 프로필에서는 받은 뱃지만 짧게, 진열장·설정은 내 뱃지 화면에서
           <Link
             href="/me/badges"
-            className={`${card} mt-3 flex min-h-20 flex-wrap items-center gap-2 px-5 py-4 hover:shadow-medium`}
+            className={`${card} mt-3 flex min-h-20 flex-wrap items-center gap-2 px-5 py-4 hover:shadow-small`}
           >
             {earned.length ? (
               earned.map((b) => (
@@ -258,9 +259,9 @@ function Stat({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl bg-bg-alt p-4">
+    <div className="rounded-[18px] border border-line bg-surface p-4">
       <p className="t-caption-1 text-label-alt">{label}</p>
-      <p className="mt-1 t-heading-1 tabular-nums">{children}</p>
+      <p className="mt-1.5 num text-[22px]">{children}</p>
     </div>
   );
 }

@@ -221,7 +221,7 @@ async function QuestionResults({
                 status: v === "done" ? "done" : undefined,
               })}
               aria-current={v === status ? "page" : undefined}
-              className={`rounded-full px-3 py-1.5 t-label-2 !font-bold transition-colors ${
+              className={`rounded-[10px] px-3 py-2 t-label-2 !font-bold transition-colors ${
                 v === status
                   ? "bg-brand text-white"
                   : "text-label-neutral hover:bg-fill"

@@ -43,7 +43,7 @@ export default async function LegalPage({
       {scheduled.length > 0 && !isScheduled && (
         <Link
           href={`${path}?v=${scheduled[scheduled.length - 1].version}`}
-          className="mt-5 block rounded-xl bg-accent-blue px-4 py-3 t-label-1 text-primary"
+          className="mt-5 block rounded-[14px] bg-accent-blue px-4 py-3 t-label-1 text-primary"
         >
           {formatDate(scheduled[scheduled.length - 1].effective_at)}부터 새{" "}
           {label}(버전 {scheduled[scheduled.length - 1].version})이 시행돼요.
@@ -52,7 +52,7 @@ export default async function LegalPage({
       )}
 
       {!shown ? (
-        <p className="mt-6 rounded-2xl bg-bg-alt py-16 text-center t-body-2 text-label-alt">
+        <p className="mt-6 rounded-[18px] bg-bg-alt py-16 text-center t-body-2 text-label-alt">
           아직 게시된 {label}이 없어요.
         </p>
       ) : (

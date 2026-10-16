@@ -24,7 +24,7 @@ export default async function NewBadgeBanner() {
   if (!fresh.length) return null;
 
   return (
-    <div className="mb-6 flex flex-wrap items-center gap-3 rounded-[14px] border border-accent bg-accent-soft px-4 py-3">
+    <div className="mb-6 flex flex-wrap items-center gap-3 rounded-[14px] bg-yes-soft px-4 py-3">
       <div className="flex -space-x-1">
         {fresh.slice(0, 4).map((b) => (
           <BadgeIcon

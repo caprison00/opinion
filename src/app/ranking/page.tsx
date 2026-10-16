@@ -134,7 +134,7 @@ export default async function RankingPage({
       </div>
 
       {/* 탭: 누적 점수 / 정확도 */}
-      <div className="mt-5 grid grid-cols-2 rounded-xl bg-fill p-1">
+      <div className="mt-5 grid grid-cols-2 gap-1 rounded-[14px] bg-bg-alt p-1">
         {(
           [
             {
@@ -153,13 +153,13 @@ export default async function RankingPage({
             key={t.value}
             href={href({ mode: t.value })}
             aria-current={mode === t.value ? "page" : undefined}
-            className={`flex flex-col items-center rounded-lg py-2 transition-colors ${
+            className={`flex flex-col items-center rounded-[11px] py-2.5 transition-colors ${
               mode === t.value
-                ? "bg-surface shadow-small"
+                ? "bg-surface shadow-xsmall"
                 : "text-label-alt hover:text-label"
             }`}
           >
-            <span className="t-body-2 !font-bold">{t.label}</span>
+            <span className="t-body-3 !font-extrabold">{t.label}</span>
             <span className="t-caption-1 text-label-alt">{t.hint}</span>
           </Link>
         ))}
@@ -174,7 +174,7 @@ export default async function RankingPage({
           <Link
             key={c.label}
             href={href({ category: c.value })}
-            className={`${chip(c.value === category)} shrink-0 !h-8 !px-3`}
+            className={`${chip(c.value === category)} shrink-0 !h-9 !px-3.5`}
           >
             {c.label}
           </Link>
@@ -201,7 +201,7 @@ export default async function RankingPage({
         )}
       </div>
 
-      <details className="mt-6 rounded-xl bg-bg-alt px-4 py-3 t-label-1 text-label-neutral">
+      <details className="mt-6 rounded-[14px] bg-bg-alt px-4 py-3.5 t-label-1 text-label-neutral">
         <summary className="cursor-pointer !font-semibold">
           티어는 어떻게 정해지나요?
         </summary>
@@ -221,8 +221,8 @@ export default async function RankingPage({
 
       {/* 내 순위: 항상 하단에 고정 */}
       {user && (
-        <div className="sticky bottom-[calc(64px+env(safe-area-inset-bottom))] z-10 mt-6 md:bottom-4">
-          <div className="rounded-2xl border border-primary/30 bg-surface shadow-medium">
+        <div className="sticky bottom-[calc(12px+env(safe-area-inset-bottom))] z-10 mt-6 md:bottom-4">
+          <div className="rounded-[18px] border-2 border-yes bg-surface shadow-medium">
             {me ? (
               <ol>
                 <RankRow
@@ -279,19 +279,19 @@ function RankRow({
   return (
     <li
       className={`flex items-center gap-3 px-4 py-3.5 md:gap-4 md:px-5 ${
-        isMe && !pinned ? "bg-accent-blue" : ""
+        isMe && !pinned ? "bg-yes-soft" : ""
       }`}
     >
       <div className="flex w-12 shrink-0 flex-col items-center">
         <span
-          className={`flex h-8 min-w-8 items-center justify-center rounded-full px-1.5 t-label-1 !font-bold tabular-nums ${
-            r.rank <= 3 ? "bg-brand text-white" : "bg-fill text-label-alt"
+          className={`num flex h-9 min-w-9 items-center justify-center rounded-[10px] px-1.5 text-[16px] ${
+            r.rank <= 3 ? "bg-brand text-white" : "bg-bg-alt text-label-neutral"
           }`}
         >
           {r.rank}
         </span>
         {pct !== null && (
-          <span className="mt-0.5 text-[11px] text-label-alt tabular-nums">
+          <span className="mt-1 text-[11px] !font-semibold text-label-alt tabular-nums">
             상위 {pct}%
           </span>
         )}
@@ -303,7 +303,7 @@ function RankRow({
         >
           <TierMark tier={tier} />
           {badge && <BadgeIcon badgeKey={badge.key} level={badge.level} />}
-          <span className="truncate t-body-2 !font-semibold">{r.nickname}</span>
+          <span className="truncate t-body-3 !font-extrabold">{r.nickname}</span>
           {isMe && (
             <span className="shrink-0 t-label-2 text-primary">(나)</span>
           )}
@@ -316,10 +316,10 @@ function RankRow({
         </p>
       </div>
       <span
-        className={`shrink-0 t-heading-2 tabular-nums ${scoreColor(value)}`}
+        className={`num shrink-0 text-[22px] ${scoreColor(value)}`}
       >
         {scoreText(value)}
-        {mode === "accuracy" && <span className="t-caption-1"> 평균</span>}
+        {mode === "accuracy" && <span className="font-sans t-caption-1"> 평균</span>}
       </span>
     </li>
   );

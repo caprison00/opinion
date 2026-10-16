@@ -38,7 +38,7 @@ export default function ThemeChoice() {
     <div
       role="radiogroup"
       aria-label="화면 모드"
-      className="inline-flex rounded-full bg-fill p-1"
+      className="inline-flex gap-1 rounded-[14px] bg-bg-alt p-1"
     >
       {OPTIONS.map(({ value, label, Icon }) => {
         const on = theme === value;
@@ -49,8 +49,8 @@ export default function ThemeChoice() {
             role="radio"
             aria-checked={on}
             onClick={() => choose(value)}
-            className={`flex h-9 items-center gap-1.5 rounded-full px-4 t-label-1 !font-semibold transition-colors ${
-              on ? "bg-surface text-label shadow-small" : "text-label-alt"
+            className={`flex h-10 items-center gap-1.5 rounded-[11px] px-4 t-label-1 !font-bold transition-colors ${
+              on ? "bg-surface text-label shadow-xsmall" : "text-label-neutral"
             }`}
           >
             <Icon className="h-4 w-4" />

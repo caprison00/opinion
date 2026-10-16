@@ -25,7 +25,7 @@ export default function DeleteAccount() {
   return (
     <form
       action={formAction}
-      className="flex flex-col gap-3 rounded-2xl border border-line p-5"
+      className="flex flex-col gap-3 rounded-[18px] border border-line bg-surface p-5"
     >
       <p className="t-body-2 !font-bold">정말 탈퇴할까요?</p>
       <p className="t-label-1 text-label-neutral">

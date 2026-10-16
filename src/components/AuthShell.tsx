@@ -6,7 +6,7 @@ import ThemeToggle from "./ThemeToggle";
 export default function AuthShell({ children }: { children: React.ReactNode }) {
   return (
     <main className="flex min-h-dvh flex-col items-center justify-center bg-bg-alt px-4 py-10">
-      <div className="w-full max-w-[400px] rounded-3xl border border-line bg-surface p-7 shadow-large md:p-10">
+      <div className="w-full max-w-[400px] rounded-3xl border border-line bg-surface p-7 md:p-10">
         <div className="flex items-start justify-between">
           <Logo className="h-11 w-auto" />
           <ThemeToggle />

@@ -131,7 +131,7 @@ export function UserMenu({
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="menu"
         aria-expanded={open}
-        className={`flex h-9 items-center gap-1.5 rounded-full border border-line bg-surface pl-2 pr-2.5 transition-shadow hover:shadow-small ${
+        className={`flex h-10 items-center gap-1.5 rounded-xl border border-line bg-surface pl-2 pr-2.5 transition-shadow hover:shadow-small ${
           open ? "ring-3 ring-fill-strong" : ""
         }`}
       >
@@ -148,7 +148,7 @@ export function UserMenu({
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-11 z-30 w-64 rounded-[14px] border border-line bg-surface p-1.5 shadow-medium"
+          className="absolute right-0 top-12 z-30 w-64 rounded-[18px] border border-line bg-surface p-1.5 shadow-large"
         >
           <div className="border-b border-line-alt pb-1.5">
             <Link
@@ -218,7 +218,7 @@ export function MobileMenu({
         onClick={() => setOpen(true)}
         aria-label="메뉴 열기"
         aria-expanded={open}
-        className="flex h-9 w-9 items-center justify-center rounded-full text-label hover:bg-fill"
+        className="flex h-11 w-11 items-center justify-center rounded-xl text-label hover:bg-fill"
       >
         <MenuIcon className="h-6 w-6" />
       </button>
@@ -246,7 +246,7 @@ export function MobileMenu({
                   type="button"
                   onClick={() => setOpen(false)}
                   aria-label="메뉴 닫기"
-                  className="flex h-9 w-9 items-center justify-center rounded-full text-label-neutral hover:bg-fill"
+                  className="flex h-11 w-11 items-center justify-center rounded-xl text-label-neutral hover:bg-fill"
                 >
                   <XIcon className="h-6 w-6" />
                 </button>
@@ -255,7 +255,7 @@ export function MobileMenu({
               {me ? (
                 <Link
                   href={`/users/${me.id}`}
-                  className="mx-4 my-2 block rounded-[14px] bg-hero p-4 text-white"
+                  className="mx-4 my-2 block rounded-[18px] bg-hero p-4 text-white"
                 >
                   <Who me={me} dark />
                 </Link>

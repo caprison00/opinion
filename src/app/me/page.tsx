@@ -121,20 +121,20 @@ export default async function MyPredictionsPage({
       </div>
 
       <section className="mt-5 grid grid-cols-2 gap-3 md:gap-4">
-        <div className="rounded-2xl bg-hero p-5 text-white">
-          <p className="t-label-2 text-white/75">
+        <div className="rounded-[18px] bg-hero p-5 text-white">
+          <p className="t-label-2 !font-bold text-hero-accent">
             {seasonLabel(season)} 시즌 점수
           </p>
-          <p className="mt-1 t-title-1 tabular-nums">
+          <p className="mt-2 num-l text-[36px]">
             {scoreText(seasonTotal)}
           </p>
           <p className="mt-0.5 t-caption-1 text-white/75">
             이번 달 판정 {seasonScores.length}건
           </p>
         </div>
-        <div className="rounded-2xl bg-bg-alt p-5">
-          <p className="t-label-2 text-label-alt">전체 누적 점수</p>
-          <p className="mt-1 t-title-1 tabular-nums">{scoreText(totalScore)}</p>
+        <div className={`${card} p-5`}>
+          <p className="t-label-2 !font-bold text-label-alt">전체 누적 점수</p>
+          <p className="mt-2 num-l text-[36px]">{scoreText(totalScore)}</p>
           <p className="mt-0.5 t-caption-1 text-label-alt">
             채점된 예측 {scores.size}건
           </p>
@@ -174,7 +174,7 @@ export default async function MyPredictionsPage({
                 <li key={p.id}>
                   <Link
                     href={`/questions/${q.id}`}
-                    className={`${card} flex items-center gap-4 p-5 transition-shadow hover:shadow-small`}
+                    className={`${card} flex items-center gap-4 p-4 transition-shadow hover:shadow-small md:p-5`}
                   >
                     <div className="min-w-0 flex-1">
                       <p className="t-caption-1 text-label-alt">
@@ -183,12 +183,12 @@ export default async function MyPredictionsPage({
                           ? `확정 ${formatDate(q.resolve_at)}`
                           : `마감 ${formatDate(q.close_at)}`}
                       </p>
-                      <p className="mt-1 line-clamp-2 t-body-2 !font-bold">
+                      <p className="mt-1 line-clamp-2 t-body-3 !font-extrabold md:t-body-2 md:!font-extrabold">
                         {q.title}
                       </p>
                       <p className="mt-1 t-label-1 text-label-neutral">
                         내 예측{" "}
-                        <span className="!font-semibold text-primary">
+                        <span className="!font-extrabold text-primary">
                           {(() => {
                             const st = stanceOf(p.probs.map(Number), q.options);
                             return `${st.label} ${st.pct}%`;
@@ -200,7 +200,9 @@ export default async function MyPredictionsPage({
                           <Participants
                             n={boards.get(q.id)?.participants ?? 0}
                           />
-                          <span>{dDay(q.close_at)}</span>
+                          <span className="num text-[13px] text-label-neutral">
+                            {dDay(q.close_at)}
+                          </span>
                         </p>
                       )}
                       {tab === "done" &&
@@ -237,7 +239,7 @@ export default async function MyPredictionsPage({
                         </span>
                       ) : (
                         <span
-                          className={`shrink-0 t-heading-2 tabular-nums ${scoreColor(score)}`}
+                          className={`num shrink-0 text-[22px] ${scoreColor(score)}`}
                         >
                           {scoreText(score)}
                         </span>

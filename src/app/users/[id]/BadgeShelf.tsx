@@ -76,7 +76,7 @@ export default function BadgeShelf({
                   className={`${card} relative flex flex-col items-center px-2 pb-3 pt-4 text-center sm:px-3 sm:pb-4 sm:pt-5`}
                 >
                   {featured === d.key && level > 0 && (
-                    <span className="absolute right-1.5 top-1.5 rounded-full sm:right-2.5 sm:top-2.5 bg-accent-soft px-2 py-0.5 t-caption-1 !font-bold text-accent-ink">
+                    <span className="absolute right-1.5 top-1.5 rounded-md sm:right-2.5 sm:top-2.5 bg-yes-soft px-2 py-0.5 t-caption-1 !font-bold text-yes-ink">
                       대표
                     </span>
                   )}
@@ -124,7 +124,7 @@ export default function BadgeShelf({
                       {goal && (
                         <div className="h-1.5 w-full overflow-hidden rounded-full bg-fill">
                           <div
-                            className="h-full rounded-full bg-accent"
+                            className="h-full rounded-full bg-yes"
                             style={{ width: `${pct}%` }}
                           />
                         </div>
