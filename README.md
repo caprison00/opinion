@@ -14,6 +14,19 @@
 3. `.env.example` 을 `.env.local` 로 복사하고 값을 채운다. (Vercel에서는 Environment Variables에 같은 값을 넣는다.)
 4. `npm install` 후 `npm run dev` → http://localhost:3000
 
+## 실서버 · 개발 서버
+
+| | 실서버 | 개발 서버 |
+|---|---|---|
+| 주소 | https://yegam.art | https://dev.yegam.art |
+| GitHub 브랜치 | `main` | `develop` |
+| DB | 실서버 Supabase 프로젝트 | 개발용 Supabase 프로젝트 |
+
+- 새 기능은 `develop`에 먼저 올려 dev.yegam.art에서 확인한 뒤 `main`에 합친다.
+- 개발 서버는 화면 맨 위에 보라색 "개발 서버" 띠가 있고, 검색엔진에 노출되지 않는다.
+- Vercel 환경 변수: Production = 실서버 Supabase 값, Preview = 개발용 Supabase 값.
+- 개발용 Supabase를 처음 만들 때 `supabase/dev-setup/all_0001-0023.sql`을 한 번 실행한다. 이후 새 SQL은 개발용 → 실서버 순서로 실행한다.
+
 ## 화면
 
 | 주소 | 내용 |
