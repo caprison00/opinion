@@ -6,6 +6,7 @@ import PageShell from "@/components/PageShell";
 import QuestionCard from "@/components/QuestionCard";
 import Rotator from "@/components/Rotator";
 import SearchBox from "@/components/SearchBox";
+import InfoTip from "@/components/InfoTip";
 import { Thumb } from "@/components/QuestionImage";
 import { card, pillBar, scoreText, textTab } from "@/components/ui";
 import { getViewer } from "@/lib/auth";
@@ -203,10 +204,6 @@ export default async function Home({
       }
     : null;
 
-  // 보이는 섹션 순서대로 01, 02… 번호를 붙인다
-  let sectionNo = 0;
-  const nextIdx = () => String(++sectionNo).padStart(2, "0");
-
   return (
     <PageShell>
       {deleted && !user && (
@@ -270,7 +267,6 @@ export default async function Home({
           {category ? (
             <section>
               <SectionTitle
-                idx={nextIdx()}
                 title={`${currentLabel} 질문`}
                 hint="마감이 가까운 순서로 보여요."
               />
@@ -291,7 +287,7 @@ export default async function Home({
               {/* 이슈 묶음마다 이슈 이름을 칸 제목으로 */}
               {hotIssues.map((h) => (
                 <section key={h.issue.id}>
-                  <SectionTitle idx={nextIdx()} title={h.issue.title} />
+                  <SectionTitle title={h.issue.title} />
                   <IssueCard
                     issue={h.issue}
                     questions={h.questions}
@@ -302,7 +298,6 @@ export default async function Home({
 
               <section>
                 <SectionTitle
-                  idx={nextIdx()}
                   title="지금 여론이 움직이는 질문"
                   hint="지난 24시간 동안 집단 확률이 크게 바뀐 순서예요."
                 />
@@ -325,7 +320,6 @@ export default async function Home({
               {resolvedList.length > 0 && (
                 <section>
                   <SectionTitle
-                    idx={nextIdx()}
                     title={
                       yesterday.length ? "어제 판정된 질문" : "최근 판정된 질문"
                     }
@@ -340,7 +334,6 @@ export default async function Home({
 
               <section>
                 <SectionTitle
-                  idx={nextIdx()}
                   title="곧 마감되는 질문"
                   hint="마감이 가까운 순서로 보여요."
                 />
@@ -358,7 +351,6 @@ export default async function Home({
               {newest.length > 0 && (
                 <section>
                   <SectionTitle
-                    idx={nextIdx()}
                     title="새로 공개된 질문"
                     hint="최근 일주일 동안 새로 열린 질문이에요. 공개된 순서대로 보여요."
                   />
@@ -435,24 +427,13 @@ export default async function Home({
   );
 }
 
-// 섹션 제목: 호박색 번호(01, 02…) + 굵은 제목 (B안)
-function SectionTitle({
-  idx,
-  title,
-  hint,
-}: {
-  idx: string;
-  title: string;
-  hint?: string;
-}) {
+// 섹션 제목: 굵은 제목 + 설명은 ⓘ 툴팁
+function SectionTitle({ title, hint }: { title: string; hint?: string }) {
   return (
-    <div className="mb-4">
-      <h2 className="flex items-baseline gap-2.5 t-heading-2">
-        <span className="sec-idx">{idx}</span>
-        {title}
-      </h2>
-      {hint && <p className="mt-0.5 t-label-1 text-label-neutral">{hint}</p>}
-    </div>
+    <h2 className="relative mb-4 flex items-center gap-1 t-heading-2">
+      {title}
+      {hint && <InfoTip text={hint} />}
+    </h2>
   );
 }
 
