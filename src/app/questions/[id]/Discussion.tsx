@@ -94,7 +94,6 @@ export default function Discussion({
   return (
     <section>
       <h2 className="flex items-baseline gap-2.5 t-heading-2">
-        <span className="sec-idx">03</span>
         토론{" "}
         <span className="t-body-2 text-label-assist">{comments.length}</span>
       </h2>

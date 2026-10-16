@@ -257,9 +257,7 @@ export default async function QuestionPage({
       />
 
       <section>
-        <h2 className="flex items-baseline gap-2.5 t-heading-2">
-          <span className="sec-idx">02</span>확률 추이
-        </h2>
+        <h2 className="flex items-baseline gap-2.5 t-heading-2">확률 추이</h2>
         <div className="mt-3">
           {crowd ? (
             <TrendChart points={history} options={q.options} type={q.type} />
@@ -563,7 +561,6 @@ function BattlePanel({
     <section>
       <div className="flex items-baseline justify-between gap-2">
         <h2 className="flex items-baseline gap-2.5 t-heading-2">
-          <span className="sec-idx">01</span>
           {accepting ? "진영 대결" : "최종 진영"}
         </h2>
         <p className="t-label-1 text-label-alt">
