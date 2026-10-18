@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { CATEGORIES, type Category } from "@/lib/questions";
-import { pillBar, textTab } from "./ui";
+import { chip } from "./ui";
 
 // 가로로 넘기는 분야 탭 (첫 칸 + 9개 분야). counts를 주면 탭마다 숫자를 붙인다.
 export default function CategoryTabs({
@@ -23,7 +23,10 @@ export default function CategoryTabs({
     })),
   ];
   return (
-    <nav aria-label="분야" className={`scroll-row ${pillBar}`}>
+    <nav
+      aria-label="분야"
+      className="scroll-row -mx-4 flex gap-1.5 overflow-x-auto px-4 md:mx-0 md:px-0"
+    >
       {tabs.map((tab) => {
         const on = tab.value === active;
         return (
@@ -32,11 +35,11 @@ export default function CategoryTabs({
             href={hrefOf(tab.value)}
             scroll={false}
             aria-current={on ? "page" : undefined}
-            className={`${textTab(on)} shrink-0 gap-1`}
+            className={`${chip(on)} shrink-0 gap-1.5 !h-10`}
           >
             {tab.label}
             {tab.n !== undefined && (
-              <span className="num text-[12px] !font-medium text-label-alt">
+              <span className="num text-[13px] !font-medium opacity-75">
                 {tab.n}
               </span>
             )}

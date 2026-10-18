@@ -9,6 +9,7 @@ import {
   BadgeLineIcon,
   ChartLineIcon,
   ChevronDownIcon,
+  ChevronRightIcon,
   GearIcon,
   LogOutIcon,
   MenuIcon,
@@ -17,8 +18,9 @@ import {
 } from "./icons";
 import { Wordmark } from "./Logo";
 import TierMark from "./TierMark";
-import { button } from "./ui";
-import type { Tier } from "@/lib/tiers";
+import { button, scoreText } from "./ui";
+import { dDay } from "@/lib/questions";
+import { SEASON_MIN, tierLabel, type Tier } from "@/lib/tiers";
 
 export type AccountInfo = {
   id: string;
@@ -70,7 +72,15 @@ function accountItems(me: AccountInfo | null, isAdmin: boolean): Item[] {
   return items;
 }
 
-function Who({ me, dark }: { me: AccountInfo; dark?: boolean }) {
+function Who({
+  me,
+  dark,
+  noSeason = false,
+}: {
+  me: AccountInfo;
+  dark?: boolean;
+  noSeason?: boolean; // ☰ 메뉴: 시즌은 아래 시즌 카드에서 보여준다
+}) {
   return (
     <>
       <p className="flex items-center gap-1.5 t-body-2 !font-bold">
@@ -80,11 +90,13 @@ function Who({ me, dark }: { me: AccountInfo; dark?: boolean }) {
         )}
         <span className="truncate">{me.nickname}</span>
       </p>
-      <p
-        className={`mt-1 t-caption-1 ${dark ? "text-white/75" : "text-label-alt"}`}
-      >
-        {me.season}
-      </p>
+      {!noSeason && (
+        <p
+          className={`mt-1 t-caption-1 ${dark ? "text-white/75" : "text-label-alt"}`}
+        >
+          {me.season}
+        </p>
+      )}
     </>
   );
 }
@@ -245,7 +257,7 @@ export function MobileMenu({
               role="dialog"
               aria-modal="true"
               aria-label="메뉴"
-              className="absolute inset-y-0 right-0 flex w-[min(320px,86vw)] flex-col bg-surface shadow-large"
+              className="absolute inset-y-0 right-0 flex w-[min(320px,86vw)] flex-col overflow-y-auto bg-surface shadow-large"
             >
               <div className="flex items-center justify-between px-4 pb-1.5 pt-3">
                 <Link href="/" aria-label="예감 홈">
@@ -264,9 +276,15 @@ export function MobileMenu({
               {me ? (
                 <Link
                   href={`/users/${me.id}`}
-                  className="mx-4 my-2 block rounded-[18px] bg-hero p-4 text-white"
+                  className="mx-4 my-2 flex items-center justify-between gap-2 rounded-[14px] bg-bg-alt px-4 py-3.5"
                 >
-                  <Who me={me} dark />
+                  <span className="min-w-0">
+                    <Who me={me} noSeason />
+                    <span className="mt-0.5 block t-caption-1 text-label-alt">
+                      내 프로필 보기
+                    </span>
+                  </span>
+                  <ChevronRightIcon className="h-5 w-5 shrink-0 text-label-alt" />
                 </Link>
               ) : signedIn ? null : (
                 <div className="px-4 py-2">
@@ -297,22 +315,66 @@ export function MobileMenu({
                 ))}
               </nav>
 
-              <div className="mt-auto border-t border-line-alt px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-2">
-                {signedIn && (
-                  <LogoutButton className="flex w-full items-center gap-3 py-2.5 t-body-2 !font-semibold text-label-neutral" />
-                )}
-                <p className="flex flex-wrap gap-x-3 gap-y-1 pt-1 t-caption-1 text-label-alt">
-                  <Link href="/terms">이용약관</Link>
-                  <Link href="/privacy" className="!font-bold text-label">
-                    개인정보처리방침
-                  </Link>
-                  <Link href="/licenses">라이선스</Link>
-                </p>
+              <div className="mt-auto">
+                {me && <SeasonCard me={me} />}
+                <div className="border-t border-line-alt px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-2">
+                  {signedIn && (
+                    <LogoutButton className="flex w-full items-center gap-3 py-2.5 t-body-2 !font-semibold text-label-neutral" />
+                  )}
+                  <p className="flex flex-wrap gap-x-3 gap-y-1 pt-1 t-caption-1 text-label-alt">
+                    <Link href="/terms">이용약관</Link>
+                    <Link href="/privacy" className="!font-bold text-label">
+                      개인정보처리방침
+                    </Link>
+                    <Link href="/licenses">라이선스</Link>
+                  </p>
+                </div>
               </div>
             </div>
           </div>,
           document.body,
         )}
     </div>
+  );
+}
+
+// ☰ 메뉴 하단 시즌 카드: 시즌 남은 날 · 점수 · 티어·순위 · 판정 건수 · 랭킹 보기
+function SeasonCard({ me }: { me: AccountInfo }) {
+  const st = me.seasonStats;
+  const [y, m] = st.key.split("-").map(Number);
+  const end = new Date(`${y}-${String(m).padStart(2, "0")}-01T00:00:00+09:00`);
+  end.setUTCMonth(end.getUTCMonth() + 1);
+  return (
+    <section
+      aria-label={`${m}월 시즌`}
+      className="mx-4 mb-3 rounded-[18px] border border-line p-4"
+    >
+      <div className="flex items-center justify-between gap-2">
+        <p className="t-label-1 !font-extrabold">{m}월 시즌</p>
+        <span className="num-s text-label-neutral">
+          {dDay(end.toISOString())}
+        </span>
+      </div>
+      <p className="mt-2 num-l text-[36px]">{scoreText(st.total)}</p>
+      <p className="mt-1.5 flex flex-wrap items-center gap-x-1.5 t-label-2 text-label-neutral">
+        <span className="!font-extrabold text-label">{tierLabel(me.tier)}</span>
+        {st.rank !== null && st.topPct !== null && (
+          <span>
+            · {st.rank}위 · 상위 {st.topPct}%
+          </span>
+        )}
+      </p>
+      <p className="mt-1 t-caption-1 text-label-alt">
+        이번 달 판정된 예측 {st.count}건
+        {st.count < SEASON_MIN && ` · ${SEASON_MIN}건부터 랭킹·티어에 올라요`}
+      </p>
+      <Link
+        href="/ranking"
+        className="mt-3.5 flex h-11 items-center justify-center gap-1 rounded-xl bg-brand t-label-1 !font-bold text-white transition-colors hover:bg-brand-strong"
+      >
+        랭킹 보기
+        <ChevronRightIcon className="h-4 w-4" />
+      </Link>
+    </section>
   );
 }

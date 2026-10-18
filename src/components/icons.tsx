@@ -152,3 +152,8 @@ export const PencilIcon = (p: Props) => (
     <path d="m13.5 6.5 4 4" />
   </Svg>
 );
+export const CheckIcon = (p: Props) => (
+  <Svg {...p}>
+    <path d="M20 6 9 17l-5-5" />
+  </Svg>
+);

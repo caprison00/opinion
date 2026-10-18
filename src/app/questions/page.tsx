@@ -132,7 +132,7 @@ export default async function QuestionsPage({
       >
         <ChevronLeftIcon className="h-4 w-4" />홈
       </Link>
-      <h1 className="mt-2 t-heading-1 md:t-title-3">전체 질문</h1>
+      <h1 className="mt-2 t-title-3 lg:t-title-1">전체 질문</h1>
 
       <div className="mt-4">
         <CategoryTabs
@@ -143,22 +143,28 @@ export default async function QuestionsPage({
         />
       </div>
 
-      <div className="mt-4 flex items-center justify-between gap-3 border-t border-line pt-4">
-        <div className="flex gap-1">
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-4">
+        <div
+          className="inline-flex gap-0.5 rounded-xl bg-bg-alt p-[3px]"
+          role="group"
+          aria-label="질문 상태"
+        >
           {(["open", "done"] as Status[]).map((st) => (
             <Link
               key={st}
               href={href({ status: st, page: 1 })}
               scroll={false}
               aria-current={st === status ? "page" : undefined}
-              className={`rounded-lg px-3 py-1.5 t-label-1 ${
+              className={`flex h-9 items-center gap-1 rounded-[9px] px-3 t-label-1 !font-extrabold transition-colors ${
                 st === status
-                  ? "bg-inverse !font-bold text-on-inverse"
-                  : "text-label-neutral hover:bg-fill"
+                  ? "bg-surface text-label shadow-xsmall"
+                  : "text-label-neutral hover:text-label"
               }`}
             >
               {st === "open" ? "진행 중" : "마감·판정"}{" "}
-              <span className="num">{byStatus[st].length}</span>
+              <span className="num !font-medium opacity-80">
+                {byStatus[st].length}
+              </span>
             </Link>
           ))}
         </div>
@@ -179,7 +185,7 @@ export default async function QuestionsPage({
             } 질문이 없어요.`}
           />
         ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
             {shown.map((q) => (
               <QuestionCard
                 key={q.id}

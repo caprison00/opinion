@@ -13,7 +13,7 @@ import QuestionCard from "@/components/QuestionCard";
 import Rotator from "@/components/Rotator";
 import InfoTip from "@/components/InfoTip";
 import { Thumb } from "@/components/QuestionImage";
-import { card, pillBar, scoreText, textTab } from "@/components/ui";
+import { card, chip, scoreText } from "@/components/ui";
 import { getViewer } from "@/lib/auth";
 import {
   changeOf,
@@ -262,7 +262,7 @@ export default async function Home({
         aria-label="분야"
         className="sticky top-14 z-10 -mx-4 bg-bg/95 px-4 py-2 backdrop-blur-md md:top-[68px] md:-mx-6 md:px-6 lg:hidden"
       >
-        <div className={`scroll-row ${pillBar}`}>
+        <div className="scroll-row flex gap-1.5 overflow-x-auto">
           {tabs.map((tab) => {
             const active = tab.value === category;
             return (
@@ -270,7 +270,7 @@ export default async function Home({
                 key={tab.label}
                 href={tab.value ? `/?category=${tab.value}` : "/"}
                 aria-current={active ? "page" : undefined}
-                className={`${textTab(active)} shrink-0 gap-1`}
+                className={`${chip(active)} shrink-0 !h-10`}
               >
                 {tab.label}
               </Link>
@@ -284,12 +284,6 @@ export default async function Home({
           <CategoryRail active={category} counts={counts} />
         </div>
         <div className="flex min-w-0 flex-col gap-10">
-          {/* 좁은 화면: 내 시즌 티어·랭킹 바로가기를 맨 위에 */}
-          {season && (
-            <div className="-mb-4 lg:hidden">
-              <SeasonBox season={season} />
-            </div>
-          )}
           {category ? (
             <section>
               <SectionTitle
@@ -492,11 +486,11 @@ function SectionTitle({
   );
   if (!more) return heading;
   return (
-    <div className="flex items-start justify-between gap-3">
+    <div className="mb-3.5 flex items-center justify-between gap-3 [&>h2]:mb-0">
       {heading}
       <Link
         href={more}
-        className="mt-1 flex shrink-0 items-center t-label-1 !font-semibold text-label-alt hover:text-label"
+        className="-mr-1 flex h-9 shrink-0 items-center rounded-[10px] pl-2.5 pr-1 t-label-1 !font-bold text-primary hover:bg-fill"
       >
         더보기
         <ChevronRightIcon className="h-4 w-4" />
