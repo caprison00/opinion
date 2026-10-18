@@ -39,7 +39,9 @@ export default function SortMenu({
         aria-expanded={open}
         className="flex h-10 items-center gap-1.5 rounded-[10px] border border-line bg-surface pl-3 pr-2.5 sm:pl-3.5 sm:pr-3 t-label-1 !font-bold text-label hover:bg-fill-alt"
       >
-        <span className="hidden !font-semibold text-label-alt sm:inline">정렬</span>
+        <span className="hidden !font-semibold text-label-alt sm:inline">
+          정렬
+        </span>
         {current?.label}
         <ChevronDownIcon className="h-4 w-4 text-label-neutral" />
       </button>
