@@ -1,6 +1,7 @@
 import Link from "next/link";
 import CategoryTabs from "@/components/CategoryTabs";
 import EmptyState from "@/components/EmptyState";
+import RevealList from "@/components/RevealList";
 import { ChevronLeftIcon } from "@/components/icons";
 import PageShell from "@/components/PageShell";
 import QuestionCard from "@/components/QuestionCard";
@@ -39,7 +40,7 @@ const SORTS: Record<Status, { value: string; label: string }[]> = {
 };
 
 // 전체 질문 목록: 진행 중 / 마감·판정 + 분야 + 정렬, 12개씩 더 보기
-// 주소: /questions?status=open|done&category=<분야>&sort=<정렬>&page=<n>
+// 주소: /questions?status=open|done&category=<분야>&sort=<정렬> (12개씩 아래로 내리면 자동으로 더 보임)
 export default async function QuestionsPage({
   searchParams,
 }: {
@@ -51,7 +52,6 @@ export default async function QuestionsPage({
   const sort = SORTS[status].some((s) => s.value === sp.sort)
     ? sp.sort!
     : SORTS[status][0].value;
-  const page = Math.max(1, Math.min(50, Number(sp.page) || 1));
 
   const { supabase } = await getViewer();
   // 공개 질문만 (비공개는 RLS로도 관리자에게만 보인다)
@@ -92,7 +92,7 @@ export default async function QuestionsPage({
     boardOf,
     ((movingData ?? []) as { question_id: string }[]).map((m) => m.question_id),
   );
-  const shown = sorted.slice(0, page * PAGE_SIZE);
+  const shown = sorted;
 
   // 사진이 없는 질문은 이슈 묶음 사진
   const issueIds = [
@@ -109,7 +109,6 @@ export default async function QuestionsPage({
     status?: Status;
     category?: Category | null;
     sort?: string;
-    page?: number;
   }) => {
     const st = p.status ?? status;
     const params = new URLSearchParams();
@@ -119,7 +118,6 @@ export default async function QuestionsPage({
     // 상태를 바꾸면 그 상태의 기본 정렬로
     const so = p.sort ?? (p.status && p.status !== status ? undefined : sort);
     if (so && so !== SORTS[st][0].value) params.set("sort", so);
-    if (p.page && p.page > 1) params.set("page", String(p.page));
     const qs = params.toString();
     return qs ? `/questions?${qs}` : "/questions";
   };
@@ -138,7 +136,7 @@ export default async function QuestionsPage({
         <CategoryTabs
           active={category}
           firstLabel="전체"
-          hrefOf={(c) => href({ category: c, page: 1 })}
+          hrefOf={(c) => href({ category: c })}
           counts={{ total: pool.length, byCategory }}
         />
       </div>
@@ -152,7 +150,7 @@ export default async function QuestionsPage({
           {(["open", "done"] as Status[]).map((st) => (
             <Link
               key={st}
-              href={href({ status: st, page: 1 })}
+              href={href({ status: st })}
               scroll={false}
               aria-current={st === status ? "page" : undefined}
               className={`flex h-9 items-center gap-1 rounded-[9px] px-3 t-label-1 !font-extrabold transition-colors ${
@@ -172,7 +170,7 @@ export default async function QuestionsPage({
           value={sort}
           options={SORTS[status].map((s) => ({
             ...s,
-            href: href({ sort: s.value, page: 1 }),
+            href: href({ sort: s.value }),
           }))}
         />
       </div>
@@ -185,7 +183,14 @@ export default async function QuestionsPage({
             } 질문이 없어요.`}
           />
         ) : (
-          <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
+          // 분야·상태·정렬이 바뀌면 처음 12개부터 다시
+          <RevealList
+            key={`${status}-${category ?? "all"}-${sort}`}
+            step={PAGE_SIZE}
+            className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3"
+            moreLabel="질문 더 보기"
+            moreClassName={button.secondary}
+          >
             {shown.map((q) => (
               <QuestionCard
                 key={q.id}
@@ -197,18 +202,7 @@ export default async function QuestionsPage({
                 )}
               />
             ))}
-          </div>
-        )}
-        {sorted.length > shown.length && (
-          <div className="mt-6 flex justify-center">
-            <Link
-              href={href({ page: page + 1 })}
-              scroll={false}
-              className={button.secondary}
-            >
-              질문 더 보기
-            </Link>
-          </div>
+          </RevealList>
         )}
       </div>
     </PageShell>
