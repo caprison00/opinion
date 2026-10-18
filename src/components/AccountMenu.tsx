@@ -26,6 +26,15 @@ export type AccountInfo = {
   tier: Tier;
   badge: { key: string; level: number } | null;
   season: string; // "10월 시즌 +212점 · 9위 · 상위 23%"
+  // ☰ 메뉴 시즌 카드용 (Header의 profile_stats에서 그대로)
+  seasonStats: {
+    key: string; // "2026-10" — D-N 계산용
+    total: number;
+    count: number; // 이번 시즌 판정된 예측 수
+    rank: number | null;
+    eligible: number | null;
+    topPct: number | null; // 순위가 없으면 null
+  };
   openCount: number; // 진행 중인 내 예측 수
   badgeCount: number; // 받은 뱃지 수
 };

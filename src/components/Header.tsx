@@ -53,6 +53,17 @@ async function getAccount(
     tier: isTier(s.tier) ? s.tier : "newbie",
     badge: featured.get(id) ?? null,
     season: `${month}월 시즌 ${scoreText(s.season_total)}점${rank}`,
+    seasonStats: {
+      key: s.season,
+      total: s.season_total,
+      count: s.season_count,
+      rank: s.season_rank,
+      eligible: s.season_eligible,
+      topPct:
+        s.season_rank && s.season_eligible
+          ? topPercent(s.season_rank, s.season_eligible)
+          : null,
+    },
     openCount: openCount ?? 0,
     badgeCount: badgeCount ?? 0,
   };
