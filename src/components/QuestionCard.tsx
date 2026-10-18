@@ -3,6 +3,8 @@ import { changeOf, type Board } from "@/lib/board";
 import {
   categoryLabel,
   formatDate,
+  isAccepting,
+  outcomeLabel,
   stanceOf,
   dDay,
   type Question,
@@ -41,11 +43,19 @@ export default function QuestionCard({
 
   // 공개된 지 48시간이 안 된 질문
   const isNew =
-    question.status === "open" &&
+    isAccepting(question) &&
     Date.now() - new Date(question.open_at).getTime() < 48 * 3_600_000;
 
   const isOx = question.type === "ox";
-  const left = dDay(question.close_at);
+  // 마감·판정된 질문 (전체 질문 목록의 '마감·판정' 탭): 오른쪽 위는 판정/마감/무효
+  const accepting = isAccepting(question);
+  const left = accepting
+    ? dDay(question.close_at)
+    : question.status === "resolved"
+      ? "판정"
+      : question.status === "void"
+        ? "무효"
+        : "마감";
   // 마감 3일 이하(D-day 포함)는 주의 색
   const soon = left === "D-day" || /^D-[0-3]$/.test(left);
 
@@ -127,11 +137,58 @@ export default function QuestionCard({
             <LockedScale />
           </>
         )}
+        {!accepting && <DoneLine question={question} board={board} />}
         <p className="flex items-center justify-between gap-2 t-caption-1 text-label-alt">
           <span>마감 {formatDate(question.close_at)}</span>
           <Participants n={board.participants} />
         </p>
       </div>
     </Link>
+  );
+}
+
+// 마감·판정된 질문의 결과 줄: 판정됨(결과 + 적중 비율) / 판정 대기 / 무효
+function DoneLine({ question, board }: { question: Question; board: Board }) {
+  if (question.status === "void") {
+    return (
+      <p className="t-label-2">
+        <span className="rounded-lg bg-fill px-2.5 py-1 !font-bold text-label-neutral">
+          무효 처리
+        </span>
+      </p>
+    );
+  }
+  if (question.status === "resolved") {
+    const isNo = question.type === "ox" && question.outcome_index === 1;
+    const rate =
+      board.hitRate === null ? null : Math.round(board.hitRate * 100);
+    return (
+      <p className="flex items-center justify-between gap-2 t-label-2">
+        <span
+          className={`rounded-lg px-2.5 py-1 !font-extrabold ${
+            isNo ? "bg-no-soft text-no-ink" : "bg-yes-soft text-yes-ink"
+          }`}
+        >
+          결과 {outcomeLabel(question)}
+        </span>
+        <span className="text-label-neutral">
+          {board.participants === 0 || rate === null
+            ? "예측한 사람이 없었어요"
+            : rate < 50
+              ? `단 ${rate}%만 맞혔어요`
+              : `${rate}%가 맞혔어요`}
+        </span>
+      </p>
+    );
+  }
+  return (
+    <p className="flex items-center justify-between gap-2 t-label-2">
+      <span className="rounded-lg bg-fill px-2.5 py-1 !font-bold text-label-neutral">
+        판정 대기
+      </span>
+      <span className="text-label-neutral">
+        {formatDate(question.resolve_at)} 판정 예정
+      </span>
+    </p>
   );
 }

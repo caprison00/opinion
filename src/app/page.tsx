@@ -362,6 +362,7 @@ export default async function Home({
                 <SectionTitle
                   title="곧 마감되는 질문"
                   hint="마감이 가까운 순서로 보여요."
+                  more="/questions?sort=closing"
                 />
                 {closingSoon.length === 0 ? (
                   <EmptyState message="진행 중인 질문이 없어요." />
@@ -379,6 +380,7 @@ export default async function Home({
                   <SectionTitle
                     title="새로 공개된 질문"
                     hint="최근 일주일 동안 새로 열린 질문이에요. 공개된 순서대로 보여요."
+                    more="/questions?sort=new"
                   />
                   <CardGrid
                     questions={newest}
@@ -473,12 +475,33 @@ export default async function Home({
 }
 
 // 섹션 제목: 굵은 제목 + 설명은 ⓘ 툴팁
-function SectionTitle({ title, hint }: { title: string; hint?: string }) {
-  return (
+function SectionTitle({
+  title,
+  hint,
+  more,
+}: {
+  title: string;
+  hint?: string;
+  more?: string; // '더보기' 링크 (전체 질문 목록)
+}) {
+  const heading = (
     <h2 className="relative mb-3.5 flex items-center gap-1 t-heading-2 lg:t-heading-1">
       {title}
       {hint && <InfoTip text={hint} />}
     </h2>
+  );
+  if (!more) return heading;
+  return (
+    <div className="flex items-start justify-between gap-3">
+      {heading}
+      <Link
+        href={more}
+        className="mt-1 flex shrink-0 items-center t-label-1 !font-semibold text-label-alt hover:text-label"
+      >
+        더보기
+        <ChevronRightIcon className="h-4 w-4" />
+      </Link>
+    </div>
   );
 }
 
