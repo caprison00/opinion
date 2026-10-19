@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "./icons";
 
 const INTERVAL = 5000;
@@ -9,6 +9,8 @@ const INTERVAL = 5000;
 // - 5초마다 다음 장, 마우스를 올리거나 포커스가 있으면 멈춤
 // - 움직임 줄이기 설정이면 자동으로 넘기지 않음, 화면이 안 보일 때도 멈춤
 // - 모든 장을 겹쳐 두어 가장 긴 장 높이에 맞춘다 (넘길 때 카드 높이가 흔들리지 않게)
+// - 휴대폰: 좌우로 밀면 넘어간다 (왼쪽으로 밀면 다음, 오른쪽으로 밀면 이전). 위아래 스크롤은 그대로
+const SWIPE_MIN = 40; // 이만큼(px) 이상 옆으로 밀어야 넘긴다
 export default function Rotator({
   slides,
   label,
@@ -38,9 +40,35 @@ export default function Rotator({
       }
     }, INTERVAL);
     return () => clearInterval(t);
-  }, [n, paused]);
+  }, [n, paused, index]); // 손으로 넘기면 5초를 다시 센다
 
   const go = (i: number) => setIndex((i + n) % n);
+
+  // 스와이프: 손가락이 움직인 거리로 판단. 옆으로 밀었으면 그 뒤 클릭(질문 열기)은 막는다
+  const touch = useRef<{ x: number; y: number } | null>(null);
+  const swiped = useRef(false);
+  function onTouchStart(e: React.TouchEvent) {
+    const t = e.touches[0];
+    touch.current = { x: t.clientX, y: t.clientY };
+    swiped.current = false;
+  }
+  function onTouchEnd(e: React.TouchEvent) {
+    const start = touch.current;
+    touch.current = null;
+    if (!start || n < 2) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - start.x;
+    const dy = t.clientY - start.y;
+    if (Math.abs(dx) < SWIPE_MIN || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+    swiped.current = true;
+    go(dx < 0 ? index + 1 : index - 1);
+  }
+  function onClickCapture(e: React.MouseEvent) {
+    if (!swiped.current) return;
+    swiped.current = false;
+    e.preventDefault();
+    e.stopPropagation();
+  }
 
   return (
     <div
@@ -52,7 +80,12 @@ export default function Rotator({
       onFocus={() => setPaused(true)}
       onBlur={() => setPaused(false)}
     >
-      <div className="grid">
+      <div
+        className="grid touch-pan-y"
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+        onClickCapture={onClickCapture}
+      >
         {slides.map((slide, i) => (
           <div
             key={i}
